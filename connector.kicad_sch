@@ -4759,7 +4759,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 737-RS2-20-G"
+		(property "Mouser part no." " 710-61304021821"
 			(at 156.21 82.55 0)
 			(effects
 				(font
@@ -5083,7 +5083,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 737-PH2-18-UA"
+		(property "Mouser part no." " 649-67996-434HLF"
 			(at 156.21 134.62 0)
 			(effects
 				(font
