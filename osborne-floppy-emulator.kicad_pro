@@ -638,6 +638,7 @@
       "Net-(U3-1IN+)": "Analog",
       "Net-(U3-1IN-)": "Analog",
       "Net-(U3-2IN+)": "Analog",
+      "Net-(U3-2IN-)": "Analog",
       "Net-(U3-CT)": "Analog",
       "Net-(U3-FB)": "Analog",
       "Net-(U3-REF)": "Analog",
