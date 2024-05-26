@@ -1405,7 +1405,7 @@
 				)
 			)
 		)
-		(property "Value" "1N4004"
+		(property "Value" "FDLL4148"
 			(at 158.75 173.99 0)
 			(effects
 				(font
@@ -1413,7 +1413,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder"
 			(at 158.75 173.355 0)
 			(effects
 				(font
@@ -1422,7 +1422,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.vishay.com/docs/88503/1n4001.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/308/1N914_D-2309448.pdf"
 			(at 158.75 177.8 0)
 			(effects
 				(font
@@ -1458,7 +1458,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-1N4004GP "
+		(property "Mouser part no." " 512-FDLL4148"
 			(at 158.75 177.8 0)
 			(effects
 				(font
@@ -1566,7 +1566,7 @@
 				)
 			)
 		)
-		(property "Value" "1N4004"
+		(property "Value" "FDLL4148"
 			(at 158.75 123.19 0)
 			(effects
 				(font
@@ -1574,7 +1574,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder"
 			(at 158.75 122.555 0)
 			(effects
 				(font
@@ -1583,7 +1583,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.vishay.com/docs/88503/1n4001.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/308/1N914_D-2309448.pdf"
 			(at 158.75 127 0)
 			(effects
 				(font
@@ -1619,7 +1619,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-1N4004GP "
+		(property "Mouser part no." " 512-FDLL4148"
 			(at 158.75 127 0)
 			(effects
 				(font
@@ -1661,7 +1661,7 @@
 				)
 			)
 		)
-		(property "Value" "1N4004"
+		(property "Value" "FDLL4148"
 			(at 158.75 59.69 0)
 			(effects
 				(font
@@ -1669,7 +1669,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder"
 			(at 158.75 59.055 0)
 			(effects
 				(font
@@ -1678,7 +1678,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.vishay.com/docs/88503/1n4001.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/308/1N914_D-2309448.pdf"
 			(at 158.75 63.5 0)
 			(effects
 				(font
@@ -1714,7 +1714,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-1N4004GP "
+		(property "Mouser part no." " 512-FDLL4148"
 			(at 158.75 63.5 0)
 			(effects
 				(font
@@ -1756,7 +1756,7 @@
 				)
 			)
 		)
-		(property "Value" "1N4004"
+		(property "Value" "FDLL4148"
 			(at 158.75 72.39 0)
 			(effects
 				(font
@@ -1764,7 +1764,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder"
 			(at 158.75 71.755 0)
 			(effects
 				(font
@@ -1773,7 +1773,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.vishay.com/docs/88503/1n4001.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/308/1N914_D-2309448.pdf"
 			(at 158.75 76.2 0)
 			(effects
 				(font
@@ -1809,7 +1809,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-1N4004GP "
+		(property "Mouser part no." " 512-FDLL4148"
 			(at 158.75 76.2 0)
 			(effects
 				(font
@@ -1851,7 +1851,7 @@
 				)
 			)
 		)
-		(property "Value" "1N4004"
+		(property "Value" "FDLL4148"
 			(at 158.75 161.29 0)
 			(effects
 				(font
@@ -1859,7 +1859,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder"
 			(at 158.75 160.655 0)
 			(effects
 				(font
@@ -1868,7 +1868,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.vishay.com/docs/88503/1n4001.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/308/1N914_D-2309448.pdf"
 			(at 158.75 165.1 0)
 			(effects
 				(font
@@ -1904,7 +1904,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-1N4004GP "
+		(property "Mouser part no." " 512-FDLL4148"
 			(at 158.75 165.1 0)
 			(effects
 				(font
@@ -2023,7 +2023,7 @@
 				)
 			)
 		)
-		(property "Value" "1N4004"
+		(property "Value" "FDLL4148"
 			(at 158.75 110.49 0)
 			(effects
 				(font
@@ -2031,7 +2031,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder"
 			(at 158.75 109.855 0)
 			(effects
 				(font
@@ -2040,7 +2040,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.vishay.com/docs/88503/1n4001.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/308/1N914_D-2309448.pdf"
 			(at 158.75 114.3 0)
 			(effects
 				(font
@@ -2076,7 +2076,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-1N4004GP "
+		(property "Mouser part no." " 512-FDLL4148"
 			(at 158.75 114.3 0)
 			(effects
 				(font
@@ -2346,7 +2346,7 @@
 				)
 			)
 		)
-		(property "Value" "1N4004"
+		(property "Value" "FDLL4148"
 			(at 158.75 85.09 0)
 			(effects
 				(font
@@ -2354,7 +2354,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder"
 			(at 158.75 84.455 0)
 			(effects
 				(font
@@ -2363,7 +2363,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.vishay.com/docs/88503/1n4001.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/308/1N914_D-2309448.pdf"
 			(at 158.75 88.9 0)
 			(effects
 				(font
@@ -2399,7 +2399,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-1N4004GP "
+		(property "Mouser part no." " 512-FDLL4148"
 			(at 158.75 88.9 0)
 			(effects
 				(font
@@ -2441,7 +2441,7 @@
 				)
 			)
 		)
-		(property "Value" "1N4004"
+		(property "Value" "FDLL4148"
 			(at 158.75 148.59 0)
 			(effects
 				(font
@@ -2449,7 +2449,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder"
 			(at 158.75 147.955 0)
 			(effects
 				(font
@@ -2458,7 +2458,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.vishay.com/docs/88503/1n4001.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/308/1N914_D-2309448.pdf"
 			(at 158.75 152.4 0)
 			(effects
 				(font
@@ -2494,7 +2494,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-1N4004GP "
+		(property "Mouser part no." " 512-FDLL4148"
 			(at 158.75 152.4 0)
 			(effects
 				(font
@@ -2775,7 +2775,7 @@
 				)
 			)
 		)
-		(property "Value" "1N4004"
+		(property "Value" "FDLL4148"
 			(at 158.75 46.99 0)
 			(effects
 				(font
@@ -2783,7 +2783,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder"
 			(at 158.75 46.355 0)
 			(effects
 				(font
@@ -2792,7 +2792,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.vishay.com/docs/88503/1n4001.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/308/1N914_D-2309448.pdf"
 			(at 158.75 50.8 0)
 			(effects
 				(font
@@ -2828,7 +2828,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-1N4004GP "
+		(property "Mouser part no." " 512-FDLL4148"
 			(at 158.75 50.8 0)
 			(effects
 				(font
@@ -3172,7 +3172,7 @@
 				)
 			)
 		)
-		(property "Value" "1N4004"
+		(property "Value" "FDLL4148"
 			(at 158.75 97.79 0)
 			(effects
 				(font
@@ -3180,7 +3180,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder"
 			(at 158.75 97.155 0)
 			(effects
 				(font
@@ -3189,7 +3189,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.vishay.com/docs/88503/1n4001.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/308/1N914_D-2309448.pdf"
 			(at 158.75 101.6 0)
 			(effects
 				(font
@@ -3225,7 +3225,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-1N4004GP "
+		(property "Mouser part no." " 512-FDLL4148"
 			(at 158.75 101.6 0)
 			(effects
 				(font
@@ -3267,7 +3267,7 @@
 				)
 			)
 		)
-		(property "Value" "1N4004"
+		(property "Value" "FDLL4148"
 			(at 158.75 135.89 0)
 			(effects
 				(font
@@ -3275,7 +3275,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder"
 			(at 158.75 135.255 0)
 			(effects
 				(font
@@ -3284,7 +3284,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.vishay.com/docs/88503/1n4001.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/308/1N914_D-2309448.pdf"
 			(at 158.75 139.7 0)
 			(effects
 				(font
@@ -3320,7 +3320,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-1N4004GP "
+		(property "Mouser part no." " 512-FDLL4148"
 			(at 158.75 139.7 0)
 			(effects
 				(font
