@@ -4732,7 +4732,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_2x17_P2.54mm_Vertical"
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_2x17_P2.54mm_Vertical_SMD"
 			(at 156.21 82.55 0)
 			(effects
 				(font
@@ -5056,7 +5056,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x17_P2.54mm_Vertical"
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x17_P2.54mm_Vertical_SMD"
 			(at 156.21 134.62 0)
 			(effects
 				(font
@@ -5083,7 +5083,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 649-67996-434HLF"
+		(property "Mouser part no." " 855-M20-7812045"
 			(at 156.21 134.62 0)
 			(effects
 				(font
