@@ -4964,7 +4964,7 @@
 				)
 			)
 		)
-		(property "Value" "BC547"
+		(property "Value" "BC847C"
 			(at 186.69 130.81 90)
 			(effects
 				(font
@@ -4972,7 +4972,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline"
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23_Handsoldering"
 			(at 188.595 127 0)
 			(effects
 				(font
@@ -4983,7 +4983,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://www.onsemi.com/pub/Collateral/BC550-D.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/916/BC847X_SER-3081381.pdf"
 			(at 186.69 121.92 0)
 			(effects
 				(font
@@ -5002,7 +5002,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-BC547CBK"
+		(property "Mouser part no." " 771-BC847C-T/R"
 			(at 186.69 121.92 0)
 			(effects
 				(font
@@ -5222,7 +5222,7 @@
 				)
 			)
 		)
-		(property "Value" "BC547"
+		(property "Value" "BC847C"
 			(at 205.74 133.35 90)
 			(effects
 				(font
@@ -5230,7 +5230,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline"
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23_Handsoldering"
 			(at 207.645 129.54 0)
 			(effects
 				(font
@@ -5241,7 +5241,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://www.onsemi.com/pub/Collateral/BC550-D.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/916/BC847X_SER-3081381.pdf"
 			(at 205.74 124.46 0)
 			(effects
 				(font
@@ -5260,7 +5260,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-BC547CBK"
+		(property "Mouser part no." " 771-BC847C-T/R"
 			(at 205.74 124.46 0)
 			(effects
 				(font
