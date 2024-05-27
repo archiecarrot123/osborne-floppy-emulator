@@ -490,6 +490,126 @@
 				)
 			)
 		)
+		(symbol "power:+3V3"
+			(power)
+			(pin_numbers hide)
+			(pin_names
+				(offset 0) hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "#PWR"
+				(at 0 -3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Value" "+3V3"
+				(at 0 3.556 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"+3V3\""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "+3V3_0_1"
+				(polyline
+					(pts
+						(xy -0.762 1.27) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54) (xy 0.762 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "+3V3_1_1"
+				(pin power_in line
+					(at 0 0 90)
+					(length 0)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "power:GND"
 			(power)
 			(pin_numbers hide)
@@ -587,6 +707,12 @@
 			)
 		)
 	)
+	(junction
+		(at 152.4 101.6)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "74b62594-66c4-4d35-ae7c-0de8c6196860")
+	)
 	(wire
 		(pts
 			(xy 106.68 140.97) (xy 106.68 138.43)
@@ -609,6 +735,16 @@
 	)
 	(wire
 		(pts
+			(xy 149.86 99.06) (xy 152.4 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "053928ff-3e34-49f2-b52b-887f8329425e")
+	)
+	(wire
+		(pts
 			(xy 162.56 114.3) (xy 165.1 114.3)
 		)
 		(stroke
@@ -619,7 +755,7 @@
 	)
 	(wire
 		(pts
-			(xy 152.4 101.6) (xy 154.94 101.6)
+			(xy 139.7 101.6) (xy 152.4 101.6)
 		)
 		(stroke
 			(width 0)
@@ -699,6 +835,16 @@
 	)
 	(wire
 		(pts
+			(xy 152.4 99.06) (xy 152.4 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "39a448c9-f07b-4223-9b67-169e93710083")
+	)
+	(wire
+		(pts
 			(xy 106.68 116.84) (xy 106.68 114.3)
 		)
 		(stroke
@@ -756,6 +902,16 @@
 			(type default)
 		)
 		(uuid "61e0e2bc-1243-4bfc-bb43-4a308bd08886")
+	)
+	(wire
+		(pts
+			(xy 152.4 101.6) (xy 154.94 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "65c3ab68-6fb7-481b-9d42-2b7501c37e18")
 	)
 	(wire
 		(pts
@@ -999,6 +1155,16 @@
 	)
 	(wire
 		(pts
+			(xy 139.7 96.52) (xy 139.7 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e9a4f093-1fae-44a3-a9d2-f6e95a90e353")
+	)
+	(wire
+		(pts
 			(xy 162.56 88.9) (xy 165.1 88.9)
 		)
 		(stroke
@@ -1006,6 +1172,16 @@
 			(type default)
 		)
 		(uuid "efb9b8fc-2caa-4f81-bcbf-4b358aa38276")
+	)
+	(wire
+		(pts
+			(xy 139.7 99.06) (xy 142.24 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f7aaa973-36aa-45a0-9b7a-6033bbf27637")
 	)
 	(text "Internal pull-ups should be used,\nand the diodes should be placed near the RP2040"
 		(exclude_from_sim no)
@@ -1209,7 +1385,7 @@
 	)
 	(hierarchical_label "~{4MHz} CMOS"
 		(shape output)
-		(at 152.4 101.6 180)
+		(at 139.7 101.6 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1388,6 +1564,83 @@
 		(uuid "ff662dd4-73f4-4e9f-8bae-f13bd1ee28c8")
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 146.05 99.06 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "0b48e961-c75d-4c71-a1d8-f745d6bd13e0")
+		(property "Reference" "R19"
+			(at 146.05 92.71 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "27k"
+			(at 146.05 95.25 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 146.05 100.838 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 146.05 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 146.05 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser part no." " 603-RE0805FRE0727KL"
+			(at 146.05 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "999e5041-5960-43de-bbec-1456993a60b1")
+		)
+		(pin "1"
+			(uuid "e3dbaced-1d9f-4938-bda8-665b2307d9d9")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/c000f981-768b-40ae-b27c-6b54380ce47a"
+					(reference "R19")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Diode:1N4004")
 		(at 158.75 177.8 180)
 		(unit 1)
@@ -1477,6 +1730,72 @@
 			(project "osborne-floppy-emulator"
 				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/c000f981-768b-40ae-b27c-6b54380ce47a"
 					(reference "D7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 139.7 96.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "1c9e2f1f-2b13-4e7f-8709-b791826711e4")
+		(property "Reference" "#PWR031"
+			(at 139.7 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 139.7 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 139.7 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 139.7 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 139.7 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8b736e02-ff04-42e0-af20-f03c1b011cd1")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/c000f981-768b-40ae-b27c-6b54380ce47a"
+					(reference "#PWR031")
 					(unit 1)
 				)
 			)
