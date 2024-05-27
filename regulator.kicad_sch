@@ -4429,7 +4429,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Package_DIP:DIP-16_W7.62mm_Socket"
+		(property "Footprint" "Package_SO:TSSOP-16_4.4x5mm_P0.65mm"
 			(at 167.64 104.14 0)
 			(effects
 				(font
@@ -4456,7 +4456,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 595-TL494CNE4"
+		(property "Mouser part no." " 595-TL494CPWR"
 			(at 167.64 104.14 0)
 			(effects
 				(font
