@@ -813,6 +813,16 @@
 	)
 	(wire
 		(pts
+			(xy 104.14 172.72) (xy 161.29 172.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "26de464b-cdcc-492a-b8fa-2f85b33cf631")
+	)
+	(wire
+		(pts
 			(xy 104.14 130.81) (xy 110.49 130.81)
 		)
 		(stroke
@@ -1550,7 +1560,7 @@
 	)
 	(sheet
 		(at 161.29 104.14)
-		(size 29.21 68.58)
+		(size 29.21 72.39)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -1570,7 +1580,7 @@
 			)
 		)
 		(property "Sheetfile" "connector.kicad_sch"
-			(at 161.29 173.3046 0)
+			(at 161.29 177.1146 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1738,7 +1748,7 @@
 			)
 			(uuid "903467d8-9323-441a-a0dc-adb1cc783cfc")
 		)
-		(pin "FDD Enable" input
+		(pin "DS 1 Enable" input
 			(at 161.29 168.91 180)
 			(effects
 				(font
@@ -1746,7 +1756,17 @@
 				)
 				(justify left)
 			)
-			(uuid "eae2f046-5e5f-48e9-856c-58351bfe8ea9")
+			(uuid "734ae032-b91a-4744-a2ee-607e98983b2b")
+		)
+		(pin "DS 2 Enable" input
+			(at 161.29 172.72 180)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+			(uuid "820bc824-a0a2-47af-b013-739c2cdd828a")
 		)
 		(instances
 			(project "osborne-floppy-emulator"
@@ -2154,7 +2174,7 @@
 	)
 	(sheet
 		(at 81.28 104.14)
-		(size 22.86 68.58)
+		(size 22.86 72.39)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -2174,7 +2194,7 @@
 			)
 		)
 		(property "Sheetfile" "rp2040.kicad_sch"
-			(at 81.28 173.3046 0)
+			(at 81.28 177.1146 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2251,16 +2271,6 @@
 				(justify right)
 			)
 			(uuid "bc44a194-2ac2-43f5-bdba-2e1b72ea6592")
-		)
-		(pin "FDD Enable" output
-			(at 104.14 168.91 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-			(uuid "cb3e06e5-5dd7-4c60-85c0-118f44b3f0ef")
 		)
 		(pin "~{TG43}" input
 			(at 104.14 107.95 0)
@@ -2381,6 +2391,26 @@
 				(justify right)
 			)
 			(uuid "8a01ae95-8248-4cbb-ade2-cf9e4a40f266")
+		)
+		(pin "DS 2 Enable" output
+			(at 104.14 172.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "c5b175f1-2dde-4481-b640-840cb6a84a55")
+		)
+		(pin "DS 1 Enable" output
+			(at 104.14 168.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "add23279-0c4a-4761-bda6-adf17e09e220")
 		)
 		(instances
 			(project "osborne-floppy-emulator"

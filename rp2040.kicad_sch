@@ -1926,12 +1926,6 @@
 		(uuid "054fbaf6-519a-4956-8add-dfaa6b7f59a6")
 	)
 	(junction
-		(at 158.75 110.49)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "18878bf7-7c98-4997-bdef-1ad1acb3b6ed")
-	)
-	(junction
 		(at 135.89 68.58)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1944,34 +1938,16 @@
 		(uuid "4a4633b5-98cb-4fc5-8c1a-de6f96184d29")
 	)
 	(junction
-		(at 158.75 105.41)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "4d522e15-09df-4763-95ba-e1a47ef76232")
-	)
-	(junction
 		(at 104.14 154.94)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "62cb113b-e57a-422e-98c9-4359563efb30")
 	)
 	(junction
-		(at 158.75 158.75)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "6b116ab1-b26c-4073-b8a4-3041c86b5152")
-	)
-	(junction
 		(at 128.27 80.01)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "6d66647c-a5c1-43b0-a02d-fc4519b44526")
-	)
-	(junction
-		(at 158.75 151.13)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "71003877-82d5-42a8-b8f6-8419ef08cc34")
 	)
 	(junction
 		(at 123.19 52.07)
@@ -1984,30 +1960,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "7c0a2a79-512b-4477-aae8-13885ef5ce14")
-	)
-	(junction
-		(at 158.75 100.33)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "7d1443f8-8858-4f8c-8357-1f0b86648eb5")
-	)
-	(junction
-		(at 158.75 115.57)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "82f516d1-b10f-406a-9b5d-a6b451a23046")
-	)
-	(junction
-		(at 158.75 95.25)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "8fd21176-9780-4842-a90b-9c1f4ad120dc")
-	)
-	(junction
-		(at 158.75 120.65)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "9c63498e-f907-4cd0-9533-5dad5bb856b7")
 	)
 	(junction
 		(at 59.69 100.33)
@@ -2058,48 +2010,6 @@
 		(uuid "d00b9fd2-a646-4012-a51e-107b78d7b24a")
 	)
 	(junction
-		(at 158.75 163.83)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "d473f96d-8ae4-4f08-8ce9-f64efbc28a22")
-	)
-	(junction
-		(at 158.75 90.17)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "d71f4031-8dd7-43bd-8697-c9c40db654ac")
-	)
-	(junction
-		(at 158.75 135.89)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "e032d6e1-e548-4f73-82ec-a693d203f986")
-	)
-	(junction
-		(at 158.75 140.97)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "e1202ec8-3246-47bb-ad94-44bdccbc15f5")
-	)
-	(junction
-		(at 158.75 146.05)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "f330341b-5e34-4b47-bf64-f909493117d6")
-	)
-	(junction
-		(at 158.75 125.73)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "f66159ac-61b6-4fea-b391-214d326ae791")
-	)
-	(junction
-		(at 158.75 130.81)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "f774f949-073b-4ee0-aba0-6d8806ade223")
-	)
-	(junction
 		(at 104.14 88.9)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2121,16 +2031,6 @@
 	)
 	(wire
 		(pts
-			(xy 156.21 114.3) (xy 158.75 114.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "011ba71c-1a5d-4793-98ba-cd09ad71dbad")
-	)
-	(wire
-		(pts
 			(xy 104.14 166.37) (xy 104.14 165.1)
 		)
 		(stroke
@@ -2141,23 +2041,13 @@
 	)
 	(wire
 		(pts
-			(xy 156.21 93.98) (xy 158.75 93.98)
+			(xy 156.21 124.46) (xy 168.91 124.46)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "04eba95a-4678-43a0-980e-7dee3dbed0b7")
-	)
-	(wire
-		(pts
-			(xy 156.21 119.38) (xy 158.75 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "050835c8-4393-4c2e-80fe-2238f33c5909")
+		(uuid "041a7bc9-68ba-45e7-a7a1-0f86ea7193ed")
 	)
 	(wire
 		(pts
@@ -2181,53 +2071,33 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 124.46) (xy 158.75 125.73)
+			(xy 156.21 104.14) (xy 168.91 104.14)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "0ac5458d-5263-4c8c-9d9f-81d7ec4d7dd6")
+		(uuid "0ceb7929-9843-48b6-8f1e-2d345f81edd7")
 	)
 	(wire
 		(pts
-			(xy 158.75 91.44) (xy 158.75 90.17)
+			(xy 156.21 99.06) (xy 168.91 99.06)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "0b48edde-d843-4201-901f-d7bb4ab31eaf")
+		(uuid "0dd3f15d-e1b2-4186-9687-4531861fdc2c")
 	)
 	(wire
 		(pts
-			(xy 158.75 116.84) (xy 158.75 115.57)
+			(xy 156.21 121.92) (xy 168.91 121.92)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "0c3ab46f-ace6-4414-90cb-9a165f1aef81")
-	)
-	(wire
-		(pts
-			(xy 158.75 93.98) (xy 158.75 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0dfd4ddc-8279-466a-965d-05ff8c186f57")
-	)
-	(wire
-		(pts
-			(xy 158.75 139.7) (xy 158.75 140.97)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0efaac66-ebac-458d-a9aa-24fda3e74371")
+		(uuid "11a55225-5f3f-4891-9639-6be6bbd7eb93")
 	)
 	(wire
 		(pts
@@ -2238,46 +2108,6 @@
 			(type default)
 		)
 		(uuid "122c92aa-94de-42fc-a2ab-038abf5fc705")
-	)
-	(wire
-		(pts
-			(xy 161.29 90.17) (xy 158.75 90.17)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "131ffed4-f38e-4302-a61f-b3f123c897c5")
-	)
-	(wire
-		(pts
-			(xy 158.75 165.1) (xy 158.75 163.83)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "184cbd30-28a3-4a2d-9e81-ee06d6bd2a90")
-	)
-	(wire
-		(pts
-			(xy 156.21 96.52) (xy 158.75 96.52)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1c349a05-3e06-4b8f-b217-8c1ac7210f38")
-	)
-	(wire
-		(pts
-			(xy 158.75 129.54) (xy 158.75 130.81)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1c4c9846-5991-4364-8a4f-b78a9b2c52d1")
 	)
 	(wire
 		(pts
@@ -2301,7 +2131,7 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 135.89) (xy 161.29 135.89)
+			(xy 156.21 111.76) (xy 168.91 111.76)
 		)
 		(stroke
 			(width 0)
@@ -2331,6 +2161,16 @@
 	)
 	(wire
 		(pts
+			(xy 156.21 93.98) (xy 168.91 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "23c9a2ac-c76f-4b7d-82b3-14dddc5f83b3")
+	)
+	(wire
+		(pts
 			(xy 86.36 96.52) (xy 87.63 96.52)
 		)
 		(stroke
@@ -2338,26 +2178,6 @@
 			(type default)
 		)
 		(uuid "28d17065-36c9-4a6a-912c-023bc9c66f55")
-	)
-	(wire
-		(pts
-			(xy 158.75 106.68) (xy 158.75 105.41)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2a88ae5f-b304-4f45-a1eb-59f196a914bb")
-	)
-	(wire
-		(pts
-			(xy 156.21 129.54) (xy 158.75 129.54)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2aeb59d6-2316-4d21-8e7e-3c9c11df11c4")
 	)
 	(wire
 		(pts
@@ -2381,6 +2201,16 @@
 	)
 	(wire
 		(pts
+			(xy 156.21 114.3) (xy 168.91 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2f327a56-afd1-446f-81c1-0615a56b03f0")
+	)
+	(wire
+		(pts
 			(xy 133.35 52.07) (xy 134.62 52.07)
 		)
 		(stroke
@@ -2401,26 +2231,6 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 130.81) (xy 161.29 130.81)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "30728978-6faf-4878-b57a-b0c2c52c3e84")
-	)
-	(wire
-		(pts
-			(xy 158.75 151.13) (xy 161.29 151.13)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3083ba26-150e-473c-ae99-11d4424b2fc8")
-	)
-	(wire
-		(pts
 			(xy 86.36 99.06) (xy 87.63 99.06)
 		)
 		(stroke
@@ -2428,16 +2238,6 @@
 			(type default)
 		)
 		(uuid "32d24c01-c12c-4b51-bb35-4413edd8545d")
-	)
-	(wire
-		(pts
-			(xy 158.75 149.86) (xy 158.75 151.13)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3756ed01-9cb0-4c1b-9d33-6bc72c6e0d44")
 	)
 	(wire
 		(pts
@@ -2491,16 +2291,6 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 157.48) (xy 158.75 158.75)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3fdaf146-6017-4e2f-baad-ef477f5d7a94")
-	)
-	(wire
-		(pts
 			(xy 133.35 52.07) (xy 133.35 68.58)
 		)
 		(stroke
@@ -2518,26 +2308,6 @@
 			(type default)
 		)
 		(uuid "428b579c-d2a8-44a6-8ab2-82600845414e")
-	)
-	(wire
-		(pts
-			(xy 156.21 147.32) (xy 158.75 147.32)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "429e8031-058e-4ab1-bd9c-218df4a356b9")
-	)
-	(wire
-		(pts
-			(xy 156.21 149.86) (xy 158.75 149.86)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "45ceb938-acef-45cf-b548-b7834c6fa826")
 	)
 	(wire
 		(pts
@@ -2561,87 +2331,7 @@
 	)
 	(wire
 		(pts
-			(xy 156.21 91.44) (xy 158.75 91.44)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4cc6cc6b-acad-4504-b6c5-d8be7a2d899d")
-	)
-	(wire
-		(pts
-			(xy 156.21 116.84) (xy 158.75 116.84)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5314e73a-f91c-4f38-addf-d6d6174b2a68")
-	)
-	(wire
-		(pts
-			(xy 158.75 144.78) (xy 158.75 146.05)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "54c5dc9e-6c6e-4ed9-b31c-4c88fd404c0c")
-	)
-	(wire
-		(pts
-			(xy 158.75 90.17) (xy 158.75 88.9)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5c7967e4-b997-40d6-be5d-07b878cf87de")
-	)
-	(wire
-		(pts
-			(xy 156.21 101.6) (xy 158.75 101.6)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5c81867f-0f90-4c45-a8ab-8a38caa1fbaa")
-	)
-	(wire
-		(pts
-			(xy 158.75 88.9) (xy 156.21 88.9)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5d9dd925-5611-4521-8797-f1d58b5259ed")
-	)
-	(wire
-		(pts
-			(xy 158.75 132.08) (xy 158.75 130.81)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "605ce87d-8f87-418b-b8ab-86ab6e356659")
-	)
-	(wire
-		(pts
-			(xy 158.75 101.6) (xy 158.75 100.33)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6122bf00-ac31-4b1e-8450-d265239fc2b0")
-	)
-	(wire
-		(pts
-			(xy 158.75 95.25) (xy 161.29 95.25)
+			(xy 156.21 91.44) (xy 168.91 91.44)
 		)
 		(stroke
 			(width 0)
@@ -2661,7 +2351,7 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 115.57) (xy 161.29 115.57)
+			(xy 156.21 101.6) (xy 168.91 101.6)
 		)
 		(stroke
 			(width 0)
@@ -2691,16 +2381,6 @@
 	)
 	(wire
 		(pts
-			(xy 156.21 106.68) (xy 158.75 106.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "65225b64-9ba5-40da-ae22-4fdd74e86dca")
-	)
-	(wire
-		(pts
 			(xy 132.08 40.64) (xy 133.35 40.64)
 		)
 		(stroke
@@ -2711,53 +2391,13 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 163.83) (xy 161.29 163.83)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "67371dcc-14b5-41a0-a413-58b5f2441ed4")
-	)
-	(wire
-		(pts
-			(xy 158.75 125.73) (xy 161.29 125.73)
+			(xy 156.21 109.22) (xy 168.91 109.22)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "67832a29-4d45-40f9-a5d5-fee687ae6c45")
-	)
-	(wire
-		(pts
-			(xy 156.21 162.56) (xy 158.75 162.56)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "69598c67-07bc-4355-af22-160d7d2bca18")
-	)
-	(wire
-		(pts
-			(xy 156.21 134.62) (xy 158.75 134.62)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6982a096-4ace-48f7-ae6a-0d219b2c184b")
-	)
-	(wire
-		(pts
-			(xy 158.75 152.4) (xy 158.75 151.13)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6bc0ee29-d233-4b20-9d98-6bd0fc000b9c")
 	)
 	(wire
 		(pts
@@ -2768,16 +2408,6 @@
 			(type default)
 		)
 		(uuid "6efc7f5d-d4dc-4754-a1f2-a9538d74c71e")
-	)
-	(wire
-		(pts
-			(xy 158.75 142.24) (xy 158.75 140.97)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "70a70c4b-4694-4554-99cb-42829f563206")
 	)
 	(wire
 		(pts
@@ -2811,36 +2441,6 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 120.65) (xy 161.29 120.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7489a328-1305-4410-856f-b1433f9028e2")
-	)
-	(wire
-		(pts
-			(xy 156.21 104.14) (xy 158.75 104.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "755dc661-c601-4d1e-9f37-19a539307f99")
-	)
-	(wire
-		(pts
-			(xy 156.21 99.06) (xy 158.75 99.06)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "760dd272-2d1e-41c8-b96f-4ad019046566")
-	)
-	(wire
-		(pts
 			(xy 116.84 68.58) (xy 115.57 68.58)
 		)
 		(stroke
@@ -2868,26 +2468,6 @@
 			(type default)
 		)
 		(uuid "7e7f2fa8-5227-4492-80c7-7de984602a65")
-	)
-	(wire
-		(pts
-			(xy 156.21 152.4) (xy 158.75 152.4)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "80b57589-b425-4ea6-b614-0695ec8f382d")
-	)
-	(wire
-		(pts
-			(xy 156.21 142.24) (xy 158.75 142.24)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "83d745cc-0eba-40c4-9817-3ae2d6062358")
 	)
 	(wire
 		(pts
@@ -2931,16 +2511,6 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 160.02) (xy 158.75 158.75)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8c8744c9-63ef-4ff0-9408-b66991560cbb")
-	)
-	(wire
-		(pts
 			(xy 59.69 100.33) (xy 59.69 101.6)
 		)
 		(stroke
@@ -2961,13 +2531,13 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 147.32) (xy 158.75 146.05)
+			(xy 156.21 116.84) (xy 168.91 116.84)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "91cc7ead-bda3-457e-a16c-ec9e4883843e")
+		(uuid "92a5bbd2-7f24-4fc9-b23c-abc7eae6fd40")
 	)
 	(wire
 		(pts
@@ -2991,26 +2561,6 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 100.33) (xy 161.29 100.33)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "98abac70-8ede-4423-aca8-5f3c68a43119")
-	)
-	(wire
-		(pts
-			(xy 158.75 119.38) (xy 158.75 120.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a19bc9e6-1ac0-4068-a459-9255be532e17")
-	)
-	(wire
-		(pts
 			(xy 115.57 81.28) (xy 115.57 80.01)
 		)
 		(stroke
@@ -3031,16 +2581,6 @@
 	)
 	(wire
 		(pts
-			(xy 156.21 165.1) (xy 158.75 165.1)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a409a8be-edc9-4d6b-a9e6-507b61adffc8")
-	)
-	(wire
-		(pts
 			(xy 138.43 80.01) (xy 140.97 80.01)
 		)
 		(stroke
@@ -3058,26 +2598,6 @@
 			(type default)
 		)
 		(uuid "a64301d9-c7fd-4d6d-8f55-4de8a8ed629f")
-	)
-	(wire
-		(pts
-			(xy 156.21 109.22) (xy 158.75 109.22)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a708d862-8e0a-4dd2-bb10-5c49e5a66fba")
-	)
-	(wire
-		(pts
-			(xy 156.21 160.02) (xy 158.75 160.02)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a7e219bf-f2d3-4995-98b4-cdfc6596bb68")
 	)
 	(wire
 		(pts
@@ -3131,33 +2651,13 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 146.05) (xy 161.29 146.05)
+			(xy 156.21 119.38) (xy 168.91 119.38)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "b542842d-09b6-4fbb-8bef-3b018ebe5841")
-	)
-	(wire
-		(pts
-			(xy 158.75 99.06) (xy 158.75 100.33)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b5e7204f-4f62-4a41-bebe-504326d062ca")
-	)
-	(wire
-		(pts
-			(xy 156.21 144.78) (xy 158.75 144.78)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "be8e6f26-c844-4f11-895a-530569ccb0e9")
 	)
 	(wire
 		(pts
@@ -3171,63 +2671,13 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 109.22) (xy 158.75 110.49)
+			(xy 156.21 106.68) (xy 168.91 106.68)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "c19b9c65-9930-44c5-86d1-568dd1e8a33b")
-	)
-	(wire
-		(pts
-			(xy 158.75 127) (xy 158.75 125.73)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c68fbb4f-b7cc-4cd7-af87-bacbc136ca9e")
-	)
-	(wire
-		(pts
-			(xy 156.21 124.46) (xy 158.75 124.46)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c8d33566-aa66-4183-8b80-15db22e94d95")
-	)
-	(wire
-		(pts
-			(xy 158.75 140.97) (xy 161.29 140.97)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c903d529-6d2f-42fd-b280-e00f8fdebe92")
-	)
-	(wire
-		(pts
-			(xy 156.21 137.16) (xy 158.75 137.16)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ca7fc6f9-e4df-4298-b7a3-18abbde8937d")
-	)
-	(wire
-		(pts
-			(xy 158.75 111.76) (xy 158.75 110.49)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cac9b41f-9fa3-48cc-9aa1-4247504f5b5c")
+		(uuid "c01dadc7-a573-46a0-ab18-d8d17e92d992")
 	)
 	(wire
 		(pts
@@ -3238,16 +2688,6 @@
 			(type default)
 		)
 		(uuid "cf98476b-c772-435a-a67d-acd026114c67")
-	)
-	(wire
-		(pts
-			(xy 158.75 104.14) (xy 158.75 105.41)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d0a1bfdb-4c33-4fdf-9672-da7f8da50581")
 	)
 	(wire
 		(pts
@@ -3271,16 +2711,6 @@
 	)
 	(wire
 		(pts
-			(xy 156.21 157.48) (xy 158.75 157.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d61da270-5c89-408a-acab-328e2e381c62")
-	)
-	(wire
-		(pts
 			(xy 69.85 114.3) (xy 105.41 114.3)
 		)
 		(stroke
@@ -3291,26 +2721,6 @@
 	)
 	(wire
 		(pts
-			(xy 156.21 139.7) (xy 158.75 139.7)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d877ddee-dfdb-4f5c-bb7a-88b7f2b55931")
-	)
-	(wire
-		(pts
-			(xy 156.21 111.76) (xy 158.75 111.76)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "db3452d7-6ad3-430d-bc6e-0b5c4c84dc3f")
-	)
-	(wire
-		(pts
 			(xy 132.08 52.07) (xy 133.35 52.07)
 		)
 		(stroke
@@ -3318,26 +2728,6 @@
 			(type default)
 		)
 		(uuid "e0b89d56-ffcd-4916-a268-0214506196ca")
-	)
-	(wire
-		(pts
-			(xy 156.21 127) (xy 158.75 127)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e12880c0-ec56-4d4c-b23e-fc4f7c8b8f9b")
-	)
-	(wire
-		(pts
-			(xy 158.75 121.92) (xy 158.75 120.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e8b01de3-4ceb-4c55-9aad-165a441bb098")
 	)
 	(wire
 		(pts
@@ -3371,6 +2761,16 @@
 	)
 	(wire
 		(pts
+			(xy 156.21 88.9) (xy 168.91 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ed49ec9a-5470-4375-a755-4b6c26a30553")
+	)
+	(wire
+		(pts
 			(xy 149.86 68.58) (xy 151.13 68.58)
 		)
 		(stroke
@@ -3381,53 +2781,13 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 134.62) (xy 158.75 135.89)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "edbcd6fe-6150-4ff2-a8ea-bcfda5990f59")
-	)
-	(wire
-		(pts
-			(xy 158.75 158.75) (xy 161.29 158.75)
+			(xy 156.21 127) (xy 168.91 127)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "ee46953f-c40a-4a0b-b26b-a05342b59f6e")
-	)
-	(wire
-		(pts
-			(xy 158.75 162.56) (xy 158.75 163.83)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "eec17038-f705-49b5-bc51-e24e9abd1211")
-	)
-	(wire
-		(pts
-			(xy 156.21 132.08) (xy 158.75 132.08)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f0b11134-e90d-49a6-9765-b0a2c7788c4a")
-	)
-	(wire
-		(pts
-			(xy 158.75 114.3) (xy 158.75 115.57)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f0fe45c6-0d39-45de-ac39-a3d624103e4e")
 	)
 	(wire
 		(pts
@@ -3441,16 +2801,6 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 137.16) (xy 158.75 135.89)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f52b1e3d-9c11-4af0-9afc-d47b914ce81b")
-	)
-	(wire
-		(pts
 			(xy 143.51 40.64) (xy 143.51 52.07)
 		)
 		(stroke
@@ -3458,26 +2808,6 @@
 			(type default)
 		)
 		(uuid "f56a14aa-e05f-4293-a508-13cf795cb65f")
-	)
-	(wire
-		(pts
-			(xy 158.75 96.52) (xy 158.75 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f56e911c-904a-4156-91df-d27f54be91b5")
-	)
-	(wire
-		(pts
-			(xy 158.75 110.49) (xy 161.29 110.49)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f783be08-8f80-41b7-adc1-886ac72d725e")
 	)
 	(wire
 		(pts
@@ -3521,23 +2851,13 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 105.41) (xy 161.29 105.41)
+			(xy 156.21 96.52) (xy 168.91 96.52)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "ff7444dc-14cf-445d-94ef-7a6619980b34")
-	)
-	(wire
-		(pts
-			(xy 156.21 121.92) (xy 158.75 121.92)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ff900c1b-b5f8-4108-af1f-5fb0f0cdbe65")
 	)
 	(label "Chip D+"
 		(at 96.52 96.52 0)
@@ -3561,9 +2881,9 @@
 		)
 		(uuid "7be8dd90-d036-4347-ae31-965c3b758d7d")
 	)
-	(hierarchical_label "FDD Enable"
+	(hierarchical_label "DS 1 Enable"
 		(shape output)
-		(at 161.29 110.49 0)
+		(at 168.91 99.06 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3575,7 +2895,7 @@
 	)
 	(hierarchical_label "~{DS 2}"
 		(shape input)
-		(at 161.29 115.57 0)
+		(at 168.91 101.6 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3611,7 +2931,7 @@
 	)
 	(hierarchical_label "Write Protect"
 		(shape output)
-		(at 161.29 146.05 0)
+		(at 168.91 119.38 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3623,7 +2943,7 @@
 	)
 	(hierarchical_label "Index"
 		(shape output)
-		(at 161.29 100.33 0)
+		(at 168.91 93.98 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3635,7 +2955,7 @@
 	)
 	(hierarchical_label "~{Early}"
 		(shape input)
-		(at 161.29 95.25 0)
+		(at 168.91 91.44 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3647,7 +2967,7 @@
 	)
 	(hierarchical_label "~{Step}"
 		(shape input)
-		(at 161.29 120.65 0)
+		(at 168.91 109.22 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3659,7 +2979,7 @@
 	)
 	(hierarchical_label "~{Write Gate}"
 		(shape input)
-		(at 161.29 130.81 0)
+		(at 168.91 114.3 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3671,7 +2991,7 @@
 	)
 	(hierarchical_label "~{DS 1}"
 		(shape input)
-		(at 161.29 105.41 0)
+		(at 168.91 96.52 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3681,9 +3001,21 @@
 		)
 		(uuid "862c5052-a4ad-4558-853b-6fb9e9d26fdf")
 	)
+	(hierarchical_label "DS 2 Enable"
+		(shape output)
+		(at 168.91 104.14 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "93961cad-eb15-419d-94e3-ac6e5b06d1b4")
+	)
 	(hierarchical_label "~{Read Data}"
 		(shape output)
-		(at 161.29 151.13 0)
+		(at 168.91 121.92 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3695,7 +3027,7 @@
 	)
 	(hierarchical_label "Track 00"
 		(shape output)
-		(at 161.29 140.97 0)
+		(at 168.91 116.84 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3719,7 +3051,7 @@
 	)
 	(hierarchical_label "~{Side Select}"
 		(shape input)
-		(at 161.29 163.83 0)
+		(at 168.91 124.46 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3731,7 +3063,7 @@
 	)
 	(hierarchical_label "~{Late}"
 		(shape input)
-		(at 161.29 158.75 0)
+		(at 168.91 127 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3743,7 +3075,7 @@
 	)
 	(hierarchical_label "~{Write Data}"
 		(shape input)
-		(at 161.29 135.89 0)
+		(at 168.91 111.76 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3767,7 +3099,7 @@
 	)
 	(hierarchical_label "~{Direction}"
 		(shape input)
-		(at 161.29 125.73 0)
+		(at 168.91 106.68 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3791,7 +3123,7 @@
 	)
 	(hierarchical_label "~{TG43}"
 		(shape input)
-		(at 161.29 90.17 0)
+		(at 168.91 88.9 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3827,7 +3159,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 100.33 0)
+		(at 157.48 93.98 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3837,7 +3169,7 @@
 		)
 		(uuid "1508dc91-77a6-48b6-b03c-a2f0c203486c")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 97.79 0)
+			(at 158.1785 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3850,7 +3182,30 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 130.81 0)
+		(at 157.48 104.14 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "17c11417-5a4a-41c7-96df-4fda91ebe103")
+		(property "Netclass" "CMOS I/O"
+			(at 158.1785 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(justify left)
+			)
+		)
+	)
+	(netclass_flag ""
+		(length 2.54)
+		(shape round)
+		(at 157.48 114.3 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3860,7 +3215,7 @@
 		)
 		(uuid "307e26c8-f110-45c9-aa60-630601b98168")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 128.27 0)
+			(at 158.1785 111.76 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3896,7 +3251,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 105.41 0)
+		(at 157.48 96.52 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3906,7 +3261,7 @@
 		)
 		(uuid "392a5acd-bdc1-4ac8-9148-02516547c25b")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 102.87 0)
+			(at 158.1785 93.98 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3942,7 +3297,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 125.73 0)
+		(at 157.48 109.22 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3952,7 +3307,7 @@
 		)
 		(uuid "554378c0-4a0c-44be-a567-55c91fa2d27c")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 123.19 0)
+			(at 158.1785 106.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3965,7 +3320,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 146.05 0)
+		(at 157.48 119.38 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3975,7 +3330,7 @@
 		)
 		(uuid "5bae56da-3868-4c7b-af1c-43bb747b7dfb")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 143.51 0)
+			(at 158.1785 116.84 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3988,7 +3343,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 158.75 0)
+		(at 157.48 127 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3998,7 +3353,7 @@
 		)
 		(uuid "64d09875-e115-4902-bf74-5ea1045ddc05")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 156.21 0)
+			(at 158.1785 124.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4011,7 +3366,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 95.25 0)
+		(at 157.48 91.44 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4021,7 +3376,7 @@
 		)
 		(uuid "6a99e1b5-8868-4081-bd3d-1c04d56d9ed8")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 92.71 0)
+			(at 158.1785 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4034,7 +3389,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 151.13 0)
+		(at 157.48 121.92 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4044,7 +3399,7 @@
 		)
 		(uuid "6adec501-4a02-4e8a-a2de-9a2832978126")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 148.59 0)
+			(at 158.1785 119.38 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4172,7 +3527,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 163.83 0)
+		(at 157.48 124.46 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4182,7 +3537,7 @@
 		)
 		(uuid "bfb4dd2b-81b7-4fb5-b760-9c64129bf835")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 161.29 0)
+			(at 158.1785 121.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4195,7 +3550,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 120.65 0)
+		(at 157.48 106.68 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4205,7 +3560,7 @@
 		)
 		(uuid "de43b244-a303-4b91-9eb4-505cfabe58ee")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 118.11 0)
+			(at 158.1785 104.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4218,7 +3573,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 110.49 0)
+		(at 157.48 99.06 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4228,7 +3583,7 @@
 		)
 		(uuid "e82e07e0-78cc-413f-859d-9ce55dfa461f")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 107.95 0)
+			(at 158.1785 96.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4241,7 +3596,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 135.89 0)
+		(at 157.48 111.76 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4251,7 +3606,7 @@
 		)
 		(uuid "e8d275d6-550a-447c-8d5f-f01235bae3ba")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 133.35 0)
+			(at 158.1785 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4264,7 +3619,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 140.97 0)
+		(at 157.48 116.84 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4274,7 +3629,7 @@
 		)
 		(uuid "eb391953-9d4d-4a92-9227-1c4a2fe95b84")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 138.43 0)
+			(at 158.1785 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4287,7 +3642,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 115.57 0)
+		(at 157.48 101.6 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4297,7 +3652,7 @@
 		)
 		(uuid "f22f0dff-9b27-489d-8a04-d15412dcbe63")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 113.03 0)
+			(at 158.1785 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4310,7 +3665,7 @@
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
-		(at 160.02 90.17 0)
+		(at 157.48 88.9 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4320,7 +3675,7 @@
 		)
 		(uuid "f5ff1802-df29-4606-855d-46a6a06b0c93")
 		(property "Netclass" "CMOS I/O"
-			(at 160.7185 87.63 0)
+			(at 158.1785 86.36 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4568,6 +3923,140 @@
 			(project "osborne-floppy-emulator"
 				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
 					(reference "R15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 160.02 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "2f406fc2-1815-4766-8393-14204ce29d5f")
+		(property "Reference" "TP7"
+			(at 161.29 158.7499 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 161.2899 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "65c47762-97a5-40f8-ad87-3b4c0ff31c89")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 165.1 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "33617fe0-da21-4789-af20-86045a57e786")
+		(property "Reference" "TP4"
+			(at 161.29 163.8299 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 166.3699 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e7437178-bbe6-4500-af8d-592d4e06d646")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP4")
 					(unit 1)
 				)
 			)
@@ -4860,6 +4349,140 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 157.48 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "4f3b6751-2d9d-433a-9ab8-6a1370609173")
+		(property "Reference" "TP6"
+			(at 161.29 156.2099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 158.7499 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "fc79a5a1-c6b1-42a9-bcd7-70552a399147")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 147.32 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "51654442-b13f-4c6c-811a-cca07b9cf91d")
+		(property "Reference" "TP15"
+			(at 161.29 146.0499 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 148.5899 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7a9bab10-9fea-44b4-96a0-dcf66340a35f")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+3V3")
 		(at 59.69 99.06 0)
 		(unit 1)
@@ -5063,6 +4686,73 @@
 			(project "osborne-floppy-emulator"
 				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
 					(reference "R7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 144.78 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "5af64272-d4bd-47ec-aff8-23a575a912b1")
+		(property "Reference" "TP14"
+			(at 161.29 143.5099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 146.0499 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cc4993db-a274-4621-b6fe-ed3bc58378ee")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP14")
 					(unit 1)
 				)
 			)
@@ -5379,6 +5069,73 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 137.16 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6b69eed8-5971-4b11-9241-fe531a0f7243")
+		(property "Reference" "TP11"
+			(at 161.29 135.8899 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 138.4299 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "1d94ebea-a3e2-4878-87ca-31148ce063a1")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 151.13 81.28 0)
 		(unit 1)
@@ -5654,6 +5411,73 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 152.4 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "843c711f-685d-4099-947b-92810019fd94")
+		(property "Reference" "TP17"
+			(at 161.29 151.1299 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 153.6699 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8f650efd-b813-43f4-89d9-0b39f6f25747")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 138.43 52.07 90)
 		(unit 1)
@@ -5791,6 +5615,207 @@
 			(project "osborne-floppy-emulator"
 				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
 					(reference "#PWR017")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 132.08 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "933df951-80d0-42a8-8c85-a0d799f7c8c9")
+		(property "Reference" "TP9"
+			(at 161.29 130.8099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 133.3499 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5295c9dd-3339-46cf-9bb3-69462133c8b5")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 139.7 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "95954c79-8a8c-467b-af18-1263777a36cb")
+		(property "Reference" "TP12"
+			(at 161.29 138.4299 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 140.9699 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "11d46dff-3b2b-487d-beca-4d5fd12c0f75")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 162.56 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "9781d01b-0a43-4473-9810-5afd25348a34")
+		(property "Reference" "TP5"
+			(at 161.29 161.2899 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 163.8299 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "9298851c-56e3-403b-88eb-608ee6b2613d")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP5")
 					(unit 1)
 				)
 			)
@@ -6043,6 +6068,207 @@
 			(project "osborne-floppy-emulator"
 				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
 					(reference "U1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 129.54 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ac307751-be67-4519-a23c-b1ff4ae7c334")
+		(property "Reference" "TP8"
+			(at 161.29 128.2699 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 130.8099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5a45e384-cf88-4fdd-813b-a0bdb645d928")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 149.86 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "addb1139-e5ec-4df7-b9ac-418371370983")
+		(property "Reference" "TP16"
+			(at 161.29 148.5899 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 151.1299 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6f7b69eb-1738-4226-a7fc-cd05ae4d88d7")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP16")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 142.24 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "afd06807-d66f-419b-ad29-87d460f863e4")
+		(property "Reference" "TP13"
+			(at 161.29 140.9699 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 143.5099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "87e4044f-bf74-48ba-98e9-bb99372661fd")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP13")
 					(unit 1)
 				)
 			)
@@ -6569,6 +6795,73 @@
 			(project "osborne-floppy-emulator"
 				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
 					(reference "C7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 156.21 134.62 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "efc01ab2-ffac-4e6b-ba2c-35deb420d780")
+		(property "Reference" "TP10"
+			(at 161.29 133.3499 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 161.29 135.8899 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 156.21 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "19f00839-7912-464d-9c3f-3bdfd0c9bf1f")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/fd1fa7b6-02b4-4375-a6ad-cf2a83e61c73"
+					(reference "TP10")
 					(unit 1)
 				)
 			)
