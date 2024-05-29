@@ -25091,7 +25091,7 @@
 		(uuid "cd7387ad-1d29-42a8-9660-bdb774d0235d")
 	)
 	(gr_text "JLCJLCJLCJLC"
-		(at 165.2 17.677806 90)
+		(at 101.65 55.6 0)
 		(layer "B.SilkS")
 		(uuid "627ceca5-31a7-4783-a4ab-ffccb958e996")
 		(effects
@@ -25129,8 +25129,8 @@
 			(justify left bottom)
 		)
 	)
-	(gr_text "Osborne 1\nFDD emulator\nv. 1 r. A"
-		(at 164.8 34 90)
+	(gr_text "Osborne 1\nFDD emulator\nv. 2 r. A"
+		(at 103.15 60.3 0)
 		(layer "F.SilkS")
 		(uuid "710d8225-f8be-44a3-88b9-791ea4f55687")
 		(effects
