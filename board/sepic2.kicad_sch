@@ -2277,7 +2277,16 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 580-50105C"
+		(property "Mouser part no." "580-50105C"
+			(at 114.3 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "50105C"
 			(at 114.3 48.26 0)
 			(effects
 				(font
@@ -2471,7 +2480,16 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 833-1N5819-TP"
+		(property "Mouser part no." "833-1N5819-TP"
+			(at 148.59 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "1N5819-TP"
 			(at 148.59 41.91 0)
 			(effects
 				(font
@@ -2556,7 +2574,16 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 187-CL21A106KOQNNNE"
+		(property "Mouser part no." "187-CL21A106KOQNNNE"
+			(at 170.18 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "CL21A106KOQNNNE"
 			(at 170.18 76.2 0)
 			(effects
 				(font
@@ -2641,7 +2668,16 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 187-CL21A106KOQNNNE"
+		(property "Mouser part no." "187-CL21A106KOQNNNE"
+			(at 154.94 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "CL21A106KOQNNNE"
 			(at 154.94 76.2 0)
 			(effects
 				(font
@@ -2968,7 +3004,16 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 757-T2N7002BKLM"
+		(property "Mouser part no." "757-T2N7002BKLM"
+			(at 106.68 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "T2N7002BKLM"
 			(at 106.68 69.85 0)
 			(effects
 				(font
@@ -3056,7 +3101,16 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 710-860080473006"
+		(property "Mouser part no." "710-860080473006"
+			(at 71.12 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "860080473006"
 			(at 71.12 76.2 0)
 			(effects
 				(font
@@ -3138,7 +3192,16 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 963-LBR2518T100K"
+		(property "Mouser part no." "963-LBR2518T100K"
+			(at 162.56 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "LBR2518T100K"
 			(at 162.56 41.91 0)
 			(effects
 				(font
@@ -3221,7 +3284,16 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 710-885012206095"
+		(property "Mouser part no." "710-885012206095"
+			(at 114.3 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "885012206095"
 			(at 114.3 57.15 0)
 			(effects
 				(font

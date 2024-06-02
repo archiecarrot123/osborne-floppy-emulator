@@ -4774,6 +4774,15 @@
 				(hide yes)
 			)
 		)
+		(property "Part no." "M20-7872042"
+			(at 156.21 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "21"
 			(uuid "85c51367-d23b-40d4-8b94-ea0d782702db")
 		)
@@ -5008,7 +5017,16 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 771-BC847C-T/R"
+		(property "Mouser part no." "771-BC847C-T/R"
+			(at 186.69 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "BC847C-T/R"
 			(at 186.69 121.92 0)
 			(effects
 				(font
@@ -5089,7 +5107,16 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 855-M20-7812045"
+		(property "Mouser part no." "855-M20-7812045"
+			(at 156.21 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "M20-7812045"
 			(at 156.21 134.62 0)
 			(effects
 				(font
@@ -5266,7 +5293,16 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 771-BC847C-T/R"
+		(property "Mouser part no." "771-BC847C-T/R"
+			(at 205.74 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "BC847C-T/R"
 			(at 205.74 124.46 0)
 			(effects
 				(font
