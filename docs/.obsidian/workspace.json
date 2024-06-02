@@ -69,7 +69,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "069e3cc1ea691ca9",
@@ -148,7 +149,12 @@
   },
   "active": "ed884df14efa7c26",
   "lastOpenFiles": [
-    "Pasted image 20240531105600.png",
-    "Pasted image 20240531100456.png"
+    "images/Pasted image 20240603090922.png",
+    "Osborne Drive Interface.md",
+    "images/Pasted image 20240603090542.png",
+    "images/Pasted image 20240603085543.png",
+    "images/Pasted image 20240531120848.png",
+    "images/Pasted image 20240531105600.png",
+    "images/Pasted image 20240531100456.png"
   ]
 }

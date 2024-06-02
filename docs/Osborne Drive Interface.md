@@ -1,8 +1,9 @@
 
 Drive controller chip: 1793 LSI chip
 
-[Osborne Technical manual ](https://archive.org/details/bitsavers_osborneosbne1TechnicalManual1982_19169707/page/n3/mode/2up?view=theater) Pages of interest: 110, 57-60 124 (internet archive page number)
-[Drive controller spec sheet](https://ia902902.us.archive.org/24/items/rearc_fd1771-01-floppy-disk-formatter-controller-manual-1980-06/FD1771-01%20Floppy%20Disk%20Formatter-Controller%20Manual%20(1980-06)(Western%20Digital)(US).pdf)
+[Osborne Technical manual ](https://archive.org/details/bitsavers_osborneosbne1TechnicalManual1982_19169707/page/n3/mode/2up?view=theater) Pages of interest: 110, 57-60 124, 168(internet archive page numbers)
+
+~~[Drive controller spec sheet](https://ia902902.us.archive.org/24/items/rearc_fd1771-01-floppy-disk-formatter-controller-manual-1980-06/FD1771-01%20Floppy%20Disk%20Formatter-Controller%20Manual%20(1980-06)(Western%20Digital)(US).pdf)~~ (nevermind it's page 168 in the techniccal manual, this is the wrong one)
 [Generic floppy manual](https://web.archive.org/web/20230328214547/http://www.bitsavers.org/pdf/shugart/SA4xx/39019-1_SA400L_OEM_Manual_Nov82.pdf)
 #### pins of interest
 ![[Pasted image 20240528100331.png]]
@@ -115,7 +116,25 @@ The osborne Uses [FM encoding](https://en.wikipedia.org/wiki/Frequency_modulatio
 
 First a signal is issued to show that a bit will be now sent, and then at the next pulse one is sent if it's a 1 and none i f it's a 0 so **01000001**, will become 1**0**1**1**1**0**1**0**1**0**1**0**1**0**1**1**
 ![[Pasted image 20240531105600.png]]
-as each index occurs every 200 ms, and there are 10 sectors per disk, I think we have 20ms per sector
+
+
+#### Read cycle
+A clock cycle takes 8000 nano seconds. (4 microseconds)
+1) wait at least 40ns from when the clock  reaches low
+2) send a high signal on the read data line for 200-500ns
+3) signal must return to low for at 40 ns before the clock switches
+4) wait until at least 40ns after the clock reaches high
+5) Send Data pulse on the read data until 
+6) 3) signal must return to low for at 40 ns before the clock switches
+
+keep in mind that these signals are inverted beforrwe they reacch the port. above they already have been
+![[Pasted image 20240531120848.png]]
+
+#### Write Data
+![[Pasted image 20240603085543.png]]
+Need to wait at least 4000 ns after write gate is toggled. 
+data pulse width will held for  900-1100 ns
+
 #### Sequence of signals
 ###### Startup
 as the disk is started the Write gate will be held "Inactive" (high I think)
@@ -131,3 +150,13 @@ step signal is pulsed to low once for each change
 Stepping sampe
 ![[Pasted image 20240531100456.png]]
 ##### 
+
+#### What we Actually need to deal with
+![[Pasted image 20240603090542.png]]
+
+On the Schematic:
+![[Pasted image 20240603090922.png]]
+
+There appears to be a VFO circuit
+There does not appear to be a write precompensation circuit
+all the outputs are already pulled high by default for us
