@@ -2747,6 +2747,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C5595521"
+			(at 205.74 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "3"
 			(uuid "3744a767-9c62-498f-b2b4-1804a1cf2c47")
 		)
@@ -2904,6 +2913,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C2896992"
+			(at 118.11 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "f34e59e8-b7ab-42bc-8d68-985cc1174cab")
 		)
@@ -2992,6 +3010,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C1713"
+			(at 85.09 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "ba378a5e-179d-408c-b5ba-c262af957980")
 		)
@@ -3072,6 +3099,15 @@
 			)
 		)
 		(property "Part no." "885012206095"
+			(at 134.62 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C14663"
 			(at 134.62 96.52 0)
 			(effects
 				(font
@@ -3234,6 +3270,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C599833"
+			(at 153.67 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "fd1ba6fc-c833-46ca-88d1-57c1ae7a0012")
 		)
@@ -3378,6 +3423,15 @@
 			)
 		)
 		(property "Part no." "MFR-12FTF52-3K6"
+			(at 144.78 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C367441"
 			(at 144.78 104.14 0)
 			(effects
 				(font
@@ -3540,6 +3594,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C2896992"
+			(at 187.96 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "61552362-8423-40e5-8a6b-df457ca77d42")
 		)
@@ -3618,6 +3681,15 @@
 			)
 		)
 		(property "Part no." "MFR-12FTF52-56R"
+			(at 102.87 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C713895"
 			(at 102.87 93.98 0)
 			(effects
 				(font
@@ -3714,6 +3786,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C2896992"
+			(at 151.13 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "27cb3eb7-21fd-4a77-9f6f-304783586e74")
 		)
@@ -3792,6 +3873,15 @@
 			)
 		)
 		(property "Part no." "MFR-12FTF52-27K"
+			(at 194.31 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C2896992"
 			(at 194.31 92.71 0)
 			(effects
 				(font
@@ -3886,6 +3976,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C1389771"
+			(at 91.44 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "27bd52b6-943c-4e18-81ec-4f01ad4fce8a")
 		)
@@ -3966,6 +4065,15 @@
 			)
 		)
 		(property "Part no." "CFR-25JT-52-1M"
+			(at 125.73 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C714052"
 			(at 125.73 96.52 0)
 			(effects
 				(font
@@ -4128,6 +4236,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C375523"
+			(at 107.95 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "9690fc2a-f325-44f4-9f47-04c6bdff1c59")
 		)
@@ -4274,6 +4391,15 @@
 			)
 		)
 		(property "Part no." "MFR-12FTF52-7K5"
+			(at 118.11 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C714231"
 			(at 118.11 109.22 0)
 			(effects
 				(font
@@ -4436,6 +4562,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C2896932"
+			(at 143.51 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "ba5625ea-b65e-4980-902d-fe3100b06c88")
 		)
@@ -4527,6 +4662,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C3201550"
+			(at 205.74 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "3"
 			(uuid "9246624e-6125-4012-882a-2d7bc922e9ea")
 		)
@@ -4610,6 +4754,15 @@
 			)
 		)
 		(property "Part no." "TL494CPWR"
+			(at 167.64 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C163520"
 			(at 167.64 104.14 0)
 			(effects
 				(font

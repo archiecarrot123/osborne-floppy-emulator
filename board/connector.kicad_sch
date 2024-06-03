@@ -4783,6 +4783,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C2685114"
+			(at 156.21 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "21"
 			(uuid "85c51367-d23b-40d4-8b94-ea0d782702db")
 		)
@@ -5035,6 +5044,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C181141"
+			(at 186.69 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "3"
 			(uuid "6b29ecd3-dd3d-4f9d-b9d6-7f67cb8aa29b")
 		)
@@ -5117,6 +5135,15 @@
 			)
 		)
 		(property "Part no." "PZ254-2-17-S"
+			(at 156.21 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C3294475"
 			(at 156.21 134.62 0)
 			(effects
 				(font
@@ -5303,6 +5330,15 @@
 			)
 		)
 		(property "Part no." "BC847C-T/R"
+			(at 205.74 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C181141"
 			(at 205.74 124.46 0)
 			(effects
 				(font

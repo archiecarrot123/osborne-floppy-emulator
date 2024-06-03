@@ -2295,6 +2295,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C6393640"
+			(at 114.3 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "4"
 			(uuid "f8fb5915-fa33-422c-ab80-785a929fbae9")
 		)
@@ -2498,6 +2507,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C526214"
+			(at 148.59 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "7cdfdb53-b9e0-44b6-a38c-007b23fbef56")
 		)
@@ -2592,6 +2610,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C1713"
+			(at 170.18 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "8397c95b-7e7b-43c3-9b95-899250ce4d40")
 		)
@@ -2678,6 +2705,15 @@
 			)
 		)
 		(property "Part no." "CL21A106KOQNNNE"
+			(at 154.94 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C1713"
 			(at 154.94 76.2 0)
 			(effects
 				(font
@@ -3022,6 +3058,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C146372"
+			(at 106.68 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "4c25fb05-a0bf-4f55-bef5-701d239bc53a")
 		)
@@ -3111,6 +3156,15 @@
 			)
 		)
 		(property "Part no." "860080473006"
+			(at 71.12 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C88754"
 			(at 71.12 76.2 0)
 			(effects
 				(font
@@ -3210,6 +3264,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC part no." "C2041481"
+			(at 162.56 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "5cd86f4c-f375-45a3-9299-c651eab71dec")
 		)
@@ -3294,6 +3357,15 @@
 			)
 		)
 		(property "Part no." "885012206095"
+			(at 114.3 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C14663"
 			(at 114.3 57.15 0)
 			(effects
 				(font

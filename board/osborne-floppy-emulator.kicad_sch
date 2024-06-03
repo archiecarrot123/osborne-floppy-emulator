@@ -1676,7 +1676,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" " ~"
+		(property "Datasheet" "~"
 			(at 54.61 111.76 0)
 			(effects
 				(font
@@ -1704,6 +1704,15 @@
 			)
 		)
 		(property "Part no." "USB-A-S-RA-SMT"
+			(at 50.8 110.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C42644"
 			(at 50.8 110.49 0)
 			(effects
 				(font
@@ -1798,6 +1807,15 @@
 			)
 		)
 		(property "Part no." "S1-04-G"
+			(at 67.31 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C5116530"
 			(at 67.31 137.16 0)
 			(effects
 				(font
