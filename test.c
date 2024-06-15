@@ -10,10 +10,10 @@ int main(void) {
     gpio_set_function(i, GPIO_FUNC_SIO);
   }
 
-  gpio_set_dir_out_masked(0x15555555); // every second pin
+  gpio_set_dir_out_masked(0x3FFFFFFF); // every pin
   
   while(1) {
     // hammer gpios
-    gpio_xor_mask(0x15555555);
+    gpio_xor_mask(0x3FFFFFFF);
   }
 }
