@@ -1,0 +1,79 @@
+
+.program readFM
+; "read" the floppy disk, FM mode
+; this program should not be running when write gate is on
+; the main cores should have an interrupt for WG changing state
+; let's say clock speed is 8 MHz
+readFM_wait:
+  nop [1]
+.wrap_target
+  out PINS 1 [7]  ; assert the read signal if 1
+  set PINS 0 [23] ; deassert the read signal 1 us later
+  set PINS 1 [7]  ; assert read signal for clock pulse
+  set PINS 0 [20] ; deassert read signal
+  jmp !OSRE readFM_wait
+  pull
+  irq 0
+.wrap
+
+.program write
+; "write" to the floppy disk, FM mode or MFM mode
+; for FM use 16 MHz, for MFM use 32 MHz
+; this should only be running when write gate is on
+; being written to is... complicated
+; we need a basic PLL type thing to detect whether or not
+; the frequency is halved, but the question is: how do
+; we know if the signal just sent was the clock pulse or
+; a data pulse?
+; we could just... not, and send the processor twice the data
+; yeah let's not because otherwise it won't know where the data finished
+; NOTE: the short period is 64 cycles, each pulse is 9 to 18 cycles
+; autopush should be on for this one, there's no need to waste an
+; instruction on it when we aren't using !OSRE
+.wrap_target
+  set Y 31 ; 31 + 1 bits to recieve
+write_normal:
+; phase can only advance so frequency should be slow
+; it should however be fast enough that three times the error plus two is
+; acceptable, for when MFM has 3 zeroes and we irq (20 cycles should be fine?)
+write_loop:
+  jmp PIN write_read
+  jmp X-- write_loop
+write_read:
+  set X 31 [3]; period is 2*(x+1)+6, so 31 is 6 cycles slow
+  in PINS 1
+  jmp Y-- write_normal
+  irq 0
+.wrap
+
+.program readMFM
+; the thing with this is that the state machine must use each
+; bit of data thrice: once for the clock bit before, once for
+; the one after, and of couse one for the data bit
+; autopull should be off because we make use of !OSRE (presumably)
+; clock speed 16 MHz
+readMFM_low_clock:
+  set PINS 1 [15]; 1 us  t1
+  set PINS 0 [15]; 1 us  t2
+readMFM_low_no_clock:
+  set Y readMFM_last_low [26]; no data bit (2 us - 6 cycles)  t4
+  jmp readMFM_decision
+readMFM_last_low:
+  out X 1
+  jmp !X readMFM_low_clock ;  t0
+  set Y readMFM_high_return [31]; no clock bit (2 us)  t2
+.wrap_target
+readMFM_high:
+  set PINS 1 [15]; 1 us  t3
+  set PINS 0 [15]; 1 us  t4
+readMFM_decision:
+  jmp !OSRE readMFM_nopull
+  pull
+  irq 0
+  mov PC Y ; jump back (or not)
+readMFM_high_return:
+  out X 1
+  jmp !X readMFM_low_no_clock [30]; no clock bit (2 us - 1 cycle)  t0
+.wrap
+readMFM_nopull:
+  mov PC Y [2]; jump back
