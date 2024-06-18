@@ -56,7 +56,7 @@ readMFM_low_clock:
   set PINS 1 [15]; 1 us  t1
   set PINS 0 [15]; 1 us  t2
 readMFM_low_no_clock:
-  set Y readMFM_last_low [26]; no data bit (2 us - 6 cycles)  t4
+  set Y readMFM_last_low [24]; no data bit (2 us - 7 cycles)
   jmp readMFM_decision
 readMFM_last_low:
   out X 1
@@ -65,15 +65,15 @@ readMFM_last_low:
 .wrap_target
 readMFM_high:
   set PINS 1 [15]; 1 us  t3
-  set PINS 0 [15]; 1 us  t4
+  set PINS 0 [10]; 1 us - 5 cycles
 readMFM_decision:
   jmp !OSRE readMFM_nopull
   pull
   irq 0
   mov PC Y ; jump back (or not)
 readMFM_high_return:
-  out X 1
-  jmp !X readMFM_low_no_clock [30]; no clock bit (2 us - 1 cycle)  t0
+  out X 1 ;  t0
+  jmp !X readMFM_low_no_clock [30]; no clock bit (2 us - 1 cycle)  t2
 .wrap
 readMFM_nopull:
   mov PC Y [2]; jump back
