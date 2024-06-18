@@ -73,7 +73,7 @@ readMFM_decision:
   mov PC Y ; jump back (or not)
 readMFM_high_return:
   out X 1 ;  t0
-  jmp !X readMFM_low_no_clock [30]; no clock bit (2 us - 1 cycle)  t2
+  jmp !X readMFM_low_no_clock [31]; no clock bit (2 us)  t2
 .wrap
 readMFM_nopull:
   mov PC Y [2]; jump back
