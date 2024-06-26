@@ -2643,12 +2643,6 @@
 		(uuid "47a39492-c2c7-4d07-8034-5e0abcb10052")
 	)
 	(junction
-		(at 205.74 115.57)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "51834df0-2449-4f91-aa97-27d80b3a9fb4")
-	)
-	(junction
 		(at 148.59 152.4)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2953,6 +2947,16 @@
 			(type default)
 		)
 		(uuid "2f40abbc-4099-42f7-adb6-977d335b1390")
+	)
+	(wire
+		(pts
+			(xy 186.69 111.76) (xy 196.85 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "33e28bf1-d3ab-479c-9c49-f2e666aff1ad")
 	)
 	(wire
 		(pts
@@ -3726,7 +3730,7 @@
 	)
 	(wire
 		(pts
-			(xy 186.69 115.57) (xy 186.69 116.84)
+			(xy 186.69 111.76) (xy 186.69 116.84)
 		)
 		(stroke
 			(width 0)
@@ -3753,16 +3757,6 @@
 			(type default)
 		)
 		(uuid "f1c04e87-8338-4b7f-974e-68b69a61826a")
-	)
-	(wire
-		(pts
-			(xy 205.74 115.57) (xy 186.69 115.57)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f37fb972-29d9-4db0-a150-243626d25215")
 	)
 	(wire
 		(pts
@@ -3900,6 +3894,18 @@
 			(justify left)
 		)
 		(uuid "2b733c83-e031-45a2-8eaf-75e1af267b8a")
+	)
+	(hierarchical_label "DS 1 Enable"
+		(shape input)
+		(at 196.85 111.76 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "2d5c947b-8ce0-4c49-b2c1-c37655f3a667")
 	)
 	(hierarchical_label "~{Write Data}"
 		(shape output)
@@ -4081,7 +4087,7 @@
 		)
 		(uuid "abfad219-1381-4c5a-9ff6-f0896f48efa6")
 	)
-	(hierarchical_label "FDD Enable"
+	(hierarchical_label "DS 2 Enable"
 		(shape input)
 		(at 209.55 115.57 0)
 		(fields_autoplaced yes)
@@ -4732,7 +4738,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_2x17_P2.54mm_Vertical"
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_2x17_P2.54mm_Vertical_SMD"
 			(at 156.21 82.55 0)
 			(effects
 				(font
@@ -4759,7 +4765,25 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 710-61304021821"
+		(property "Mouser part no." "855-M20-7872042"
+			(at 156.21 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "FH-00357"
+			(at 156.21 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C2685114"
 			(at 156.21 82.55 0)
 			(effects
 				(font
@@ -4964,7 +4988,7 @@
 				)
 			)
 		)
-		(property "Value" "BC547"
+		(property "Value" "BC847C"
 			(at 186.69 130.81 90)
 			(effects
 				(font
@@ -4972,7 +4996,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline"
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23_Handsoldering"
 			(at 188.595 127 0)
 			(effects
 				(font
@@ -4983,7 +5007,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://www.onsemi.com/pub/Collateral/BC550-D.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/916/BC847X_SER-3081381.pdf"
 			(at 186.69 121.92 0)
 			(effects
 				(font
@@ -5002,7 +5026,25 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-BC547CBK"
+		(property "Mouser part no." "771-BC847C-T/R"
+			(at 186.69 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "BC847C-T/R"
+			(at 186.69 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C181141"
 			(at 186.69 121.92 0)
 			(effects
 				(font
@@ -5056,7 +5098,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x17_P2.54mm_Vertical"
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x17_P2.54mm_Vertical_SMD"
 			(at 156.21 134.62 0)
 			(effects
 				(font
@@ -5083,7 +5125,25 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 649-67996-434HLF"
+		(property "Mouser part no." "855-M20-7812045"
+			(at 156.21 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "PZ254-2-17-S"
+			(at 156.21 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C3294475"
 			(at 156.21 134.62 0)
 			(effects
 				(font
@@ -5222,7 +5282,7 @@
 				)
 			)
 		)
-		(property "Value" "BC547"
+		(property "Value" "BC847C"
 			(at 205.74 133.35 90)
 			(effects
 				(font
@@ -5230,7 +5290,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline"
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23_Handsoldering"
 			(at 207.645 129.54 0)
 			(effects
 				(font
@@ -5241,7 +5301,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://www.onsemi.com/pub/Collateral/BC550-D.pdf"
+		(property "Datasheet" "https://au.mouser.com/datasheet/2/916/BC847X_SER-3081381.pdf"
 			(at 205.74 124.46 0)
 			(effects
 				(font
@@ -5260,7 +5320,25 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser part no." " 637-BC547CBK"
+		(property "Mouser part no." "771-BC847C-T/R"
+			(at 205.74 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "BC847C-T/R"
+			(at 205.74 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C181141"
 			(at 205.74 124.46 0)
 			(effects
 				(font
