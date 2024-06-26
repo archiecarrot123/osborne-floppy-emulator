@@ -18,8 +18,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "711a03f8a3fd80b7",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Board.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -69,8 +82,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "069e3cc1ea691ca9",
@@ -86,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Osborne Drive Interface.md",
+                "file": "Board.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Osborne Drive Interface.md",
+                "file": "Board.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,16 +138,16 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Osborne Drive Interface.md"
+                "file": "Board.md"
               }
             }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -147,10 +159,11 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "ed884df14efa7c26",
+  "active": "711a03f8a3fd80b7",
   "lastOpenFiles": [
-    "images/Pasted image 20240603090922.png",
     "Osborne Drive Interface.md",
+    "Board.md",
+    "images/Pasted image 20240603090922.png",
     "images/Pasted image 20240603090542.png",
     "images/Pasted image 20240603085543.png",
     "images/Pasted image 20240531120848.png",

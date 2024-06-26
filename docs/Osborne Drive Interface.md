@@ -119,7 +119,7 @@ First a signal is issued to show that a bit will be now sent, and then at the ne
 
 
 #### Read cycle
-A clock cycle takes 8000 nano seconds. (4 microseconds)
+A clock cycle takes 8000 nano seconds. (8 microseconds)
 1) wait at least 40ns from when the clock  reaches low
 2) send a high signal on the read data line for 200-500ns
 3) signal must return to low for at 40 ns before the clock switches
@@ -144,13 +144,11 @@ Drive select is given (check if this is the right one)
 ##### Changing traccks
 drive select needs to be Low
 direction is set
-write gate needs to be "incactive" (High I think)
+write gate needs to be "inactive" (High I think)
 step signal is pulsed to low once for each change
 
-Stepping sampe
+Stepping sample
 ![[Pasted image 20240531100456.png]]
-##### 
-
 #### What we Actually need to deal with
 ![[Pasted image 20240603090542.png]]
 
@@ -160,3 +158,7 @@ On the Schematic:
 There appears to be a VFO circuit
 There does not appear to be a write precompensation circuit
 all the outputs are already pulled high by default for us
+
+#### Write Precompensation:
+
+UUUHHHHHH da heq does this work
