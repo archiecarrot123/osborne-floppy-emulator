@@ -4,16 +4,12 @@
 ; this program should not be running when write gate is on
 ; the main cores should have an interrupt for WG changing state
 ; let's say clock speed is 8 MHz
-readFM_wait:
-  nop [1]
+; autopull should be on
 .wrap_target
   out PINS 1 [7]  ; assert the read signal if 1
   set PINS 0 [23] ; deassert the read signal 1 us later
   set PINS 1 [7]  ; assert read signal for clock pulse
-  set PINS 0 [20] ; deassert read signal
-  jmp !OSRE readFM_wait
-  pull
-  irq 0
+  set PINS 0 [23] ; deassert read signal
 .wrap
 
 .program write
@@ -31,49 +27,53 @@ readFM_wait:
 ; autopush should be on for this one, there's no need to waste an
 ; instruction on it when we aren't using !OSRE
 .wrap_target
-  set Y 31 ; 31 + 1 bits to recieve
 write_normal:
 ; phase can only advance so frequency should be slow
-; it should however be fast enough that three times the error plus two is
-; acceptable, for when MFM has 3 zeroes and we irq (20 cycles should be fine?)
+; it should however be fast enough that three times the error is
+; acceptable, for when MFM has 3 zeroes and we irq (18 cycles should be fine?)
 write_loop:
   jmp PIN write_read
   jmp X-- write_loop
 write_read:
   set X 31 [3]; period is 2*(x+1)+6, so 31 is 6 cycles slow
-  in PINS 1
-  jmp Y-- write_normal
-  irq 0
+  in PINS 1 [1]
 .wrap
 
 .program readMFM
 ; the thing with this is that the state machine must use each
 ; bit of data thrice: once for the clock bit before, once for
 ; the one after, and of couse one for the data bit
-; autopull should be off because we make use of !OSRE (presumably)
+; autopull should be on
 ; clock speed 16 MHz
 readMFM_low_clock:
   set PINS 1 [15]; 1 us  t1
   set PINS 0 [15]; 1 us  t2
 readMFM_low_no_clock:
-  set Y readMFM_last_low [24]; no data bit (2 us - 7 cycles)
-  jmp readMFM_decision
-readMFM_last_low:
-  out X 1
+  out X 1 [30]; no data bit (2 us - 1 cycle)
   jmp !X readMFM_low_clock ;  t0
-  set Y readMFM_high_return [31]; no clock bit (2 us)  t2
+  nop [31]; no clock bit (2 us)  t2
 .wrap_target
 readMFM_high:
   set PINS 1 [15]; 1 us  t3
-  set PINS 0 [10]; 1 us - 5 cycles
-readMFM_decision:
-  jmp !OSRE readMFM_nopull
-  pull
-  irq 0
-  mov PC Y ; jump back (or not)
-readMFM_high_return:
+  set PINS 0 [13]; 1 us - 2 cycles
   out X 1 ;  t0
   jmp !X readMFM_low_no_clock [31]; no clock bit (2 us)  t2
 .wrap
-readMFM_nopull:
-  mov PC Y [2]; jump back
+
+.program readrawFM
+; this one is much simpler, but requires twice the data from the processor
+; it is also much more flexible, so it is able to output address marks,
+; which have missing clock bits
+; autopull should be on, clock speed 8 MHz
+.wrap_target
+  out PINS 1 [7]
+  set PINS 0 [23]
+.wrap
+
+.program readrawMFM
+; same as the previous, slightly different timing
+; autopull should be on, clock speed 16 MHz
+.wrap_target
+  out PINS 1 [15]
+  set PINS 0 [15]
+.wrap
