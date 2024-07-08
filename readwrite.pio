@@ -6,10 +6,10 @@
 ; let's say clock speed is 8 MHz
 ; autopull should be on
 .wrap_target
-  out PINS 1 [7]  ; assert the read signal if 1
-  set PINS 0 [23] ; deassert the read signal 1 us later
   set PINS 1 [7]  ; assert read signal for clock pulse
   set PINS 0 [23] ; deassert read signal
+  out PINS 1 [7]  ; assert the read signal if 1
+  set PINS 0 [23] ; deassert the read signal 1 us later
 .wrap
 
 .program write
