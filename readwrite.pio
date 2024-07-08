@@ -60,6 +60,22 @@ readMFM_high:
   jmp !X readMFM_low_no_clock [31]; no clock bit (2 us)  t2
 .wrap
 
+.program readMFM2
+; minimal size
+; uses side-set
+; clock speed 4 MHz
+noclock:
+  jmp data                [7]; 2 us
+.wrap_target
+clock:
+  mov PINS ~X             [3]; 1 us
+  set PINS 0              [3]; 1 us
+data:
+  mov PINS X              [2]; 1 us - 1 cycle
+  out X 1
+  jmp PIN noclock  side 0 [3]; 1 us weird trick hopefully works
+.wrap
+
 .program readrawFM
 ; this one is much simpler, but requires twice the data from the processor
 ; it is also much more flexible, so it is able to output address marks,
