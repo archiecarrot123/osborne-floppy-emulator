@@ -1,0 +1,183 @@
+
+.program readFM
+; "read" the floppy disk, FM mode
+; this program should not be running when write gate is on
+; the main cores should have an interrupt for WG changing state
+; clock speed is 1 MHz
+; autopull should be on
+.wrap_target
+  set PINS 1 [0] ; assert read signal for clock pulse
+  set PINS 0 [2] ; deassert read signal
+  out PINS 1 [0] ; assert the read signal if 1
+  set PINS 0 [2] ; deassert the read signal 1 us later
+.wrap
+
+.program write
+; "write" to the floppy disk, FM mode or MFM mode
+; for FM use 16 MHz, for MFM use 32 MHz
+; this should only be running when write gate is on
+; being written to is... complicated
+; we need a basic PLL type thing to detect whether or not
+; the frequency is halved, but the question is: how do
+; we know if the signal just sent was the clock pulse or
+; a data pulse?
+; we could just... not, and send the processor twice the data
+; yeah let's not because otherwise it won't know where the data finished
+; NOTE: the short period is 64 cycles, each pulse is 9 to 18 cycles
+; autopush should be on for this one, there's no need to waste an
+; instruction on it when we aren't using !OSRE
+.wrap_target
+write_normal:
+; phase can only advance so frequency should be slow
+; it should however be fast enough that three times the error is
+; acceptable, for when MFM has 3 zeroes and we irq (18 cycles should be fine?)
+write_loop:
+  jmp PIN write_read
+  jmp X-- write_loop
+write_read:
+  set X 31 [3]; period is 2*(x+1)+6, so 31 is 6 cycles slow
+  in PINS 1 [1]
+.wrap
+
+.program readMFM
+; the thing with this is that the state machine must use each
+; bit of data thrice: once for the clock bit before, once for
+; the one after, and of couse one for the data bit
+; autopull should be on
+; clock speed 4 MHz
+readMFM_low_clock:
+  set PINS 1 [3]; 1 us  t1
+  set PINS 0 [3]; 1 us  t2
+readMFM_low_no_clock:
+  out X 1 [6]; no data bit (2 us - 1 cycle)
+  jmp !X readMFM_low_clock ;  t0
+  nop [7]; no clock bit (2 us)  t2
+.wrap_target
+readMFM_high:
+  set PINS 1 [3]; 1 us  t3
+  set PINS 0 [1]; 1 us - 2 cycles
+  out X 1 ;  t0
+  jmp !X readMFM_low_no_clock [7]; no clock bit (2 us)  t2
+.wrap
+
+.program readMFM2
+.side_set 1 opt
+; minimal size
+; uses side-set
+; clock speed 4 MHz
+noclock:
+  jmp data                [7]; 2 us
+.wrap_target
+clock:
+  mov PINS ~X             [3]; 1 us
+  set PINS 0              [3]; 1 us
+data:
+  mov PINS X              [2]; 1 us - 1 cycle
+  out X 1
+  jmp PIN noclock  side 0 [3]; 1 us weird trick hopefully works
+.wrap
+
+.program readrawFM
+; this one is much simpler, but requires twice the data from the processor
+; it is also much more flexible, so it is able to output address marks,
+; which have missing clock bits
+; autopull should be on, clock speed 1 MHz
+.wrap_target
+  out PINS 1 [0]
+  set PINS 0 [2]
+.wrap
+
+.program readrawMFM
+; same as the previous, slightly different timing
+; autopull should be on, clock speed 1 MHz
+.wrap_target
+  out PINS 1 [0]
+  set PINS 0 [0]
+.wrap
+
+.program rawreadFM_irq
+.side_set 1 opt
+; irq-driven
+; meant to wait for the normal readfm's fifo to run out
+; then allow it to continue once our fifo runs out
+; clock 2 MHz
+delay:
+  mov x status                 [2]; 4 all ones if tx fifo empty
+normal:
+.wrap_target
+  pull ifempty noblock            ; 7
+  out pins 1                   [1]; 0
+  jmp !osre delay       side 0 [1]; 2
+  jmp !x normal                [2]; 4 jump if tx fifo not empty
+  irq set 5                       ; 6
+  wait 1 irq 4                    ; -2
+.wrap
+
+.program readFM_irq
+.side_set 1 opt
+; irq-driven
+; clock 2 MHz
+delay:
+  mov x status                 [1]; 11
+normal:
+  nop                          [2]; 13 
+.wrap_target
+  pull ifempty noblock  side 1 [1]; 0
+  nop                   side 0 [5]; 2
+  out pins 1                   [1]; 8
+  jmp !osre delay       side 0    ; 10
+  jmp !x normal                [1]; 11
+  irq set 4                       ; 13
+  wait 1 irq 5                    ; -1
+.wrap
+
+.program rawreadMFM_irq
+.side_set 1 opt
+; irq-driven
+; meant to wait for the normal readmfm's fifo to run out
+; then allow it to continue once our fifo runs out
+; clock 4 MHz
+delay:
+  mov x status                 [1]; 2 all ones if tx fifo empty
+normal:
+.wrap_target
+  pull ifempty noblock  side 0 [3]; 4
+  out pins 1                      ; 0
+  jmp !osre delay                 ; 1
+  jmp !x normal                   ; 2 jump if tx fifo not empty
+  irq set 5                       ; 3
+  wait 1 irq 4          side 0    ; -5
+.wrap
+
+.program readMFM2_irq
+.side_set 1 opt
+; "minimal size"
+; clock speed 4 MHz
+; after a rawread, zero is assumed to have been the last bit sent
+; this shouldn't cause any trouble with the ibm format as it
+; always follows a byte with missing clock pulses with a byte starting with a 1
+noclock:
+  mov y status               ; 0
+  jmp data                [4]; 1
+.wrap_target
+clock:
+  mov PINS ~X             [3]; 0
+  mov y status     side 0 [2]; 4
+data:
+  jmp !osre delay            ; 7
+  mov PINS X                 ; 8
+  jmp !y normal              ; 9
+  irq set 4               [1]; 10
+  wait 1 irq 5     side 0    ; -4
+  pull ifempty noblock       ; -3
+  out x 1                    ; -2
+  jmp PIN noclock            ; -1
+  mov pins ~x             [3]; 0
+  jmp data         side 0 [2]; 4
+delay:
+  mov PINS X              [1]; 8
+normal:
+  pull ifempty noblock       ; 10
+  out X 1                    ; 11
+  jmp PIN noclock  side 0 [3]; 12
+.wrap

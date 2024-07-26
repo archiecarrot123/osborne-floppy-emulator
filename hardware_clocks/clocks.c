@@ -134,41 +134,46 @@ void clocks_init(void) {
     // Disable resus that may be enabled from previous software
     clocks_hw->resus.ctrl = 0;
 
-    // don't
-#if 0
-    // Enable the xosc
-    xosc_init();
+    // only do this stuff if we have the XOSC
+    *(volatile uint32_t *)(CLOCKS_BASE + CLOCKS_FC0_REF_KHZ_OFFSET) = 6500;
+    *(volatile uint32_t *)(CLOCKS_BASE + CLOCKS_FC0_INTERVAL_OFFSET) = 3; // ~32 us
+    *(volatile uint32_t *)(CLOCKS_BASE + CLOCKS_FC0_SRC_OFFSET) = 0x05; // xosc_clksrc
+    while (!(*(volatile uint32_t *)(CLOCKS_BASE + CLOCKS_FC0_STATUS_OFFSET) & 0x10));
+    // require at least 1 MHz measured frequency
+    if (*(volatile uint32_t *)(CLOCKS_BASE + CLOCKS_FC0_RESULT_OFFSET) > (1000 << 5)) {
+      // Enable the xosc
+      //xosc_init();
 
-    // Before we touch PLLs, switch sys and ref cleanly away from their aux sources.
-    hw_clear_bits(&clocks_hw->clk[clk_sys].ctrl, CLOCKS_CLK_SYS_CTRL_SRC_BITS);
-    while (clocks_hw->clk[clk_sys].selected != 0x1)
+      // Before we touch PLLs, switch sys and ref cleanly away from their aux sources.
+      hw_clear_bits(&clocks_hw->clk[clk_sys].ctrl, CLOCKS_CLK_SYS_CTRL_SRC_BITS);
+      while (clocks_hw->clk[clk_sys].selected != 0x1)
         tight_loop_contents();
-    hw_clear_bits(&clocks_hw->clk[clk_ref].ctrl, CLOCKS_CLK_REF_CTRL_SRC_BITS);
-    while (clocks_hw->clk[clk_ref].selected != 0x1)
+      hw_clear_bits(&clocks_hw->clk[clk_ref].ctrl, CLOCKS_CLK_REF_CTRL_SRC_BITS);
+      while (clocks_hw->clk[clk_ref].selected != 0x1)
         tight_loop_contents();
 
-    /// \tag::pll_init[]
-    pll_init(pll_sys, PLL_COMMON_REFDIV, PLL_SYS_VCO_FREQ_KHZ * KHZ, PLL_SYS_POSTDIV1, PLL_SYS_POSTDIV2);
-    pll_init(pll_usb, PLL_COMMON_REFDIV, PLL_USB_VCO_FREQ_KHZ * KHZ, PLL_USB_POSTDIV1, PLL_USB_POSTDIV2);
-    /// \end::pll_init[]
+      /// \tag::pll_init[]
+      pll_init(pll_sys, PLL_COMMON_REFDIV, PLL_SYS_VCO_FREQ_KHZ * KHZ, PLL_SYS_POSTDIV1, PLL_SYS_POSTDIV2);
+      pll_init(pll_usb, PLL_COMMON_REFDIV, PLL_USB_VCO_FREQ_KHZ * KHZ, PLL_USB_POSTDIV1, PLL_USB_POSTDIV2);
+      /// \end::pll_init[]
 
-    // Configure clocks
-    // CLK_REF = XOSC (usually) 12MHz / 1 = 12MHz
-    clock_configure(clk_ref,
-                    CLOCKS_CLK_REF_CTRL_SRC_VALUE_XOSC_CLKSRC,
-                    0, // No aux mux
-                    XOSC_KHZ * KHZ,
-                    XOSC_KHZ * KHZ);
+      // Configure clocks
+      // CLK_REF = XOSC (usually) 12MHz / 1 = 12MHz
+      clock_configure(clk_ref,
+		      CLOCKS_CLK_REF_CTRL_SRC_VALUE_XOSC_CLKSRC,
+		      0, // No aux mux
+		      XOSC_KHZ * KHZ,
+		      XOSC_KHZ * KHZ);
 
-    /// \tag::configure_clk_sys[]
-    // CLK SYS = PLL SYS (usually) 125MHz / 1 = 125MHz
-    clock_configure(clk_sys,
-                    CLOCKS_CLK_SYS_CTRL_SRC_VALUE_CLKSRC_CLK_SYS_AUX,
-                    CLOCKS_CLK_SYS_CTRL_AUXSRC_VALUE_CLKSRC_PLL_SYS,
-                    SYS_CLK_KHZ * KHZ,
-                    SYS_CLK_KHZ * KHZ);
-    /// \end::configure_clk_sys[]
-#endif
+      /// \tag::configure_clk_sys[]
+      // CLK SYS = PLL SYS (usually) 125MHz / 1 = 125MHz
+      clock_configure(clk_sys,
+		      CLOCKS_CLK_SYS_CTRL_SRC_VALUE_CLKSRC_CLK_SYS_AUX,
+		      CLOCKS_CLK_SYS_CTRL_AUXSRC_VALUE_CLKSRC_PLL_SYS,
+		      SYS_CLK_KHZ * KHZ,
+		      SYS_CLK_KHZ * KHZ);
+      /// \end::configure_clk_sys[]
+    }
 #if 1
     // CLK USB = PLL USB 48MHz / 1 = 48MHz
     clock_configure(clk_usb,

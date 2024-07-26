@@ -1,0 +1,14 @@
+#pragma once
+
+#define SYS_CLK_KHZ 96000u
+#define XOSC_KHZ 4000u
+
+#define PLL_SYS_VCO_FREQ_KHZ 768000u
+#define PLL_SYS_POSTDIV1 4u
+#define PLL_SYS_POSTDIV2 2u
+
+#define PLL_USB_VCO_FREQ_KHZ 768000u
+#define PLL_USB_POSTDIV1 4u
+#define PLL_USB_POSTDIV2 4u
+
+#define XOSC_ATTACHED 0
