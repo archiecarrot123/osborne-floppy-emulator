@@ -134,16 +134,31 @@ void clocks_init(void) {
     // Disable resus that may be enabled from previous software
     clocks_hw->resus.ctrl = 0;
 
-    // only do this stuff if we have the XOSC
-    *(volatile uint32_t *)(CLOCKS_BASE + CLOCKS_FC0_REF_KHZ_OFFSET) = 6500;
-    *(volatile uint32_t *)(CLOCKS_BASE + CLOCKS_FC0_INTERVAL_OFFSET) = 3; // ~32 us
-    *(volatile uint32_t *)(CLOCKS_BASE + CLOCKS_FC0_SRC_OFFSET) = 0x05; // xosc_clksrc
-    while (!(*(volatile uint32_t *)(CLOCKS_BASE + CLOCKS_FC0_STATUS_OFFSET) & 0x10));
-    // require at least 1 MHz measured frequency
-    if (*(volatile uint32_t *)(CLOCKS_BASE + CLOCKS_FC0_RESULT_OFFSET) > (1000 << 5)) {
-      // Enable the xosc
-      //xosc_init();
+    // xosc_init is split up here
+    // Assumes 1-15 MHz input, checked above.
+    xosc_hw->ctrl = XOSC_CTRL_FREQ_RANGE_VALUE_1_15MHZ;
 
+    // Set xosc startup delay
+    // we changed it to 1 because the osborne already has one
+    xosc_hw->startup = 1;
+
+    // Set the enable bit now that we have set freq range and startup delay
+    hw_set_bits(&xosc_hw->ctrl, XOSC_CTRL_ENABLE_VALUE_ENABLE << XOSC_CTRL_ENABLE_LSB);
+
+    // we need to sleep for at least around 60,000 cycles for the clock to come online plus 768 for
+    // the startup delay, assuming worst-case 12 MHz ROSC
+    // sub and cmp take 1 cycle each, and bne takes 3 when branching
+    unsigned int countdown = 13000;
+    asm volatile ("clockwait:\n"
+		  "sub %[counter], %[counter], #1\n"
+		  "cmp %[counter], #0\n"
+		  "bne clockwait"
+		  : [counter] "+r" (countdown)
+		  :
+		  : "cc");
+    
+    // only use oscillator if it appears to be working
+    if (xosc_hw->status & XOSC_STATUS_STABLE_BITS) {
       // Before we touch PLLs, switch sys and ref cleanly away from their aux sources.
       hw_clear_bits(&clocks_hw->clk[clk_sys].ctrl, CLOCKS_CLK_SYS_CTRL_SRC_BITS);
       while (clocks_hw->clk[clk_sys].selected != 0x1)
