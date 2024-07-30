@@ -399,6 +399,26 @@ CRC-16-CCITT.
 
 \subsection{Gap}
 
-TODO: talk about gap sizes
+Formatted disks include gaps, where no data is stored, that are placed
+between data fields and ID fields, as well as between the end and
+start of the disk. The gaps are numbered 0 through 4, with gaps 2 and
+3 appearing once for each sector. The FD179X chips and their clones
+have minimum size requirements for most of the gaps, except for gap 0
+which occurs after the index pulse (at the start of the disk) and is
+nominally 40 bytes in FM and 80 in MFM, and gap 2, which must always
+be 11 bytes in FM and 22 in MFM. Interestingly, in FM the gaps contain
+the byte 0xFF (0b11111111), while in MFM they contain 0x4E
+(0b01001110). This is perhaps because in MFM the byte 0xFF could be
+confused with the byte used for the sync after gaps 2 and 3, which is
+0x00. In MFM this sync section is followed by 3 bytes of 0xA1 missing
+the clock transition between bits 4 and 5 in the sectors, or 0xC2
+missing the clock transition between bits 3 and 4 in the preamble. The
+flexibility in gap lengths allowed by these chips made it possible for
+designers to make formats that squeezed more actual data into the disk
+by missing out parts of the gaps - this could save 19 bytes per sector
+compared to the IBM 3740 format and 34 bytes per sector compared to
+the IBM System 34 format, plus a few hundred more by shortening gap 4,
+which would reduce the tolerance for fast disks but allow a few more
+kilobytes to be stored.
 
 \end{document}
