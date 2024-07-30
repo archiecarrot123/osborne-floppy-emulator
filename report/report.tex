@@ -29,10 +29,11 @@ been written to or had an encounter with a magnet.
 
 Much later, when checking the rotation rate of the floppy drives (I
 had misunderstood the formatting and assumed that they must have a
-rotation time of \qty{400}{\ms} instead of \qty{200}{\ms} to fit all of the data), I
-discovered that the index pulse in drive 1 was not working. After
-taking it apart, I found that the index pulse sensor had broken off of
-the drive's chassis, but I glued it back together and put it back and
+rotation time of \qty{400}{\ms} instead of \qty{200}{\ms} to fit all
+of the data), I discovered that the index pulse in drive 1 was not
+working. After taking it apart, I found that the index pulse sensor
+had broken off of the drive's chassis, but I glued it back together
+and put it back and
 then it worked.
 
 \section{Hardware}
@@ -54,18 +55,18 @@ converter I saw that only used one diode and used a low-side N-channel
 MOSFET.
 
 I chose the value of the inductors using a formula I found in a book,
-assuming a ripple current ratio of 0.4, \(V_{in}\) of \qty{12}{\V}, \(V_{out}\) of
-\qty{3.3}{\V}, and other parameters (frequency and current) which I can't
-remember. I then created a schematic for the converter using KiCad,
-and simulated it with Ngspice to fine tune values.
+assuming a ripple current ratio of 0.4, \(V_{in}\) of \qty{12}{\V},
+\(V_{out}\) of \qty{3.3}{\V}, and other parameters (frequency and
+current) which I can't remember. I then created a schematic for the
+converter using KiCad, and simulated it with Ngspice to fine tune
+values.
 
 I used a TL494 PWM control IC because it was available from Jaycar,
-although it complicated the design as it was a TTL chip with two
-BJTs as outputs, rather than a push-pull output which is suited to
-driving the MOSFET. Because of this, I had to create my own MOSFET
-driver, but because the IC had two outputs I could construct a simple
-push-pull driver from one NPN and one PNP tranistor, as well as some
-resistors.
+although it complicated the design as it was a TTL chip with two BJTs
+as outputs, rather than a push-pull output which is suited to driving
+the MOSFET. Because of this, I had to create my own MOSFET driver, but
+because the IC had two outputs I could construct a simple push-pull
+driver from one NPN and one PNP tranistor, as well as some resistors.
 
 The SEPIC works by using the MOSFET (or other switching element) to
 cause current to flow from the input through the input inductor, and
@@ -99,14 +100,14 @@ contain a comically small toroid held in clear resin.
 
 
 Much later into the project, when I managed to get the RP2040 to use
-the osborne's clock signal to run at \qty{96}{\MHz}, the increased power draw
-highlighted a flaw in my choice of a tiny common-mode choke for the
-power inductor - it was too small. When the inductor reached
+the osborne's clock signal to run at \qty{96}{\MHz}, the increased
+power draw highlighted a flaw in my choice of a tiny common-mode choke
+for the power inductor - it was too small. When the inductor reached
 saturation, the converter started drawing much more current and its
 output dropped substantially. It took me quite a while to figure this
-out, but the tell-tale sign was the small \qty{0}{\V} ``front porch'' visible at
-the anode of the diode after the MOSFET turned off but before current
-started to flow through the diode.
+out, but the tell-tale sign was the small \qty{0}{\V} ``front porch''
+visible at the anode of the diode after the MOSFET turned off but
+before current started to flow through the diode.
 
 \begin{figure}
   \centering
@@ -119,40 +120,40 @@ started to flow through the diode.
 \begin{figure}
   \centering
   \includegraphics[height=3.5cm]{pic_25_1}\hfill\includegraphics[height=3.5cm]{pic_25_4}
-  \caption[Voltage and current traces with handwound inductors]{Diode anode
-    voltage vs. time (yellow) and voltage across \qty{0.1}{\ohm} shunt
-    (blue) with hand-wound inductors - On left under light
-    load (in DCM) and on right under high load (in CCM)}
+  \caption[Voltage and current traces with handwound inductors]{Diode
+    anode voltage vs. time (yellow) and voltage across \qty{0.1}{\ohm}
+    shunt (blue) with hand-wound inductors - On left under light load (in
+    DCM) and on right under high load (in CCM)}
 \end{figure}
 
 \subsection{Processor}
 
-The microcontroller we used was the RP2040, because I already had one spare
-from another project. It is almost certainly more powerful than we
-need, but having a more powerful processor allows more room for
+The microcontroller we used was the RP2040, because I already had one
+spare from another project. It is almost certainly more powerful than
+we need, but having a more powerful processor allows more room for
 inefficiencies when programming, and the ability to implement
 additional functionality.
 
 The RP2040 has some interesting features, the foremost of which are
 that it contains 2 cores, it has 2 banks of 4 ``PIO'' (Programmable
 I/O) state machines, and that it has a USB 2.0 controller and a USB
-1.1 PHY. These features, along with its \qty{264}{\kibi\byte} of RAM, make it
-very capable in this application.
+1.1 PHY. These features, along with its \qty{264}{\kibi\byte} of RAM,
+make it very capable in this application.
 
-The microcontroller contains its own ring oscillator, which is used when
-debugging and programming the flash, as well as the hardware to
+The microcontroller contains its own ring oscillator, which is used
+when debugging and programming the flash, as well as the hardware to
 support a crystal oscillator, which is instead fed with the
 \qty{4}{\MHz} clock given to (but not used by) the floppy drives.
 
 \subsection{I/O}
 
-The Osborne 1 uses TTL chips, which use \qty{5}{\V}, while the
-RP2040 is designed for the CMOS world, and can only handle up to
-\qty{3.3}{\V}. Additionally, the Osborne 1's disk drives and controller use
-``open-collector'' chips on their outputs, which either short their
-output to ground or leave it floating. This would be great if we
-weren't planning to connect the physical drives as well, as we could
-connect the inputs directly to the RP2040 and use its internal
+The Osborne 1 uses TTL chips, which use \qty{5}{\V}, while the RP2040
+is designed for the CMOS world, and can only handle up to
+\qty{3.3}{\V}. Additionally, the Osborne 1's disk drives and
+controller use ``open-collector'' chips on their outputs, which either
+short their output to ground or leave it floating. This would be great
+if we weren't planning to connect the physical drives as well, as we
+could connect the inputs directly to the RP2040 and use its internal
 pull-ups, but because we want to have the disk drives attached we need
 a diode on the inputs, so the RP2040's side can be pulled down but not
 up. The open-collector I/O does however make it very easy to
@@ -177,17 +178,18 @@ the power supply, and I was also able to use the debugger on the
 RP2040 to test that I could program it.
 
 Because the first design of the board was... bad, I decided to create
-a second version of the PCB, this time taking into consideration the fact
-that I was going to get it printed by a commercial manufacturer who
-would make vias at no additional cost and has their design tolerances
-listed. I also changed the parts supplier from Mouser to LCSC, as they
-had the SMD pin headers that the new board needed, as well as just
-generally having cheaper components. The new board also used some SMD
-resistors, an SMD version of the TL494, and SMD signal diodes and
-transistors, allowing a size reduction of more than two times while
-most of the parts remained the same. Another one of the changes I made
-between the versions was to change the RP2040's footprint to have
-longer solder pads, so that it could be hand-soldered more easily.
+a second version of the PCB, this time taking into consideration the
+fact that I was going to get it printed by a commercial manufacturer
+who would make vias at no additional cost and has their design
+tolerances listed. I also changed the parts supplier from Mouser to
+LCSC, as they had the SMD pin headers that the new board needed, as
+well as just generally having cheaper components. The new board also
+used some SMD resistors, an SMD version of the TL494, and SMD signal
+diodes and transistors, allowing a size reduction of more than two
+times while most of the parts remained the same. Another one of the
+changes I made between the versions was to change the RP2040's
+footprint to have longer solder pads, so that it could be
+hand-soldered more easily.
 
 \section{Software}
 
@@ -195,11 +197,12 @@ longer solder pads, so that it could be hand-soldered more easily.
 
 While I was waiting for the first version of the boards to arrive, I
 decided to write a program I could run on an Arduino Uno to debug and
-program the RP2040 and the flash memory respectively. This turned
-out to be folly, however, as after writing about half of the program I
-realised that OpenOCD would work to do all that on an SBC I already had (it should
-work on any linux machine with GPIO) with minimal configuration,
-although I suppose the extra practice in C programming didn't hurt.
+program the RP2040 and the flash memory respectively. This turned out
+to be folly, however, as after writing about half of the program I
+realised that OpenOCD would work to do all that on an SBC I already
+had (it should work on any linux machine with GPIO) with minimal
+configuration, although I suppose the extra practice in C programming
+didn't hurt.
 
 \subsection{GPIO}
 
@@ -226,14 +229,14 @@ use basic logic to encode data as FM and MFM.
 Initially the PIO programs were meant to run freely and be stopped and
 started when required, but I later realised that the timing precision
 required would not be acheivable as the main processors only knew the
-time to the nearest \qty{2}{\us}. Because of this I modified the programs heavily to
-use the PIO's IRQ system to switch between sending ``raw'' data
-(required for address marks) and modulating the data.
+time to the nearest \qty{2}{\us}. Because of this I modified the
+programs heavily to use the PIO's IRQ system to switch between sending
+``raw'' data (required for address marks) and modulating the data.
 
-An interesting feature of the PIO is that it has 5 extra bits for
-each instruction which it can use either to specify a delay to wait
-for after execution or some pins to set before/during execution, which
-is very useful for timing and reducing the number of instructions used.
+An interesting feature of the PIO is that it has 5 extra bits for each
+instruction which it can use either to specify a delay to wait for
+after execution or some pins to set before/during execution, which is
+very useful for timing and reducing the number of instructions used.
 
 \begin{figure}
 \begin{verbatim}
@@ -287,31 +290,31 @@ explained in section~\ref{subsubsec:am}.
 
 In order to be able to allocate memory, the program needs to be able
 to keep track of the free memory, which is stored in a sorted linked
-list. Newly freed memory is placed in a seperate list, which is
-later sorted and merged into the main list. Each of the different
-sizes of blocks has its own linked lists, but the program will
-automatically decide to split up the largest size of blocks when there
-is a deficit of the smaller blocks, and merge these blocks together
-when there is an excess.
+list. Newly freed memory is placed in a seperate list, which is later
+sorted and merged into the main list. Each of the different sizes of
+blocks has its own linked lists, but the program will automatically
+decide to split up the largest size of blocks when there is a deficit
+of the smaller blocks, and merge these blocks together when there is
+an excess.
 
 \subsection{USB}
 
 For a short period of time, I thought that I might try to create my
 own USB driver because it seemed like a hassle to learn someone else's
-library, but I decided against this after reading more about
-USB and how complicated it is, as well as just thinking about how
-complicated filesystems are. Because of this, we were going to use
-TinyUSB stack, however we have not started implementing USB at time of
-writing. We are planning on running USB on processor 1 while the
-floppy drive emulator runs on processor 0, to allow us to read data
-from the USB stick and manipulate it to some degree while emulating
-a floppy drive, which is important as an MFM disk may not completely
-fit in memory, so its tracks must be streamed from the USB mass
-storage device. Whether or not the regular interrupts and other tasks on processor 0
-would slow down USB transfers is unknown, but by processing the data
-on both cores we can hopefully acheive a speed-up, as each sector is
-loaded and the CRC calculated using one processor while the other one
-places the last sector into a linked list.
+library, but I decided against this after reading more about USB and
+how complicated it is, as well as just thinking about how complicated
+filesystems are. Because of this, we were going to use TinyUSB stack,
+however we have not started implementing USB at time of writing. We
+are planning on running USB on processor 1 while the floppy drive
+emulator runs on processor 0, to allow us to read data from the USB
+stick and manipulate it to some degree while emulating a floppy drive,
+which is important as an MFM disk may not completely fit in memory, so
+its tracks must be streamed from the USB mass storage device. Whether
+or not the regular interrupts and other tasks on processor 0 would
+slow down USB transfers is unknown, but by processing the data on both
+cores we can hopefully acheive a speed-up, as each sector is loaded
+and the CRC calculated using one processor while the other one places
+the last sector into a linked list.
 
 \subsection{Images}
 
@@ -326,14 +329,14 @@ USB mass storage yet.
 A slight problem with the ImageDisk format is that it was designed for
 archiving data, rather than exact reproduction of the disk, so it
 doesn't contain much formatting information such as gap sizes, or have
-any way to represent bytes with missing clock bits, as these are not usually
-significant in operating systems, and missing clock bits will go
-unnoticed by the computer unless they cause the FDC to report an
+any way to represent bytes with missing clock bits, as these are not
+usually significant in operating systems, and missing clock bits will
+go unnoticed by the computer unless they cause the FDC to report an
 error. This presents a problem if we want to faithfully reproduce a
 floppy drive down to the errors, as we will need a way to store
 abnormal bytes and incorrect CRCs. As of yet we have no plan on how to
 go about this, but we could potentially create our own format based on
-the way that we store data in memory. 
+the way that we store data in memory.
 
 \section{Format}
 
@@ -377,33 +380,35 @@ How can we do better? By reducing the number of transitions! If we
 just get rid of all the ``clock pulses'' that are next to ``data
 pulses'' we can halve the fundemental frequency for a given data rate,
 or equivalently double the data rate for a given fundemental
-frequency. Because this is slightly different to FM, it is called ``MFM'', for
-``Modified Frequency Modulation'' (it is also \(RLL \left(1,3\right)\)). The drawback of this is that
-encoding and decoding it is more complicated, but it's well
-worth the cost to get double the data storage on the same disks. The
-sequence 11 still has a frequency of \qty{250}{\kHz}, but so
-does the sequence 00. The sequence 1010 has a frequency of \qty{125}{\kHz} and the sequence
-100 has a frequency of just over \qty{166}{\kHz}.
+frequency. Because this is slightly different to FM, it is called
+``MFM'', for ``Modified Frequency Modulation'' (it is also \(RLL
+\left(1,3\right)\)). The drawback of this is that encoding and
+decoding it is more complicated, but it's well worth the cost to get
+double the data storage on the same disks. The sequence 11 still has a
+frequency of \qty{250}{\kHz}, but so does the sequence 00. The
+sequence 1010 has a frequency of \qty{125}{\kHz} and the sequence 100
+has a frequency of just over \qty{166}{\kHz}.
 
 \subsubsection{AM}
 \label{subsubsec:am}
 
-One of the more interesting things about the IBM 3740 and IBM System 34 formats is that
-the IBM 3740 format uses address marks (which mark the beginnings of data and metadata
-sections) with missing clock bits, and the IBM System 34 format
-preceeds the address marks with 3 bytes missing a clock bit. This gives the FDC
-the ability to find them amongst whatever strange data might be on the
-disk, but also complicates the job of a floppy drive emulator. In
-order to be able to send address marks our program uses two of the PIO
-state machines running different programs, which synchronise with each
-other to allow the emulator to send an address mark followed by
-regular bytes, without the processor having to add the clock signal to regular bytes.
+One of the more interesting things about the IBM 3740 and IBM System
+34 formats is that the IBM 3740 format uses address marks (which mark
+the beginnings of data and metadata sections) with missing clock bits,
+and the IBM System 34 format preceeds the address marks with 3 bytes
+missing a clock bit. This gives the FDC the ability to find them
+amongst whatever strange data might be on the disk, but also
+complicates the job of a floppy drive emulator. In order to be able to
+send address marks our program uses two of the PIO state machines
+running different programs, which synchronise with each other to allow
+the emulator to send an address mark followed by regular bytes,
+without the processor having to add the clock signal to regular bytes.
 
 \subsection{Metadata}
 
 Each sector on the floppy disk has a small amount of metadata
 associated with it, almost all of which is stored in what is known as
-the ``ID field'' - the only part which isn't is whether the data is
+the ``ID field''---the only part which isn't is whether the data is
 deleted or not, which is stored in the data (or deleted data) address
 mark. The ID field stores the track number, the side number (only 0 or
 1), the sector number, and the sector length (as a power of 2 times
