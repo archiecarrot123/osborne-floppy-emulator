@@ -216,25 +216,24 @@ but I overcame it pretty easily.
 
 \subsection{PIO}
 
-TODO: fix this bit up
-
 The PIO on the RP2040 is constructed of 2 banks with 32 half-words of
 instuction memory and 4 state machines each, which can write to the
 GPIO pins every cycle. The main limitations of the PIOs are the
 limited instuction set of 9 instructions and the limited instuction
 memory. Despite this, it is still possible to create programs which
-perform basic computations to encode data as FM and MFM.
+use basic logic to encode data as FM and MFM.
 
 Initially the PIO programs were meant to run freely and be stopped and
-started when required, but when I realised that the timing precision
+started when required, but I later realised that the timing precision
 required would not be acheivable as the main processors only knew the
-time to the nearest \qty{2}{\us}, I modified the programs heavily to
+time to the nearest \qty{2}{\us}. Because of this I modified the programs heavily to
 use the PIO's IRQ system to switch between sending ``raw'' data
 (required for address marks) and modulating the data.
 
 An interesting feature of the PIO is that it has 5 extra bits for
 each instruction which it can use either to specify a delay to wait
-for after execution or some pins to set before/during execution.
+for after execution or some pins to set before/during execution, which
+is very useful for timing and reducing the number of instructions used.
 
 \begin{figure}
 \begin{verbatim}
@@ -260,10 +259,11 @@ normal:
     then cause an interrupt and wait on another when it runs out of data}
 \end{figure}
 
-The PIO has a few quirks, these include that the easiest way to change
-its program counter is to give it a jump instruction to execute, and
-that the pins are all inputs by default, so you need to execute an
-instruction on one of the state machines to set the pins to outputs.
+The PIO has a few quirks, these include that its program counter
+cannot be directly written to, meaning that the easiest way to change
+it is to give it a jump instruction to execute, as well as that the
+pins are all set to be inputs by default, so you need to use one of
+the state machines to set the pins to outputs.
 
 \subsection{Memory}
 
