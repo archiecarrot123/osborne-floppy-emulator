@@ -322,6 +322,17 @@ the way that we store data in memory.
 
 \section{Format}
 
+Note that this section relates to IBM 3740 and IBM System 34 and
+similar formats (including the Osborne formats).
+
+\subsubsection{MSB-first}
+
+Something important about the format of floppy disks that it doesn't
+seem is mentioned very often is that the bytes are transmitted
+MSB-first (I assumed that they were transmitted LSB-first but when
+looking at datasheets LSB-first didn't make sense with the bits they
+said were missing in the MFM address marks).
+
 \subsection{FM}
 
 Data is stored on floppy disks as a series of transitions, as the head
@@ -354,20 +365,20 @@ or equivalently double the data rate for a given fundemental
 frequency. Because this is slightly different to FM, it is called ``MFM'', for
 ``Modified Frequency Modulation'' (it is also \(RLL \left(1,3\right)\)). The drawback of this is that
 encoding and decoding it is more complicated, but it's well
-worth the cost to get double the data storage on the same disks. A
-sequence of all 1s still has a frequency of \qty{250}{\kHz}, but so
-does a sequence of all 0s. A sequence of alternating 1s and 0s has a
-frequency of \qty{125}{\kHz} and a repeating sequence of
-100100100... has a frequency of just over \qty{166}{\kHz}.
+worth the cost to get double the data storage on the same disks. The
+sequence 11 still has a frequency of \qty{250}{\kHz}, but so
+does the sequence 00. The sequence 1010 has a frequency of \qty{125}{\kHz} and the sequence
+100 has a frequency of just over \qty{166}{\kHz}.
 
 \subsubsection{AM}
 \label{subsubsec:am}
 
-One of the things about the IBM 3740 and IBM System 34 formats is that
-they use address marks (which mark the beginnings of data and metadata
-sections) with missing clock bits, which gives the FDC
+One of the more interesting things about the IBM 3740 and IBM System 34 formats is that
+the IBM 3740 format uses address marks (which mark the beginnings of data and metadata
+sections) with missing clock bits, and the IBM System 34 format
+preceeds the address marks with 3 bytes missing a clock bit. This gives the FDC
 the ability to find them amongst whatever strange data might be on the
-disk, but also complicating the job of a floppy drive emulator. In
+disk, but also complicates the job of a floppy drive emulator. In
 order to be able to send address marks our program uses two of the PIO
 state machines running different programs, which synchronise with each
 other to allow the emulator to send an address mark followed by
@@ -375,7 +386,16 @@ regular bytes, without the processor having to add the clock signal to regular b
 
 \subsection{Metadata}
 
-TODO: talk about the metadata
+Each sector on the floppy disk has a small amount of metadata
+associated with it, almost all of which is stored in what is known as
+the ``ID field'' - the only part which isn't is whether the data is
+deleted or not, which is stored in the data (or deleted data) address
+mark. The ID field stores the track number, the side number (only 0 or
+1), the sector number, and the sector length (as a power of 2 times
+128). The ID and data fields both also contain a 16-bit CRC of all of
+the data from the start of the last address mark, which uses the
+polynomial \(x^0 + x^5 + x^{12} + x^{16}\), and is also known as
+CRC-16-CCITT.
 
 \subsection{Gap}
 
