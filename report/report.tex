@@ -296,7 +296,22 @@ when there is an excess.
 
 \subsection{USB}
 
-TODO: talk about tinyusb
+For a short period of time, I thought that I might try to create my
+own USB driver because it seemed like a hassle to learn someone else's
+library, but I decided against this after reading more about
+USB and how complicated it is, as well as just thinking about how
+complicated filesystems are. Because of this, we were going to use
+TinyUSB stack, however we have not started implementing USB at time of
+writing. We are planning on running USB on processor 1 while the
+floppy drive emulator runs on processor 0, to allow us to read data
+from the USB stick and manipulate it to some degree while emulating
+a floppy drive, which is important as an MFM disk may not completely
+fit in memory, so its tracks must be streamed from the USB mass
+storage device. Whether or not the regular interrupts and other tasks on processor 0
+would slow down USB transfers is unknown, but by processing the data
+on both cores we can hopefully acheive a speed-up, as each sector is
+loaded and the CRC calculated using one processor while the other one
+places the last sector into a linked list.
 
 \subsection{Images}
 
@@ -401,8 +416,9 @@ There is also a short preamble that starts when the index pulse
 begins, which is sent by the floppy drive when a small hole punched in
 the floppy disk is detected at a certain position by a photogate-like
 device. All that this preamble contains is an index address mark,
-which presumably serves to verify that the drive's head has not
-wondered away to a different angle to the index pulse detector.
+which presumably serves to verify that the drive's head is not somehow
+reading part of the disk which shouldn't even be exposed as the index
+hole goes past.
 
 \subsection{Gap}
 
