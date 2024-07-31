@@ -10,11 +10,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+// TODO: make sure that disks contain the correct number of bytes, also
+// it would be nice to make sure that we are synchronised with the index pulse
 
 static void *readpointer;
 static uint32_t residualdata;
 static uint_fast8_t residualdatabytes;
-
 
 uint32_t readbuffer[256]; // be careful with this one
 volatile uint8_t readbufferstart;
@@ -27,7 +28,7 @@ unsigned int writebufferstarttime;
 
 // may as well be a macro
 static inline void set_rawread_timers(uint_fast8_t rawbytecount, uint32_t currenttime) {
-  // TODO: fix behaviour when the readpointertime is little above the currenttime
+  // TODO: check behaviour when the readpointertime is little above the currenttime
   if (readpointertime > currenttime + 32*currentperiod - PWM_ERROR_MARGIN) {
     pwm_set_wrap(1, readpointertime - currenttime - 32*currentperiod + PWM_ERROR_MARGIN);
     pwm_set_counter(1, 0);
@@ -410,7 +411,6 @@ void maintain_readbuffer(void) {
       pio_sm_put(pio0, 1, ((struct am *)readpointer)->rawbyte);
       // set up pwm interrupts
       uint32_t currenttime = (timebasenumber << 16) + pwm_get_counter(0);
-      // TODO: fix behaviour when the readpointertime is little above the currenttime
       set_rawread_timers(1, currenttime);
       // set status
       status.rawreadstage = WAITING_FM_AM;
@@ -453,7 +453,6 @@ void maintain_readbuffer(void) {
       }
       // set up pwm interrupts
       uint32_t currenttime = (timebasenumber << 16) + pwm_get_counter(0);
-      // TODO: fix behaviour when the readpointertime is little above the currenttime
       set_rawread_timers(3, currenttime);
       // set status
       status.rawreadstage = WAITING_MFM_AM;

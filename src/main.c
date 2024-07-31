@@ -5,15 +5,15 @@
 #include "disk.h"
 
 #include "pico/stdlib.h"
+#include "pico/multicore.h"
 #include "hardware/pwm.h"
 #include "hardware/pio.h"
 #include "hardware/irq.h"
 #include "hardware/regs/io_bank0.h"
 #include "hardware/regs/intctrl.h"
 #include "hardware/regs/pio.h"
-
-
-// TODO: track 0
+#include "hardware/structs/sio.h"
+#include "hardware/structs/clocks.h"
 
 
 volatile uint_fast8_t timebasenumber;
@@ -114,7 +114,6 @@ void pwm_irq_handler(void) {
     // enable state machine fifo interrupt
     pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
     // re-enable the read signal
-    // TODO: check polarity
     gpio_set_outover(13, GPIO_OVERRIDE_NORMAL);
     // disable ourselves
     pwm_set_irq_enabled(4, false);
@@ -305,7 +304,6 @@ void pio0_irq0_handler(void) {
 	deferredtasks.readmore = true;
 	deferredtasks.urgent = true;
 	pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, false);
-	// TODO: cause ourselves to be re-enabled later
 	irq_set_pending(BUFFERS_IRQ_NUMBER);
       }
     }
@@ -326,6 +324,12 @@ void pio0_irq1_handler(void) {
     } else {
       // :(
     }
+  }
+}
+
+void proc0_sio_irq_handler(void) {
+  if (multicore_fifo_rvalid()) {
+    add_sector_to_disk(*(struct sector *volatile *)(sio_hw->fifo_rd));
   }
 }
 
@@ -433,13 +437,13 @@ static void setup_interrupts(void) {
   // some OS kinda stuff... idk what to call it
   irq_set_exclusive_handler(31, maintain_buffers);
   irq_set_enabled(31, true);
-  irq_set_priority(31, 255); // lowest priority
+  irq_set_priority(31, 0xC0); // lowest priority
   EI();
 }
 
 void main(void) {
   initialize_track_storage();
-  generate_fm_test_disk(&drive1);
+  generate_fm_test_disk((struct disk *)&drive1);
   drive1.enabled = true;
   setup_pio();
   setup_gpio();
@@ -449,7 +453,19 @@ void main(void) {
   gpio_put(4, !drive1.enabled);
   gpio_put(6, !drive2.enabled);
   select_drive(&drive1);
+  // testing
+  clocks_hw->fc0.src = 0x05;
+  gpio_init(16);
+  gpio_set_dir(16, true);
   while (1) {
+    if (clocks_hw->fc0.status & CLOCKS_FC0_STATUS_DONE_BITS) {
+      if ((clocks_hw->fc0.result >> 5) > 1000) {
+	gpio_put(16, true);
+      } else {
+	gpio_put(16, false);
+      }
+      clocks_hw->fc0.src = 0x05;
+    }
     //maintain_buffers();
     maintain_track_storage();
   }

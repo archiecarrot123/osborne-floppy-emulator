@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <stdbool.h>
 
 // i give up on thread safety - it takes too long and we don't need it
 //#define DI() asm volatile ("CPSID i")
@@ -42,6 +43,7 @@ struct tinydatablock {
 
 // minimum value of count is 3
 // this is because i'm lazy
+// this also means that there is no way to represent less than 3 bytes
 struct bytes {
   void *cdr;
   unsigned char type;
@@ -118,5 +120,9 @@ void maintain_track_storage(void);
 // that we're not using them in any other files - if you want to use them
 // somewhere else just remove it and prototype them here
 
-// we don't have a free function yet as we don't have anything that needs to free memory yet
 void * alloc(enum type type);
+void free_block(void *block);
+
+bool sort_big_blocks(void);
+bool sort_medium_blocks(void);
+bool sort_small_blocks(void);
