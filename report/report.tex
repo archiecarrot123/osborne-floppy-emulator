@@ -464,7 +464,7 @@ nominally 40 bytes in FM and 80 in MFM, and gap 2, which must always
 be 11 bytes in FM and 22 in MFM. Interestingly, in FM the gaps contain
 the byte 0xFF (0b11111111), while in MFM they contain 0x4E
 (0b01001110). This is perhaps because in MFM the byte 0xFF could be
-confused with the byte used for the sync after gaps 2 and 3, which is
+confused with the byte used for the sync sections before address marks, which is
 0x00. In MFM this sync section is followed by 3 bytes of 0xA1 missing
 the clock transition between bits 4 and 5 in the sectors, or 0xC2
 missing the clock transition between bits 3 and 4 in the preamble. The
