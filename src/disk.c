@@ -237,7 +237,6 @@ void generate_fm_test_disk(struct disk *disk) {
   ((struct bytes *)last)->cdr = toc;
   fill_toc(toc);
   // make the test disk
-  disk->mfm = false;
   disk->wp = true; // we don't have writing yet
   // all tracks get track 0's data, to make sure i don't accidentally crash it
   for (int i = 0; i < 40; i++) {
@@ -275,7 +274,6 @@ void generate_mfm_test_disk(struct disk *disk) {
   ((struct bytes *)last)->cdr = toc;
   fill_toc(toc);
   // make the test disk
-  disk->mfm = false;
   disk->wp = true; // we don't have writing yet
   // all tracks get track 0's data, to make sure i don't accidentally crash it
   for (int i = 0; i < 40; i++) {
