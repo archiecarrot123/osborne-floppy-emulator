@@ -38,7 +38,7 @@ of being offline that it exploded. The replacement part was a
 \qty{0.1}{\uF} X2 (line-to-line rated) capacitor from Jaycar, made of
 metallised polypropylene. After replacing this capacitor I tried to
 boot the Osborne again, and it started beeping loudly after trying to
-load data off of the ``blank'' disk - later when probing the read data
+load data off of the ``blank'' disk---later when probing the read data
 line the signal from it seemed random, so it had probably either never
 been written to or had an encounter with a magnet.
 
@@ -117,7 +117,7 @@ contain a comically small toroid held in clear resin.
 Much later into the project, when I managed to get the RP2040 to use
 the osborne's clock signal to run at \qty{96}{\MHz}, the increased
 power draw highlighted a flaw in my choice of a tiny common-mode choke
-for the power inductor - it was too small. When the inductor reached
+for the power inductor---it was too small. When the inductor reached
 saturation, the converter started drawing much more current and its
 output dropped substantially. It took me quite a while to figure this
 out, but the tell-tale sign was the small \qty{0}{\V} ``front porch''
@@ -128,7 +128,7 @@ before current started to flow through the diode.
   \centering
   \includegraphics[height=3.5cm]{pic_23_3}\hfill\includegraphics[height=3.5cm]{pic_23_4}
   \caption[Voltage traces with SMD choke]{Diode anode voltage
-    vs. time with SMD choke - On left operating normally, on right
+    vs. time with SMD choke---On left operating normally, on right
     with saturation issue (different horizontal scale)}
 \end{figure}
 
@@ -137,7 +137,7 @@ before current started to flow through the diode.
   \includegraphics[height=3.5cm]{pic_25_1}\hfill\includegraphics[height=3.5cm]{pic_25_4}
   \caption[Voltage and current traces with handwound inductors]{Diode
     anode voltage vs. time (yellow) and voltage across \qty{0.1}{\ohm}
-    shunt (blue) with hand-wound inductors - On left under light load (in
+    shunt (blue) with hand-wound inductors---On left under light load (in
     DCM) and on right under high load (in CCM)}
 \end{figure}
 
@@ -470,7 +470,7 @@ the clock transition between bits 4 and 5 in the sectors, or 0xC2
 missing the clock transition between bits 3 and 4 in the preamble. The
 flexibility in gap lengths allowed by these chips made it possible for
 designers to make formats that squeezed more actual data into the disk
-by missing out parts of the gaps - this could save 19 bytes per sector
+by missing out parts of the gaps---this could save 19 bytes per sector
 compared to the IBM 3740 format and 34 bytes per sector compared to
 the IBM System 34 format, plus a few hundred more by shortening gap 4,
 which would reduce the tolerance for fast disks but allow a few more
