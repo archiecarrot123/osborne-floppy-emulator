@@ -29,15 +29,28 @@ unsigned int writebufferstarttime;
 // may as well be a macro
 static inline void set_rawread_timers(uint_fast8_t rawbytecount, uint32_t currenttime) {
   // TODO: check behaviour when the readpointertime is little above the currenttime
-  if (readpointertime > currenttime + 32*currentperiod - PWM_ERROR_MARGIN) {
-    pwm_set_wrap(1, readpointertime - currenttime - 32*currentperiod + PWM_ERROR_MARGIN);
-    pwm_set_counter(1, 0);
-    pwm_set_enabled(1, true);
+  if (readpointertime < currenttime) {
+    // either we have fallen behind or we have wrapped---let's assume wrapped
+    if ((readpointertime + ROTATION_PERIOD) > currenttime + 32*currentperiod - PWM_ERROR_MARGIN) {
+      pwm_set_wrap(1, (readpointertime + ROTATION_PERIOD) - currenttime - 32*currentperiod + PWM_ERROR_MARGIN);
+      pwm_set_counter(1, 0);
+      pwm_set_enabled(1, true);
+    } else {
+      pwm_force_irq(1);
+    }
+    pwm_set_wrap(2, (readpointertime + ROTATION_PERIOD) - currenttime + PWM_ERROR_MARGIN);
+    pwm_set_wrap(3, (readpointertime + ROTATION_PERIOD) - currenttime + 8*rawbytecount*currentperiod + PWM_ERROR_MARGIN);
   } else {
-    pwm_force_irq(1);
+    if (readpointertime > currenttime + 32*currentperiod - PWM_ERROR_MARGIN) {
+      pwm_set_wrap(1, readpointertime - currenttime - 32*currentperiod + PWM_ERROR_MARGIN);
+      pwm_set_counter(1, 0);
+      pwm_set_enabled(1, true);
+    } else {
+      pwm_force_irq(1);
+    }
+    pwm_set_wrap(2, readpointertime - currenttime + PWM_ERROR_MARGIN);
+    pwm_set_wrap(3, readpointertime - currenttime + 8*rawbytecount*currentperiod + PWM_ERROR_MARGIN);
   }
-  pwm_set_wrap(2, readpointertime - currenttime + PWM_ERROR_MARGIN);
-  pwm_set_wrap(3, readpointertime - currenttime + 8*rawbytecount*currentperiod + PWM_ERROR_MARGIN);
   pwm_set_counter(2, 0);
   pwm_set_counter(3, 0);
   pwm_set_irq_mask_enabled(0b1110, true);
@@ -124,9 +137,9 @@ static void seek_readbuffer(void) {
   case TOC:
     // start of the disc
     readpointer = ((struct toc *)readpointer)->cdr;
-    if (readpointertime % ROTATION_PERIOD) {
-      readpointertime = 0;
-    }
+    // we should have gone around one time (or none)
+    bpassert((readpointertime == 0) || (readpointertime == ROTATION_PERIOD));
+    readpointertime = 0;
     goto readstart;
   case DATABLOCK:
     readpointertime += 67 * 8 * currentperiod;
