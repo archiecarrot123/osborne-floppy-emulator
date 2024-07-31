@@ -1,6 +1,6 @@
 #include <stdbool.h>
 
-#define XOSC_KHZ _u(4000)
+//#define XOSC_KHZ _u(4000)
 
 #include "hardware/gpio.h"
 

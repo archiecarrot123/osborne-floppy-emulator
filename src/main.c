@@ -443,7 +443,7 @@ static void setup_interrupts(void) {
 
 void main(void) {
   initialize_track_storage();
-  generate_fm_test_disk((struct disk *)&drive1);
+  generate_mfm_test_disk((struct disk *)&drive1);
   drive1.enabled = true;
   setup_pio();
   setup_gpio();

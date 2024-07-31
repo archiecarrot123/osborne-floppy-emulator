@@ -11,7 +11,9 @@
 
 // should probably use bytetotal for asserts
 
-uint16_t bytetotal;
+// TODO: use bytetotal to automatically determine gap length
+
+volatile uint16_t bytetotal;
 
 volatile struct disk drive1;
 volatile struct disk drive2;
@@ -212,6 +214,7 @@ void generate_fm_test_disk(struct disk *disk) {
   struct toc *toc = create_toc();
   void *last;
   disk->mfm = false;
+  bytetotal = 0;
   // preamble
   // gap 0
   last = add_bytes(toc, 0xFF, 40);
@@ -229,6 +232,7 @@ void generate_fm_test_disk(struct disk *disk) {
     last = add_test_data(last, false, 1, true); // 256 bytes/sector, deleted
   }
   // gap 4 - a length of 62 bytes should bring us to a total of 3125 bytes per track
+  bpassert(3125 - bytetotal == 62);
   last = add_bytes(last, 0xFF, 62);
   ((struct bytes *)last)->cdr = toc;
   fill_toc(toc);
@@ -248,6 +252,7 @@ void generate_mfm_test_disk(struct disk *disk) {
   struct toc *toc = create_toc();
   void *last;
   disk->mfm = true;
+  bytetotal = 0;
   // preamble
   // gap 0
   last = add_bytes(toc, 0x4E, 80);
@@ -265,6 +270,7 @@ void generate_mfm_test_disk(struct disk *disk) {
     last = add_test_data(last, true, 3, true); // 1024 bytes/sector, deleted
   }
   // gap 4 - a length of 444 bytes should bring us to a total of 6250 bytes per track
+  bpassert(6250 - bytetotal == 444);
   last = add_bytes(last, 0x4E, 444);
   ((struct bytes *)last)->cdr = toc;
   fill_toc(toc);
@@ -390,6 +396,7 @@ static struct toc * load_track(union trackrequest request) {
   bpassert(sio_hw->fifo_st & SIO_FIFO_ST_RDY_BITS);
   sio_hw->fifo_wr = request.asword;
   toc = create_toc();
+  bytetotal = 0;
   // preamble
   // gap 0
   last = add_bytes(toc, 0xFF, 40);
@@ -414,6 +421,7 @@ static struct toc * load_track(union trackrequest request) {
     // TODO: something in the meantime
     maintain_track_storage();
   }
+  trackloadingpointer = add_bytes((void *)trackloadingpointer, 0xFF, 3125 - bytetotal);
   ((struct bytes *)trackloadingpointer)->cdr = toc;
   fill_toc(toc);
   return toc;

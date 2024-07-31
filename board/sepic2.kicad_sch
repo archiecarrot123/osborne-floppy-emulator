@@ -2233,21 +2233,24 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "04d5c9ea-fd94-4f25-8c4b-20ede64bd8da")
 		(property "Reference" "L1"
-			(at 106.68 48.006 0)
+			(at 118.11 46.6089 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify right)
 			)
 		)
 		(property "Value" "1m"
-			(at 109.22 48.006 0)
+			(at 118.11 49.1489 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify right)
 			)
 		)
 		(property "Footprint" "custom-footprints:L_CommonModeChoke_Murata_5000_Series"
@@ -3305,7 +3308,7 @@
 		(fields_autoplaced yes)
 		(uuid "ea7145e0-d958-4038-8709-3c0b9ec1fbd4")
 		(property "Reference" "C1"
-			(at 114.3 49.53 90)
+			(at 114.3 62.23 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3313,7 +3316,7 @@
 			)
 		)
 		(property "Value" "100n"
-			(at 114.3 52.07 90)
+			(at 114.3 64.77 90)
 			(effects
 				(font
 					(size 1.27 1.27)

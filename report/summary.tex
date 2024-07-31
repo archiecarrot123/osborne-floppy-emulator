@@ -1,5 +1,9 @@
 \documentclass[a4paper]{article}
 
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
 \begin{document}
 \title{Osborne 1 floppy drive emulator}
 \date{July 2024}
@@ -22,13 +26,13 @@ and documentation has been made readily available on github
 (\url{https://github.com/archiecarrot123/osborne-floppy-emulator}) for
 anyone who desires to recreate this project.
 
-Our project came about from us trying to locate a copy of the cp/m
-operating system on floppy disk for our schools osborne, for which we
+Our project came about from us trying to locate a copy of the CP/M
+operating system on floppy disk for our school's Osborne, for which we
 did not have any software available. Upon further research we realised
 locating and creating these disks prohibitively difficult for
 hobbyists. We chose to create a device that can emulate a floppy disk
 from a usb instead of working with floppy disks directly because of
-the technical limitations of floppy disks and their mechanical
+the technical limitations of floppy drives and their mechanical
 complexity. 
 
 \subsection{Problems}
@@ -77,5 +81,52 @@ inductor we made earlier.
     shunt (blue) with hand-wound inductors---On left under light load (in
     DCM) and on right under high load (in CCM)}
 \end{figure}
+
+\section {Design and Features}
+
+For our project we decided to design our own PCBs and get them printed
+by a commercial manufacturer. Our boards use a SEPIC (Single-Ended
+Primary-Inductor Converter) SMPS to create a \qty{3.3}{\V} supply for
+the RP2040 microcontroller, which has 2 cores and many other notable
+features, such as a USB controller and PHY, and programmable I/O state
+machines.
+
+We wanted to be able to easily change what disks the emulator
+emulated, so we decided to use a USB mass storage device to store
+them. We haven't written the code to read and write disk images on a
+USB device yet, but we plan to use the TinyUSB stack which is
+integrated with the Pico SDK we are using.
+
+So far we have been able to get the RP2040 to output a test signal
+with mostly consistant timing, that mimics a floppy disk containing
+deleted data, but we have not yet verified that the data is correct
+and that any timing errors do not build up as the program runs.
+
+\section{Challenges}
+
+One of the challenges in using the RP2040 is that it doesn't have
+enough RAM to fit an entire floppy disk in it when formatting is
+included, so we needed to create a way to store the data that could
+reduce the amount of redundant information, such as that contained in
+the gaps (which are just one byte repeated many times), and allow
+data to be loaded as it is needed and unloaded when it is unneeded. In
+order to address the problem of memory allocation and the repeated
+bytes, we use a system of linked lists containing elements of 3
+different sizes---8, 24, and 72 bytes.
+
+Another challenge was that the floppy disk drives send out the data
+combined with the clock signal, as they are stored that way on the
+floppy disk, which means that we either needed to store the clock
+signal in the disk image (which wouldn't work well due to the
+afformentioned memory constraint), or to be able to generate the clock
+signal on the fly. Generating a clock signal is not particularly
+difficult, but the problem is that the address marks, which are
+important for the formatting of the drive, have missing clock bits,
+meaning that we have to somehow send a byte with a missing clock
+bit. Because our design used the PIO state machines to generate the
+clock bits, this gave a challenge: to be able to switch from sending
+data with the state machine's generated clock pulses to sending data
+verbatim (at twice the speed), so that clock bits could be
+deliberately omitted.
 
 \end{document}

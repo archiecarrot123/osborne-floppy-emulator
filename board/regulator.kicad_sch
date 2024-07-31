@@ -420,6 +420,127 @@
 				)
 			)
 		)
+		(symbol "R_1"
+			(pin_numbers hide)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R"
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "R res resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "R_1_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_1_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "Regulator_Controller:TL494"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -1515,6 +1636,12 @@
 		(uuid "2908c836-96d5-4222-9174-140f23b087e9")
 	)
 	(junction
+		(at 184.15 92.71)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "38eaf4fe-5a5a-41db-afc6-230d56918a6a")
+	)
+	(junction
 		(at 85.09 101.6)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1585,6 +1712,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "de095a73-9053-474f-8acb-d500d4a5eae2")
+	)
+	(junction
+		(at 184.15 74.93)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e11a814a-11a5-4a33-ae62-17e23f50a05b")
 	)
 	(junction
 		(at 107.95 93.98)
@@ -1820,6 +1953,16 @@
 	)
 	(wire
 		(pts
+			(xy 184.15 74.93) (xy 167.64 74.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4e902365-f5d8-4f25-95d1-d10ee238c1b9")
+	)
+	(wire
+		(pts
 			(xy 85.09 72.39) (xy 85.09 74.93)
 		)
 		(stroke
@@ -1960,6 +2103,16 @@
 	)
 	(wire
 		(pts
+			(xy 184.15 90.17) (xy 184.15 92.71)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7a9fd199-8c4c-410b-a21d-8a8104fe450a")
+	)
+	(wire
+		(pts
 			(xy 184.15 92.71) (xy 190.5 92.71)
 		)
 		(stroke
@@ -2020,7 +2173,7 @@
 	)
 	(wire
 		(pts
-			(xy 187.96 74.93) (xy 167.64 74.93)
+			(xy 187.96 74.93) (xy 184.15 74.93)
 		)
 		(stroke
 			(width 0)
@@ -2057,6 +2210,16 @@
 			(type default)
 		)
 		(uuid "9c962331-572b-4046-b2e9-85c5eff3b436")
+	)
+	(wire
+		(pts
+			(xy 184.15 74.93) (xy 184.15 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9ff7b5cb-38be-431b-8151-5fd4608124fd")
 	)
 	(wire
 		(pts
@@ -3456,6 +3619,103 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 184.15 86.36 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "66372977-6146-446d-892b-238c68d9d065")
+		(property "Reference" "R20"
+			(at 186.69 85.0899 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "27k"
+			(at 186.69 87.6299 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+			(at 182.372 86.36 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 184.15 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 184.15 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser part no." "603-MFR-12FTF52-27K"
+			(at 184.15 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part no." "MFR-12FTF52-27K"
+			(at 184.15 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC part no." "C2896992"
+			(at 184.15 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "7833eed4-cd05-40cd-9712-c94cddc42191")
+		)
+		(pin "1"
+			(uuid "a2897554-9bbb-4d91-bcb4-55d10e5d1a6a")
+		)
+		(instances
+			(project "osborne-floppy-emulator"
+				(path "/a407fcbc-6d86-4aa2-968f-b2fcdecb9640/ff2c5a00-867d-47b1-bade-a270f3659bc6"
+					(reference "R20")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 139.7 120.65 0)
 		(unit 1)
@@ -3811,6 +4071,7 @@
 		)
 	)
 	(symbol
+		(lib_name "R_1")
 		(lib_id "Device:R")
 		(at 194.31 92.71 90)
 		(unit 1)
