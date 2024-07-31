@@ -497,7 +497,9 @@ void maintain_track_storage(void) {
     if (freetrackstorage.mediumcount > TRACKSTORAGE_MAX_MEDIUM) {
       merge_medium_blocks_to_big_blocks();
       // we know that the medium blocks were sorted, so our new bigs should be too
-      merge((struct bytes **)&(freetrackstorage.big), (struct bytes *)freetrackstorage.newbig);
+      if (freetrackstorage.newbig) {
+	merge((struct bytes **)&(freetrackstorage.big), (struct bytes *)freetrackstorage.newbig);
+      }
       break;
     }
     stage++;
@@ -508,7 +510,9 @@ void maintain_track_storage(void) {
     if (freetrackstorage.smallcount > TRACKSTORAGE_MAX_SMALL) {
       merge_small_blocks_to_medium_blocks();
       // we know that the small blocks were sorted, so our new mediums should be too
-      merge((struct bytes **)&(freetrackstorage.medium), (struct bytes *)freetrackstorage.newmedium);
+      if (freetrackstorage.newmedium) {
+	merge((struct bytes **)&(freetrackstorage.medium), (struct bytes *)freetrackstorage.newmedium);
+      }
       break;
     }
     if (freetrackstorage.mediumcount < TRACKSTORAGE_MIN_MEDIUM) {
