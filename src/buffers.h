@@ -17,4 +17,6 @@ extern volatile uint8_t writebufferend;
 extern volatile uint8_t writebufferlength;
 extern unsigned int writebufferstarttime;
 
+extern uint_fast8_t residualdatabytes;
+
 void maintain_buffers(void);

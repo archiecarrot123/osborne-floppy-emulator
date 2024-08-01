@@ -18,6 +18,14 @@
 #define INDEX_PULSE_TIME 4000 // 4 ms
 #define INDEX_PULSE_LENGTH ((INDEX_PULSE_TIME * TIMEBASE_FREQUENCY) / 1000) // 2000
 
+#define FM_SHIFT 2
+#if (1 << FM_SHIFT) != FM_PERIOD
+#error "FM_SHIFT wrong value"
+#endif
+#define MFM_SHIFT 1
+#if (1 << MFM_SHIFT) != MFM_PERIOD
+#error "MFM_SHIFT wrong value"
+#endif
 
 #define DI() asm volatile ("CPSID i")
 #define EI() asm volatile ("CPSIE i")
@@ -78,6 +86,7 @@ extern volatile struct deferredtasks deferredtasks;
 extern volatile struct status status;
 
 extern uint_fast8_t currentperiod;
+extern uint_fast8_t currentshift;
 
 // used for rawread so the data doesn't have to be word-aligned
 extern uint_fast8_t lastwordbytecount;

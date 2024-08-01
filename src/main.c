@@ -14,11 +14,13 @@
 #include "hardware/regs/pio.h"
 #include "hardware/structs/sio.h"
 #include "hardware/structs/clocks.h"
+#include "hardware/structs/systick.h"
 
 
 volatile uint_fast8_t timebasenumber;
 // we start in mfm
 uint_fast8_t currentperiod = MFM_PERIOD;
+uint_fast8_t currentshift = MFM_SHIFT;
 
 volatile struct deferredtasks deferredtasks = {
   false,
@@ -152,6 +154,7 @@ static inline void update_mode(void) {
   // TODO: write
   if (status.mfm) {
     currentperiod = MFM_PERIOD;
+    currentshift = MFM_SHIFT;
     pio_remove_program(pio0, &readFM_irq_program, piooffsets.read);
     pio_remove_program(pio0, &rawreadFM_irq_program, piooffsets.rawread);
     pio_add_program_at_offset(pio0, &readMFM2_irq_program, piooffsets.read);
@@ -161,6 +164,7 @@ static inline void update_mode(void) {
     pio_clkdiv_restart_sm_mask(pio0, 0b1011);
   } else {
     currentperiod = FM_PERIOD;
+    currentshift = FM_SHIFT;
     pio_remove_program(pio0, &readMFM2_irq_program, piooffsets.read);
     pio_remove_program(pio0, &rawreadMFM_irq_program, piooffsets.rawread);
     pio_add_program_at_offset(pio0, &readFM_irq_program, piooffsets.read);
@@ -286,11 +290,31 @@ void pio0_irq0_handler(void) {
     // fill buffer
     // we assume that the interrupt will trigger again if the condition persists
     if (readbufferlength) {
+      bpassert(!(pio_sm_is_tx_fifo_full(pio0, 0)));
       pio_sm_put(pio0, 0, readbuffer[readbufferstart]);
       readbufferstart++;
       readbufferlength--;
       deferredtasks.readmore = true;
       irq_set_pending(BUFFERS_IRQ_NUMBER);
+      if (pio_sm_is_tx_fifo_full(pio0, 0) &&
+	  (pwm_get_counter(0) > 32) &&
+	  (pwm_get_counter(0) < TIMEBASE_REMAINDER - 32)) {
+	// if we have a full fifo, we should be able to verify that we are sending at the correct time
+	// LHS is the time that the last word in the fifo should be shifted in
+	bpassert(readpointertime
+		 - (8*32 << currentshift)
+		 - (readbufferlength*32 << currentshift)
+		 - (residualdatabytes*8 << currentshift)
+		 > pwm_get_counter(0) + (timebasenumber << 16)
+		 - PWM_ERROR_MARGIN);
+	bpassert(readpointertime
+		 - (8*32 << currentshift)
+		 - (readbufferlength*32 << currentshift)
+		 - (residualdatabytes*8 << currentshift)
+		 < pwm_get_counter(0) + (timebasenumber << 16)
+		 + 32*currentperiod
+		 + PWM_ERROR_MARGIN);
+      }
     } else {
       if ((status.rawreadstage == WAITING_FM_AM) ||
 	  (status.rawreadstage == WAITING_MFM_AM)) {
@@ -362,16 +386,17 @@ static void setup_pio(void) {
   sm_config_set_out_pins(&pioconfigs.fmread, 13, 1);
   sm_config_set_sideset_pins(&pioconfigs.mfmread, 13);
   sm_config_set_out_pins(&pioconfigs.mfmread, 13, 1);
+  sm_config_set_jmp_pin(&pioconfigs.mfmread, 13);
   sm_config_set_sideset_pins(&pioconfigs.fmrawread, 13);
   sm_config_set_out_pins(&pioconfigs.fmrawread, 13, 1);
   sm_config_set_sideset_pins(&pioconfigs.mfmrawread, 13);
   sm_config_set_out_pins(&pioconfigs.mfmrawread, 13, 1);
 
   sm_config_set_in_shift(&pioconfigs.rawwrite, false, true, 32);
-  sm_config_set_out_shift(&pioconfigs.fmread, false, true, 32);
-  sm_config_set_out_shift(&pioconfigs.mfmread, false, true, 32);
-  sm_config_set_out_shift(&pioconfigs.fmrawread, false, true, 16);
-  sm_config_set_out_shift(&pioconfigs.mfmrawread, false, true, 16);
+  sm_config_set_out_shift(&pioconfigs.fmread, false, false, 32);
+  sm_config_set_out_shift(&pioconfigs.mfmread, false, false, 32);
+  sm_config_set_out_shift(&pioconfigs.fmrawread, false, false, 16);
+  sm_config_set_out_shift(&pioconfigs.mfmrawread, false, false, 16);
 
   sm_config_set_mov_status(&pioconfigs.fmread, STATUS_TX_LESSTHAN, 1);
   sm_config_set_mov_status(&pioconfigs.mfmread, STATUS_TX_LESSTHAN, 1);
@@ -383,6 +408,10 @@ static void setup_pio(void) {
   pio_sm_set_consecutive_pindirs(pio0, 2, 13, 1, true);
 
   // TODO: write
+  pio_sm_set_config(pio0, 0, &pioconfigs.mfmread);
+  pio_sm_set_config(pio0, 1, &pioconfigs.mfmrawread);
+  pio_clkdiv_restart_sm_mask(pio0, 0b1011);
+
   pio_sm_set_config(pio0, 0, &pioconfigs.mfmread);
   pio_sm_set_config(pio0, 1, &pioconfigs.mfmrawread);
   pio_clkdiv_restart_sm_mask(pio0, 0b1011);
@@ -443,7 +472,7 @@ static void setup_interrupts(void) {
 
 void main(void) {
   initialize_track_storage();
-  generate_mfm_test_disk((struct disk *)&drive1);
+  generate_fm_test_disk((struct disk *)&drive1);
   drive1.enabled = true;
   setup_pio();
   setup_gpio();
@@ -454,6 +483,8 @@ void main(void) {
   gpio_put(6, !drive2.enabled);
   select_drive(&drive1);
   // testing
+  systick_hw->rvr = 0x00FFFFFF;
+  systick_hw->csr = 0x00000005;
   clocks_hw->fc0.src = 0x05;
   gpio_init(16);
   gpio_set_dir(16, true);
