@@ -551,7 +551,7 @@ void maintain_buffers(void) {
     residualdata = 0;
     readbufferlength = 0;
     // restart and disable state machines
-    *(volatile uint32_t *)(PIO0_BASE + PIO_CTRL_OFFSET) = 0b11110000;
+    pio0_hw->ctrl = 0b11110000;
     pio_sm_clear_fifos(pio0, 0);
     pio_sm_clear_fifos(pio0, 1);
   }

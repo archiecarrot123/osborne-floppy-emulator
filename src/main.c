@@ -11,7 +11,6 @@
 #include "hardware/irq.h"
 #include "hardware/regs/io_bank0.h"
 #include "hardware/regs/intctrl.h"
-#include "hardware/regs/pio.h"
 #include "hardware/structs/sio.h"
 #include "hardware/structs/clocks.h"
 #include "hardware/structs/systick.h"
@@ -51,10 +50,10 @@ struct pioconfigs pioconfigs;
 // the raw timer should use CH1 and CH2
 // both CH1 and CH2 should be set elsewhere
 void pwm_irq_handler(void) {
-  uint32_t interrupts = *(volatile uint32_t *)(PWM_BASE + PWM_INTS_OFFSET);
+  uint32_t interrupts = pwm_hw->ints;
   if (interrupts & PWM_INTS_CH1_BITS) {
     // change the amount to output
-    *(volatile uint32_t *)(PIO0_BASE + PIO_SM0_SHIFTCTRL_OFFSET) |=
+    pio0_hw->sm[0].shiftctrl |=
       (8 * lastwordbytecount) << PIO_SM0_SHIFTCTRL_PULL_THRESH_LSB;
     // disable ourselves
     pwm_set_irq_enabled(1, false);
@@ -63,7 +62,7 @@ void pwm_irq_handler(void) {
   }
   if (interrupts & PWM_INTS_CH2_BITS) {
     // restore amount to output
-    *(volatile uint32_t *)(PIO0_BASE + PIO_SM0_SHIFTCTRL_OFFSET) &=
+    pio0_hw->sm[0].shiftctrl &=
       ~(0b11111 << PIO_SM0_SHIFTCTRL_PULL_THRESH_LSB);
     // status update
     status.rawreadstage++;
@@ -110,9 +109,9 @@ void pwm_irq_handler(void) {
       }
     }
     // clear interrupts
-    *(volatile uint32_t *)(PIO0_BASE + PIO_IRQ_OFFSET) = 0b00110000;
+    pio0_hw->irq = 0b00110000;
     // restart and enable state machines
-    *(volatile uint32_t *)(PIO0_BASE + PIO_CTRL_OFFSET) = 0b00110011;
+    pio0_hw->ctrl = 0b00110011;
     // enable state machine fifo interrupt
     pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
     // re-enable the read signal
@@ -188,7 +187,7 @@ static inline void select_drive(volatile struct disk *drive) {
     deferredtasks.urgent = true;
     deferredtasks.startread = true;
     irq_set_pending(BUFFERS_IRQ_NUMBER);
-    if (*(volatile uint32_t *)(PWM_BASE + PWM_CH5_CSR_OFFSET) & 0b1) {
+    if (pwm_hw->slice[5].csr & 0b1) {
       // if this pwm is enabled then there should be an index pulse
       gpio_put(2, true);
     }
@@ -231,7 +230,7 @@ static inline void deselect_drive(volatile struct disk *drive) {
 // these are respectively connected to DS 1, DS 2, Step, and Write Gate
 void gpio_irq_handler(void) {
   // confusingly by low i mean in position, not edge
-  uint32_t lowinterrupts = *(volatile uint32_t *)(IO_BANK0_BASE + IO_BANK0_PROC0_INTS0_OFFSET);
+  uint32_t lowinterrupts = iobank0_hw->proc0_irq_ctrl.ints[0];
   if (lowinterrupts & IO_BANK0_INTR0_GPIO3_EDGE_LOW_BITS) {
     gpio_acknowledge_irq(3, GPIO_IRQ_EDGE_FALL);
     select_drive(&drive1);
@@ -248,7 +247,7 @@ void gpio_irq_handler(void) {
     gpio_acknowledge_irq(5, GPIO_IRQ_EDGE_RISE);
     deselect_drive(&drive2);
   }
-  uint32_t highinterrupts = *(volatile uint32_t *)(IO_BANK0_BASE + IO_BANK0_PROC0_INTS1_OFFSET);
+  uint32_t highinterrupts = iobank0_hw->proc0_irq_ctrl.ints[1];
   if (highinterrupts & IO_BANK0_INTR1_GPIO8_EDGE_LOW_BITS) {
     gpio_acknowledge_irq(8, GPIO_IRQ_EDGE_FALL);
     // change currenttrack depending on direction
@@ -285,7 +284,7 @@ void gpio_irq_handler(void) {
 // sm0 for data read, sm1 for raw read
 // sm1 should be managed by a pwm timer, so we won't worry about it here
 void pio0_irq0_handler(void) {
-  uint32_t interrupts = *(volatile uint32_t *)(PIO0_BASE + PIO_IRQ0_INTS_OFFSET);
+  uint32_t interrupts = pio0_hw->ints0;
   if (interrupts & PIO_INTR_SM0_TXNFULL_BITS) {
     // fill buffer
     // we assume that the interrupt will trigger again if the condition persists
@@ -336,7 +335,7 @@ void pio0_irq0_handler(void) {
 
 // writing should use irq1, sm3
 void pio0_irq1_handler(void) {
-  uint32_t interrupts = *(volatile uint32_t *)(PIO0_BASE + PIO_IRQ1_INTS_OFFSET);
+  uint32_t interrupts = pio0_hw->ints1;
   if (interrupts & PIO_INTR_SM3_RXNEMPTY_BITS) { // should always be true
     // empty buffer
     if (writebufferlength < 255) {
