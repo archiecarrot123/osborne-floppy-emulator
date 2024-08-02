@@ -32,25 +32,53 @@ static inline void set_rawread_timers(uint_fast8_t rawbytecount, uint32_t curren
   // TODO: check behaviour when the readpointertime is little above the currenttime
   if (readpointertime < currenttime) {
     // either we have fallen behind or we have wrapped---let's assume wrapped
-    if ((readpointertime + ROTATION_PERIOD) > currenttime + (32 << currentshift) - PWM_ERROR_MARGIN) {
-      pwm_set_wrap(1, (readpointertime + ROTATION_PERIOD) - currenttime - (32 << currentshift) + PWM_ERROR_MARGIN);
+    if ((readpointertime + ROTATION_PERIOD)
+	> currenttime
+	+ (32 << currentshift)
+	- PWM_ERROR_MARGIN) {
+      pwm_set_wrap(1,
+		   (readpointertime + ROTATION_PERIOD)
+		   - currenttime
+		   - (32 << currentshift)
+		   + PWM_ERROR_MARGIN);
       pwm_set_counter(1, 0);
       pwm_set_enabled(1, true);
     } else {
       pwm_force_irq(1);
     }
-    pwm_set_wrap(2, (readpointertime + ROTATION_PERIOD) - currenttime + PWM_ERROR_MARGIN);
-    pwm_set_wrap(3, (readpointertime + ROTATION_PERIOD) - currenttime + (8*rawbytecount << currentshift) + PWM_ERROR_MARGIN);
+    pwm_set_wrap(2,
+		 (readpointertime + ROTATION_PERIOD)
+		 - currenttime
+		 + PWM_ERROR_MARGIN);
+    pwm_set_wrap(3,
+		 (readpointertime + ROTATION_PERIOD)
+		 - currenttime
+		 + (8*rawbytecount << currentshift)
+		 + PWM_ERROR_MARGIN);
   } else {
-    if (readpointertime > currenttime + (32 << currentshift) - PWM_ERROR_MARGIN) {
-      pwm_set_wrap(1, readpointertime - currenttime - (32 << currentshift) + PWM_ERROR_MARGIN);
+    if (readpointertime
+	> currenttime
+	+ (32 << currentshift)
+	- PWM_ERROR_MARGIN) {
+      pwm_set_wrap(1,
+		   readpointertime
+		   - currenttime
+		   - (32 << currentshift)
+		   + PWM_ERROR_MARGIN);
       pwm_set_counter(1, 0);
       pwm_set_enabled(1, true);
     } else {
       pwm_force_irq(1);
     }
-    pwm_set_wrap(2, readpointertime - currenttime + PWM_ERROR_MARGIN);
-    pwm_set_wrap(3, readpointertime - currenttime + (8*rawbytecount << currentshift) + PWM_ERROR_MARGIN);
+    pwm_set_wrap(2,
+		 readpointertime
+		 - currenttime
+		 + PWM_ERROR_MARGIN);
+    pwm_set_wrap(3,
+		 readpointertime
+		 - currenttime
+		 + (8*rawbytecount << currentshift)
+		 + PWM_ERROR_MARGIN);
   }
   pwm_set_counter(2, 0);
   pwm_set_counter(3, 0);
