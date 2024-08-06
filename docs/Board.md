@@ -1,9 +1,9 @@
-If you hold It wioth usb up
+					If you hold It with usb up
 Left to right
 3.3v
 gnd
 Clock
 IO
 
-Chip is rp20240
-https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf
+Chip is rp2040
+			https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf

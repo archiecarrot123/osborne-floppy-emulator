@@ -19,7 +19,7 @@ set(PICO_BOARD_HEADER_DIRS "${CMAKE_CURRENT_LIST_DIR}/src")
 # initialize the SDK directly
 include(pico-sdk/pico_sdk_init.cmake)
 
-project(osborne-floppy-emulator)
+project(osborne-floppy-emulator C ASM CXX)
 
 # initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
