@@ -30,69 +30,45 @@ unsigned int writebufferstarttime;
 // may as well be a macro
 static inline void set_rawread_timers(uint_fast8_t rawbytecount, uint32_t currenttime) {
   // TODO: check behaviour when the readpointertime is little above the currenttime
-  if (readpointertime < currenttime) {
+  int32_t timedifference = readpointertime - currenttime;
+  if (timedifference < 0) {
     // either we have fallen behind or we have wrapped---let's assume wrapped
-    if ((readpointertime + ROTATION_PERIOD)
-	> currenttime
-	+ (32 << currentshift)
-	- PWM_ERROR_MARGIN) {
-      pwm_set_wrap(1,
-		   (readpointertime + ROTATION_PERIOD)
-		   - currenttime
-		   - (32 << currentshift)
-		   + PWM_ERROR_MARGIN);
-      pwm_set_counter(1, 0);
-      pwm_set_enabled(1, true);
-    } else {
-      pwm_force_irq(1);
-    }
-    pwm_set_wrap(2,
-		 (readpointertime + ROTATION_PERIOD)
-		 - currenttime
-		 + PWM_ERROR_MARGIN);
-    pwm_set_wrap(3,
-		 (readpointertime + ROTATION_PERIOD)
-		 - currenttime
-		 + (8*rawbytecount << currentshift)
-		 + PWM_ERROR_MARGIN);
-  } else {
-    if (readpointertime
-	> currenttime
-	+ (32 << currentshift)
-	- PWM_ERROR_MARGIN) {
-      pwm_set_wrap(1,
-		   readpointertime
-		   - currenttime
-		   - (32 << currentshift)
-		   + PWM_ERROR_MARGIN);
-      pwm_set_counter(1, 0);
-      pwm_set_enabled(1, true);
-    } else {
-      pwm_force_irq(1);
-    }
-    pwm_set_wrap(2,
-		 readpointertime
-		 - currenttime
-		 + PWM_ERROR_MARGIN);
-    pwm_set_wrap(3,
-		 readpointertime
-		 - currenttime
-		 + (8*rawbytecount << currentshift)
-		 + PWM_ERROR_MARGIN);
+    timedifference += ROTATION_PERIOD;
   }
-  pwm_set_counter(2, 0);
-  pwm_set_counter(3, 0);
-  pwm_set_irq_mask_enabled(0b1110, true);
+  if (lastwordbytecount) {
+    // don't need to do this if our last byte is full
+    if (timedifference > (32 << currentshift) - PWM_ERROR_MARGIN) {
+      pwm_set_counter(1, 65536 - (timedifference
+				  - ((4 + lastwordbytecount)*8 << currentshift)
+				  + PWM_ERROR_MARGIN));
+      pwm_set_counter(6, 65536 - (timedifference
+				  - (4*8 << currentshift)
+				  + PWM_ERROR_MARGIN));
+    } else {
+      // angery
+      bpassert(false);
+      pwm_force_irq(1);
+    }
+  }
+  pwm_set_counter(2, 65536 - (timedifference
+			      + PWM_ERROR_MARGIN));
+  pwm_set_counter(3, 65536 - (timedifference
+			      + (8*rawbytecount << currentshift)
+			      + PWM_ERROR_MARGIN));
+  // enable timers
+  pwm_set_irq_mask_enabled(0b1001110, true);
+  pwm_set_enabled(1, true);
   pwm_set_enabled(2, true);
   pwm_set_enabled(3, true);
+  pwm_set_enabled(6, true);
 }
 
 
 // should probably be a macro
-// probably always produces a result one too low
-// doesn't work on low values of endtime
+// doesn't work on low values of endtime?
 static inline uint32_t byte_offset(uint32_t endtime, uint32_t targettime, uint32_t length) {
-  return (targettime - (endtime - (length*8 << currentshift))) / (8 << currentshift);
+  uint32_t starttime = endtime - (length*8 << currentshift);
+  return (targettime - starttime) / (8 << currentshift);
 }
 
 static inline uint32_t get_currenttime(void) {
@@ -153,6 +129,7 @@ static void seek_readbuffer(void) {
   uint8_t myreadbufferend = readbufferstart + readbufferlength;
  readstart:
   currenttime = get_currenttime();
+  // we aim for the first byte to contain targettime
   targettime = currenttime + ((8 << currentshift) + PWM_ERROR_MARGIN);
   if (readpointertime > targettime) {
     // we have overshot (unlikely) or the time has wrapped (more likely)
@@ -247,11 +224,10 @@ static void seek_readbuffer(void) {
       lastwordbytecount = 0;
       // set up the pio
       bpassert(!(pio_sm_is_tx_fifo_full(pio0, 1)));
-      pio_sm_put(pio0, 1, ((struct am *)readpointer)->rawbyte);
+      pio_sm_put(pio0, 1, (((struct am *)readpointer)->rawbyte << 16));
       // set up pwm interrupts
       // interrupt 4 will do whatever interrupt 2 normally would
-      pwm_set_wrap(3, readpointertime - currenttime + PWM_ERROR_MARGIN);
-      pwm_set_counter(3, 0);
+      pwm_set_counter(3, 65536 - (readpointertime - currenttime + PWM_ERROR_MARGIN));
       pwm_set_irq_enabled(3, true);
       pwm_set_enabled(3, true);
       // set status
@@ -260,9 +236,9 @@ static void seek_readbuffer(void) {
       while (((struct bytes *)readpointer)->type == FMAM) {
 	// TODO: something when we try to add too much to the fifo
 	bpassert(!(pio_sm_is_tx_fifo_full(pio0, 1)));
-	pio_sm_put(pio0, 1, ((struct am *)readpointer)->rawbyte);
+	pio_sm_put(pio0, 1, (((struct am *)readpointer)->rawbyte << 16));
 	// readpointertime will keep increasing as we add more stuff
-	pwm_set_wrap(3, readpointertime - currenttime + (8 << currentshift) + PWM_ERROR_MARGIN);
+	pwm_set_counter(3, 65536 - (readpointertime - currenttime + (8 << currentshift) + PWM_ERROR_MARGIN));
 	readpointertime += (8 << currentshift);
 	readpointer = ((struct datablock *)readpointer)->cdr;
       }
@@ -270,16 +246,16 @@ static void seek_readbuffer(void) {
 	// TODO: something when we try to add too much to the fifo
 	for (int i = 0; i < 3; i++) {
 	  bpassert(!(pio_sm_is_tx_fifo_full(pio0, 1)));
-	  pio_sm_put(pio0, 1, ((struct am *)readpointer)->rawbyte);
+	  pio_sm_put(pio0, 1, (((struct am *)readpointer)->rawbyte << 16));
 	}
 	// readpointertime will keep increasing as we add more stuff
-	pwm_set_wrap(3, readpointertime - currenttime + (24 << currentshift) + PWM_ERROR_MARGIN);
+	pwm_set_counter(3, 65536 - (readpointertime - currenttime + (24 << currentshift) + PWM_ERROR_MARGIN));
 	// this gives us one residual byte
 	residualdata = ((struct am *)readpointer)->byte3 << 24;
 	residualdatabytes = 1;
 	readpointertime += (32 << currentshift);
 	// don't forget we're now doing an MFM read (if that's any different)
-	status.rawreadstage += EXHAUSTED_MFM_AM;
+	status.rawreadstage = EXHAUSTED_MFM_AM;
 	readpointer = ((struct datablock *)readpointer)->cdr;
       }
       break;
@@ -296,11 +272,10 @@ static void seek_readbuffer(void) {
 	// set up the pio
 	for (int i = 3; i; i--) {
 	  bpassert(!(pio_sm_is_tx_fifo_full(pio0, 1)));
-	  pio_sm_put(pio0, 1, ((struct am *)readpointer)->rawbyte);
+	  pio_sm_put(pio0, 1, (((struct am *)readpointer)->rawbyte << 16));
 	}
 	// set up pwm interrupts
-	pwm_set_wrap(3, readpointertime - currenttime - (8 << currentshift) + PWM_ERROR_MARGIN);
-	pwm_set_counter(3, 0);
+	pwm_set_counter(3, 65536 - (readpointertime - currenttime - (8 << currentshift) + PWM_ERROR_MARGIN));
 	pwm_set_irq_enabled(3, true);
 	pwm_set_enabled(3, true);
 	// set status
@@ -318,6 +293,10 @@ static void seek_readbuffer(void) {
   }
   // round targettime down to a byte
   targettime = targettime - (targettime % ((8 << currentshift)));
+  // assert that we have the correct number of bytes
+  if (!status.rawreadstage) {
+    bpassert(readpointertime == targettime + (4*readbufferlength + residualdatabytes)*(8 << currentshift));
+  }
   if (targettime >= ROTATION_PERIOD) {
     targettime -= ROTATION_PERIOD;
   }
@@ -332,18 +311,19 @@ static void seek_readbuffer(void) {
     // let's just ignore the problem
     targettime = currenttime + 1;
   }
-  pwm_set_wrap(4, targettime - currenttime);
-  pwm_set_counter(4, 0);
+  pwm_set_counter(4, 65536 - (targettime - currenttime));
   pwm_set_irq_enabled(4, true);
   pwm_set_enabled(4, true);
   EI();
-  // we want the buffer to be refilled
-  irq_set_pending(BUFFERS_IRQ_NUMBER);
 }
 
 static inline void flush_residual(uint8_t *myreadbufferend, uint8_t *myreadbufferlength) {
   if (residualdatabytes) {
-    readbuffer[*myreadbufferend] = residualdata;
+    DI();
+    readbuffer[*myreadbufferend] =
+      (residualdata >> (4 - residualdatabytes)) |
+      (readbuffer[*myreadbufferend - 1] << residualdatabytes);
+    EI();
     (*myreadbufferend)++;
     (*myreadbufferlength)++;
     lastwordbytecount = residualdatabytes;
@@ -375,16 +355,19 @@ void maintain_readbuffer(void) {
     DI();
     // update readbuffer length
     readbufferlength = myreadbufferend - readbufferstart;
-    EI();
     if ((status.rawreadstage != EXHAUSTED_FM_AM) && (status.rawreadstage != EXHAUSTED_MFM_AM)) {
       pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
     }
+    EI();
   }
  firsttime:
   switch (((struct bytes *)readpointer)->type) {
   case TOC:
     // start of the disc
     readpointer = ((struct toc *)readpointer)->cdr;
+    // we should have gone around one time (or none)
+    bpassert((readpointertime == 0) || (readpointertime == ROTATION_PERIOD));
+    readpointertime = 0;
     // we go to firsttime as we didn't add anything to the fifo
     goto firsttime;
   case DATABLOCK:
@@ -459,9 +442,9 @@ void maintain_readbuffer(void) {
       flush_residual(&myreadbufferend, &myreadbufferlength);
       // set up the pio
       bpassert(!(pio_sm_is_tx_fifo_full(pio0, 1)));
-      pio_sm_put(pio0, 1, ((struct am *)readpointer)->rawbyte);
+      pio_sm_put(pio0, 1, ((uint32_t)((struct am *)readpointer)->rawbyte << 16));
       // set up pwm interrupts
-      uint32_t currenttime = (timebasenumber << 16) + pwm_get_counter(0);
+      uint32_t currenttime = get_currenttime();
       set_rawread_timers(1, currenttime);
       // set status
       status.rawreadstage = WAITING_FM_AM;
@@ -470,9 +453,9 @@ void maintain_readbuffer(void) {
       while (((struct bytes *)readpointer)->type == FMAM) {
 	// TODO: something when we try to add too much to the fifo
 	bpassert(!(pio_sm_is_tx_fifo_full(pio0, 1)));
-	pio_sm_put(pio0, 1, ((struct am *)readpointer)->rawbyte);
+	pio_sm_put(pio0, 1, (((struct am *)readpointer)->rawbyte << 16));
 	// readpointertime will keep increasing as we add more stuff
-	pwm_set_wrap(3, readpointertime - currenttime + (8 << currentshift) + PWM_ERROR_MARGIN);
+	pwm_set_counter(3, 65536 - (readpointertime - currenttime + (8 << currentshift) + PWM_ERROR_MARGIN));
 	readpointertime += (8 << currentshift);
 	readpointer = ((struct datablock *)readpointer)->cdr;
       }
@@ -480,10 +463,10 @@ void maintain_readbuffer(void) {
 	// TODO: something when we try to add too much to the fifo
 	for (int i = 3; i; i--) {
 	  bpassert(!(pio_sm_is_tx_fifo_full(pio0, 1)));
-	  pio_sm_put(pio0, 1, ((struct am *)readpointer)->rawbyte);
+	  pio_sm_put(pio0, 1, (((struct am *)readpointer)->rawbyte << 16));
 	}
 	// readpointertime will keep increasing as we add more stuff
-	pwm_set_wrap(3, readpointertime - currenttime + (24 << currentshift) + PWM_ERROR_MARGIN);
+	pwm_set_counter(3, 65536 - (readpointertime - currenttime + (24 << currentshift) + PWM_ERROR_MARGIN));
 	// this gives us one residual byte
 	residualdata = ((struct am *)readpointer)->byte3 << 24;
 	residualdatabytes = 1;
@@ -503,10 +486,10 @@ void maintain_readbuffer(void) {
       // set up the pio
       for (int i = 3; i; i--) {
 	bpassert(!(pio_sm_is_tx_fifo_full(pio0, 1)));
-	pio_sm_put(pio0, 1, ((struct am *)readpointer)->rawbyte);
+	pio_sm_put(pio0, 1, (((struct am *)readpointer)->rawbyte << 16));
       }
       // set up pwm interrupts
-      uint32_t currenttime = (timebasenumber << 16) + pwm_get_counter(0);
+      uint32_t currenttime = get_currenttime();
       set_rawread_timers(3, currenttime);
       // set status
       status.rawreadstage = WAITING_MFM_AM;
@@ -573,8 +556,10 @@ void maintain_buffers(void) {
       (status.rawreadstage != WAITING_MFM_AM)) {
     maintain_readbuffer();
     // just to be safe
+    DI();
     if ((status.rawreadstage != EXHAUSTED_FM_AM) && (status.rawreadstage != EXHAUSTED_MFM_AM)) {
       pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
     }
+    EI();
   }
 }

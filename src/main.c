@@ -49,25 +49,40 @@ struct pioconfigs pioconfigs;
 // timebase should use CH0,
 // the raw timer should use CH1 and CH2
 // both CH1 and CH2 should be set elsewhere
+uint32_t rotations;
 void pwm_irq_handler(void) {
   uint32_t interrupts = pwm_hw->ints;
   if (interrupts & PWM_INTS_CH1_BITS) {
     // change the amount to output
     pio0_hw->sm[0].shiftctrl |=
       (8 * lastwordbytecount) << PIO_SM0_SHIFTCTRL_PULL_THRESH_LSB;
+    // make sure we were set up for the right time
+    bpassert(status.rawreadstage == EXHAUSTED_FM_AM ||
+	     status.rawreadstage == EXHAUSTED_MFM_AM);
+    bpassert(pio_sm_get_tx_fifo_level(pio0, 0) == 1);
     // disable ourselves
     pwm_set_irq_enabled(1, false);
     pwm_set_enabled(1, false);
     pwm_clear_irq(1);
   }
-  if (interrupts & PWM_INTS_CH2_BITS) {
+  if (interrupts & PWM_INTS_CH6_BITS) {
     // restore amount to output
     pio0_hw->sm[0].shiftctrl &=
       ~(0b11111 << PIO_SM0_SHIFTCTRL_PULL_THRESH_LSB);
+    // make sure we were set up for the right time
+    bpassert(pio_sm_get_tx_fifo_level(pio0, 0) == 0);
+    // disable ourselves
+    pwm_set_irq_enabled(6, false);
+    pwm_set_enabled(6, false);
+    pwm_clear_irq(6);
+  }
+  if (interrupts & PWM_INTS_CH2_BITS) {
     // status update
     status.rawreadstage++;
     bpassert((status.rawreadstage == ONGOING_FM_AM) ||
 	     (status.rawreadstage == ONGOING_MFM_AM));
+    // make sure we were set up for the right time
+    bpassert(pio_sm_get_tx_fifo_level(pio0, 0) == 0);
     // enable fifo interrupt to get it refilled
     pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
     // disable ourselves
@@ -76,6 +91,10 @@ void pwm_irq_handler(void) {
     pwm_clear_irq(2);
   }
   if (interrupts & PWM_INTS_CH3_BITS) {
+    // make sure we have refilled the thing
+    bpassert(pio_sm_get_tx_fifo_level(pio0, 0) > 0);
+    bpassert((status.rawreadstage == ONGOING_FM_AM) ||
+	     (status.rawreadstage == ONGOING_MFM_AM));
     // this is only a status update - now we can put stuff in rawread's fifo again
     status.rawreadstage = NO_RAW_READ;
     // disable ourselves
@@ -84,8 +103,11 @@ void pwm_irq_handler(void) {
     pwm_clear_irq(3);
   }
   if (interrupts & PWM_INTS_CH4_BITS) {
+    // set scratch register X to 1 in sm1
+    pio_sm_exec_wait_blocking(pio0, 1, 0xe021);
     // jump state machines
-    if (status.rawreadstage) {
+    if (status.rawreadstage == EXHAUSTED_FM_AM ||
+	status.rawreadstage == EXHAUSTED_MFM_AM) {
       if (status.mfm) {
 	// first bit 1 us after being started
 	// conditionless jump with no sideset or delay is conveniently just the address
@@ -101,11 +123,11 @@ void pwm_irq_handler(void) {
       if (status.mfm) {
 	// first bit 0.75 us after being started
 	pio_sm_exec(pio0, 0, piooffsets.read + 9);
-	pio_sm_exec(pio0, 1, piooffsets.rawread + 6);
+	pio_sm_exec(pio0, 1, piooffsets.rawread + 7);
       } else {
 	// first bit 0 us after being started
 	pio_sm_exec(pio0, 0, piooffsets.read + 2);
-	pio_sm_exec(pio0, 1, piooffsets.rawread + 6);
+	pio_sm_exec(pio0, 1, piooffsets.rawread + 7);
       }
     }
     // clear interrupts
@@ -125,18 +147,22 @@ void pwm_irq_handler(void) {
     timebasenumber++;
     if (timebasenumber == TIMEBASE_PER_ROTATION) {
       timebasenumber = 0;
+      rotations++;
       if (status.selected) {
 	// set index pulse
 	gpio_put(2, true);
       }
       // we set up the interrupt anyway because we might be selected in the mean time
-      pwm_set_wrap(5, INDEX_PULSE_LENGTH - 1);
       pwm_set_counter(5, 0);
       pwm_set_irq_enabled(5, true);
       pwm_set_enabled(5, true);
-      pwm_set_wrap(0, 65535);
-    } else if (timebasenumber == TIMEBASE_PER_ROTATION - 1) {
+    }
+    // the wrap values are double-buffered
+    if (timebasenumber == TIMEBASE_PER_ROTATION - 2) {
       pwm_set_wrap(0, TIMEBASE_REMAINDER - 1);
+    }
+    if (timebasenumber == TIMEBASE_PER_ROTATION - 1) {
+      pwm_set_wrap(0, 65535);
     }
     pwm_clear_irq(0);
   }
@@ -283,9 +309,18 @@ void gpio_irq_handler(void) {
 // reading should use irq0, sm0 and sm1
 // sm0 for data read, sm1 for raw read
 // sm1 should be managed by a pwm timer, so we won't worry about it here
+uint8_t debugrunouttimesstart;
+uint16_t debugrunouttimes[256];
 void pio0_irq0_handler(void) {
+  static bool stable = false;
   uint32_t interrupts = pio0_hw->ints0;
   if (interrupts & PIO_INTR_SM0_TXNFULL_BITS) {
+    // TXSTALL confusingly gets set when pull ifempty nowait is
+    // unsuccessfuly executed due to an empty TX fifo
+    bpassert(!(pio0_hw->fdebug & 0x01000000));
+    // assert that we are not being called when we shouldn't be
+    bpassert((status.rawreadstage != EXHAUSTED_FM_AM) &&
+	     (status.rawreadstage != EXHAUSTED_MFM_AM));
     // fill buffer
     // we assume that the interrupt will trigger again if the condition persists
     if (readbufferlength) {
@@ -296,23 +331,39 @@ void pio0_irq0_handler(void) {
       deferredtasks.readmore = true;
       irq_set_pending(BUFFERS_IRQ_NUMBER);
       if (pio_sm_is_tx_fifo_full(pio0, 0) &&
-	  (pwm_get_counter(0) > 32) &&
-	  (pwm_get_counter(0) < TIMEBASE_REMAINDER - 32)) {
+	  (pwm_get_counter(0) > 256) &&
+	  (pwm_get_counter(0) < TIMEBASE_REMAINDER - 256) &&
+	  (readpointertime
+	   > (8*32 << currentshift)
+	   + (readbufferlength*32 << currentshift)
+	   + (residualdatabytes*8 << currentshift))) {
 	// if we have a full fifo, we should be able to verify that we are sending at the correct time
-	// LHS is the time that the last word in the fifo should be shifted in
-	bpassert(readpointertime
-		 - (8*32 << currentshift)
-		 - (readbufferlength*32 << currentshift)
-		 - (residualdatabytes*8 << currentshift)
-		 > pwm_get_counter(0) + (timebasenumber << 16)
-		 - PWM_ERROR_MARGIN);
-	bpassert(readpointertime
-		 - (8*32 << currentshift)
-		 - (readbufferlength*32 << currentshift)
-		 - (residualdatabytes*8 << currentshift)
-		 < pwm_get_counter(0) + (timebasenumber << 16)
-		 + 32*currentperiod
-		 + PWM_ERROR_MARGIN);
+	if (stable) {
+	  // only try if we had a full fifo last time
+	  uint32_t currenttime = pwm_get_counter(0) + (timebasenumber << 16);
+	  // prediction is the time that the last word in the fifo should be shifted in
+	  uint32_t prediction =
+	    readpointertime
+	    - (4*8 + 4*readbufferlength + residualdatabytes)*(8 << currentshift);
+	  if ((status.rawreadstage == WAITING_FM_AM) ||
+	      (status.rawreadstage == WAITING_MFM_AM)) {
+	    prediction += (4 - lastwordbytecount)*(8 << currentshift);
+	    prediction -= pio_sm_get_tx_fifo_level(pio0, 1) * (8 << currentshift);
+	  }
+	  // first check: is now before the next word should be shifted in?
+	  // we should make this stricter if the thing runs correctly
+	  // if we break here then the state machines have fallen behind
+	  // i.e. we are refilling after we expect
+	  bpassert(currenttime < prediction + PWM_ERROR_MARGIN);
+	  // second check: is now after the word in the OSR should have been shifted in?
+	  // if we break here then the state machines have gotten ahead
+	  // i.e. we are refilling before we expect
+	  bpassert(currenttime > prediction - (32 << currentshift) - PWM_ERROR_MARGIN);
+	} else {
+	  stable = true;
+	}
+      } else {
+	stable = false;
       }
     } else {
       if ((status.rawreadstage == WAITING_FM_AM) ||
@@ -320,6 +371,9 @@ void pio0_irq0_handler(void) {
 	// disable the interrupt and status update
 	pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, false);
 	status.rawreadstage++;
+	// also we should start refilling the buffer
+	bpassert(!((pio0_hw->inte0 & 0x10) && (status.rawreadstage == EXHAUSTED_FM_AM)));
+	irq_set_pending(BUFFERS_IRQ_NUMBER);
       } else {
 	// we have run out of readbuffer but the fifo is not empty yet
 	// even if the fifo does run out we should still try to recover,
@@ -445,12 +499,24 @@ static void setup_timebase(void) {
   pwm_set_clkdiv(0, TIMEBASE_DIVIDER);
   pwm_set_enabled(0, true);
   pwm_set_irq_enabled(0, true);
+  // because double-buffering
+  if (timebasenumber == TIMEBASE_PER_ROTATION - 2) {
+    pwm_set_wrap(0, TIMEBASE_REMAINDER - 1);
+  }
   // set other pwms' dividers
   pwm_set_clkdiv(1, TIMEBASE_DIVIDER);
   pwm_set_clkdiv(2, TIMEBASE_DIVIDER);
   pwm_set_clkdiv(3, TIMEBASE_DIVIDER);
   pwm_set_clkdiv(4, TIMEBASE_DIVIDER);
   pwm_set_clkdiv(5, TIMEBASE_DIVIDER);
+  pwm_set_clkdiv(6, TIMEBASE_DIVIDER);
+  // set other pwms' tops
+  pwm_set_wrap(1, 65535);
+  pwm_set_wrap(2, 65535);
+  pwm_set_wrap(3, 65535);
+  pwm_set_wrap(4, 65535);
+  pwm_set_wrap(5, INDEX_PULSE_LENGTH - 1);
+  pwm_set_wrap(6, 65535);
 }
 
 static void setup_interrupts(void) {

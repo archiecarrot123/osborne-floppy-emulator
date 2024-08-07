@@ -102,14 +102,16 @@ data:
 ; then allow it to continue once our fifo runs out
 ; clock 2 MHz
 delay:
-  mov x status                 [2]; 4 all ones if tx fifo empty
+  set y 15                     [1]; 4
 normal:
+  mov x status                    ; 6 all ones if tx fifo empty
 .wrap_target
   pull ifempty noblock            ; 7
   out pins 1                   [1]; 0
-  jmp !osre delay       side 0 [1]; 2
-  jmp !x normal                [2]; 4 jump if tx fifo not empty
+  jmp !x delay          side 0 [1]; 2 jump if tx fifo not empty
+  jmp y-- normal               [1]; 4
   irq set 5                       ; 6
+  set y 15                        ; 7
   wait 1 irq 4                    ; -2
 .wrap
 
@@ -138,15 +140,17 @@ normal:
 ; then allow it to continue once our fifo runs out
 ; clock 4 MHz
 delay:
-  mov x status                 [1]; 2 all ones if tx fifo empty
+  set y 15                        ; 2
 normal:
+  mov x status                    ; 3 all ones if tx fifo empty
 .wrap_target
   pull ifempty noblock  side 0 [3]; 4
   out pins 1                      ; 0
-  jmp !osre delay                 ; 1
-  jmp !x normal                   ; 2 jump if tx fifo not empty
+  jmp !x delay                    ; 1 jump if tx fifo not empty
+  jmp y-- normal                  ; 2
   irq set 5                       ; 3
-  wait 1 irq 4          side 0    ; -5
+  set y 15              side 0    ; 4
+  wait 1 irq 4                    ; -5
 .wrap
 
 .program readMFM2_irq
