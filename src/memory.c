@@ -359,12 +359,15 @@ static bool merge_small_blocks_to_medium_blocks(void) {
   if (!bytes0) {
     goto end;
   }
-  if (((unsigned int)bytes0 - (unsigned int)(&trackstorage)) % sizeof(struct smalldatablock)) {
+  // these things are sorted in descending order so it's a bit weird
+  if (((unsigned int)bytes0 - (unsigned int)(&trackstorage))
+      % sizeof(struct smalldatablock)
+      != sizeof(struct smalldatablock) - sizeof(struct bytes)) {
     bytes0 = bytes0->cdr;
     goto firstbytes;
   }
   bytes1 = bytes0->cdr;
-  if ((unsigned int)bytes1 - (unsigned int)bytes0 - sizeof(struct bytes)) {
+  if ((unsigned int)bytes0 - (unsigned int)bytes1 - sizeof(struct bytes)) {
     if (!bytes1) {
       goto end;
     }
@@ -372,7 +375,7 @@ static bool merge_small_blocks_to_medium_blocks(void) {
     goto firstbytes;
   }
   bytes2 = bytes1->cdr;
-  if ((unsigned int)bytes2 - (unsigned int)bytes1 - sizeof(struct bytes)) {
+  if ((unsigned int)bytes1 - (unsigned int)bytes2 - sizeof(struct bytes)) {
     if (!bytes2) {
       goto end;
     }
@@ -380,7 +383,10 @@ static bool merge_small_blocks_to_medium_blocks(void) {
     goto firstbytes;
   }
   // success!
-  struct smalldatablock *newmedium = (struct smalldatablock *)bytes0;
+  bpassert(((unsigned int)bytes2 - (unsigned int)(&trackstorage))
+	   % sizeof(struct smalldatablock)
+	   == 0);
+  struct smalldatablock *newmedium = (struct smalldatablock *)bytes2;
   lastmedium->cdr = newmedium;
   newmedium = lastmedium;
   lastbytes->cdr = bytes2->cdr;
@@ -409,12 +415,15 @@ static bool merge_medium_blocks_to_big_blocks(void) {
   if (!smalldatablock0) {
     goto end;
   }
-  if (((unsigned int)smalldatablock0 - (unsigned int)(&trackstorage)) % sizeof(struct datablock)) {
+  // these things are sorted in descending order so it's a bit weird
+  if (((unsigned int)smalldatablock0 - (unsigned int)(&trackstorage))
+      % sizeof(struct datablock)
+      != sizeof(struct datablock) - sizeof(struct smalldatablock)) {
     smalldatablock0 = smalldatablock0->cdr;
     goto firstsmalldatablock;
   }
   smalldatablock1 = smalldatablock0->cdr;
-  if ((unsigned int)smalldatablock1 - (unsigned int)smalldatablock0 - sizeof(struct smalldatablock)) {
+  if ((unsigned int)smalldatablock0 - (unsigned int)smalldatablock1 - sizeof(struct smalldatablock)) {
     if (!smalldatablock1) {
       goto end;
     }
@@ -422,7 +431,7 @@ static bool merge_medium_blocks_to_big_blocks(void) {
     goto firstsmalldatablock;
   }
   smalldatablock2 = smalldatablock1->cdr;
-  if ((unsigned int)smalldatablock2 - (unsigned int)smalldatablock1 - sizeof(struct smalldatablock)) {
+  if ((unsigned int)smalldatablock1 - (unsigned int)smalldatablock2 - sizeof(struct smalldatablock)) {
     if (!smalldatablock2) {
       goto end;
     }
@@ -430,7 +439,10 @@ static bool merge_medium_blocks_to_big_blocks(void) {
     goto firstsmalldatablock;
   }
   // success!
-  struct datablock *newbig = (struct datablock *)smalldatablock0;
+  bpassert(((unsigned int)smalldatablock2 - (unsigned int)(&trackstorage))
+	   % sizeof(struct datablock)
+	   == 0);
+  struct datablock *newbig = (struct datablock *)smalldatablock2;
   lastbig->cdr = newbig;
   lastbig = newbig;
   lastsmalldatablock->cdr = smalldatablock2->cdr;
@@ -486,6 +498,8 @@ bool sort_small_blocks(void) {
 // TODO: remember when attempting to merge blocks failed
 void maintain_track_storage(void) {
   static uint_fast8_t stage;
+  static bool mergesmall;
+  static bool mergemedium;
   if (stage == 3) {
     stage = 0;
   }
@@ -494,26 +508,34 @@ void maintain_track_storage(void) {
     if (sort_big_blocks()) {
       break;
     }
-    if (freetrackstorage.mediumcount > TRACKSTORAGE_MAX_MEDIUM) {
+    if ((freetrackstorage.mediumcount > TRACKSTORAGE_MAX_MEDIUM) && mergemedium) {
       merge_medium_blocks_to_big_blocks();
       // we know that the medium blocks were sorted, so our new bigs should be too
       if (freetrackstorage.newbig) {
 	merge((struct bytes **)&(freetrackstorage.big), (struct bytes *)freetrackstorage.newbig);
+      } else {
+	mergemedium = false;
       }
       break;
+    } else {
+      mergemedium = true;
     }
     stage++;
   case 1:
     if (sort_medium_blocks()) {
       break;
     }
-    if (freetrackstorage.smallcount > TRACKSTORAGE_MAX_SMALL) {
+    if ((freetrackstorage.smallcount > TRACKSTORAGE_MAX_SMALL) && mergesmall) {
       merge_small_blocks_to_medium_blocks();
       // we know that the small blocks were sorted, so our new mediums should be too
       if (freetrackstorage.newmedium) {
 	merge((struct bytes **)&(freetrackstorage.medium), (struct bytes *)freetrackstorage.newmedium);
+      } else {
+	mergesmall = false;
       }
       break;
+    } else {
+      mergesmall = true;
     }
     if (freetrackstorage.mediumcount < TRACKSTORAGE_MIN_MEDIUM) {
       for (unsigned int i = freetrackstorage.mediumcount; i < TRACKSTORAGE_MIN_MEDIUM; i += 3) {
@@ -573,7 +595,7 @@ void * alloc(enum type type) {
   case BYTES:
   case FMAM:
   case MFMAM:
-    if (!freetrackstorage.mediumcount) {
+    if (!freetrackstorage.smallcount) {
       split_big_track_storage_to_small();
       sort_new_blocks_into_regular_blocks(&(freetrackstorage.newsmall),
 					  &(freetrackstorage.newsmallcount),
