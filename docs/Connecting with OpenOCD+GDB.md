@@ -24,7 +24,6 @@ Clone the Project repository:
 ```
 git clone https://github.com/archiecarrot123/osborne-floppy-emulator.git
 ```
-
 Setup is done.
 
 **Running Raspberry Pi:**
@@ -60,6 +59,30 @@ Info : [rp2040.core1] Cortex-M0+ r0p1 processor detected
 Info : [rp2040.core1] target has 4 breakpoints, 2 watchpoints  
 Info : starting gdb server for rp2040.core0 on 3333  
 Info : Listening on port 3333 for gdb connections
+```
+**Compiling the binary**
+Back on your host machine make sure you /have the repo
+
+Install CMake and the arm gcc toolchain:
+```
+Debian: apt install CMake gcc-arm-none-eabi
+```
+
+Add subrepositories:
+```
+git submodule init
+git submodule update --recursive
+```
+once from the base of the repo once then from inside pico-sdk
+
+Run CMake **on the root of the project**:
+```
+cmake -s .
+```
+(you can use --fresh if you already have some files from previous attempts)
+
+```
+make
 ```
 
 **Connecting to Raspberry Pi via GDB:**
