@@ -56,11 +56,13 @@ static inline void set_rawread_timers(uint_fast8_t rawbytecount, uint32_t curren
 			      + (8*rawbytecount << currentshift)
 			      + PWM_ERROR_MARGIN));
   // enable timers
-  pwm_set_irq_mask_enabled(0b1001110, true);
-  pwm_set_enabled(1, true);
-  pwm_set_enabled(2, true);
-  pwm_set_enabled(3, true);
-  pwm_set_enabled(6, true);
+  if (lastwordbytecount) {
+    pwm_set_irq_mask_enabled(0b1001110, true);
+    pwm_hw->en |= 0b01001110;
+  } else {
+    pwm_set_irq_mask_enabled(0b0001100, true);
+    pwm_hw->en |= 0b00001100;
+  }
 }
 
 
