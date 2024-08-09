@@ -102,7 +102,7 @@ data:
 ; then allow it to continue once our fifo runs out
 ; clock 2 MHz
 delay:
-  set y 15                     [1]; 4
+  set y 14                     [1]; 4 x is not immediately updated
 normal:
   mov x status                    ; 6 all ones if tx fifo empty
 .wrap_target
@@ -140,7 +140,7 @@ normal:
 ; then allow it to continue once our fifo runs out
 ; clock 4 MHz
 delay:
-  set y 15                        ; 2
+  set y 14                        ; 2 x is not immediately updated
 normal:
   mov x status                    ; 3 all ones if tx fifo empty
 .wrap_target
@@ -162,7 +162,7 @@ normal:
 ; always follows a byte with missing clock pulses with a byte starting with a 1
 noclock:
   mov y status               ; 0
-  jmp data                [4]; 1
+  jmp data                [5]; 1
 .wrap_target
 clock:
   mov PINS ~X             [3]; 0
