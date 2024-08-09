@@ -97,6 +97,8 @@ void pwm_irq_handler(void) {
 	     (status.rawreadstage == ONGOING_MFM_AM));
     // this is only a status update - now we can put stuff in rawread's fifo again
     status.rawreadstage = NO_RAW_READ;
+    // make sure there isn't an error in the pio program
+    bpassert(!(pio0_hw->fdebug & 0x02000000));
     // disable ourselves
     pwm_set_irq_enabled(3, false);
     pwm_set_enabled(3, false);
