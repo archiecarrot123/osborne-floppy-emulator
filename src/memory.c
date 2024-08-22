@@ -477,6 +477,7 @@ bool sort_medium_blocks(void) {
 					(struct bytes **)&(freetrackstorage.medium),
 					&(freetrackstorage.mediumcount)
 					);
+    freetrackstorage.mergemedium = true;
     return true;
   }
   return false;
@@ -489,6 +490,7 @@ bool sort_small_blocks(void) {
 					&(freetrackstorage.small),
 					&(freetrackstorage.smallcount)
 					);
+    freetrackstorage.mergesmall = true;
     return true;
   }
   return false;
@@ -508,34 +510,30 @@ void maintain_track_storage(void) {
     if (sort_big_blocks()) {
       break;
     }
-    if ((freetrackstorage.mediumcount > TRACKSTORAGE_MAX_MEDIUM) && mergemedium) {
+    if ((freetrackstorage.mediumcount > TRACKSTORAGE_MAX_MEDIUM) && freetrackstorage.mergemedium) {
       merge_medium_blocks_to_big_blocks();
       // we know that the medium blocks were sorted, so our new bigs should be too
       if (freetrackstorage.newbig) {
 	merge((struct bytes **)&(freetrackstorage.big), (struct bytes *)freetrackstorage.newbig);
       } else {
-	mergemedium = false;
+	freetrackstorage.mergemedium = false;
       }
       break;
-    } else {
-      mergemedium = true;
     }
     stage++;
   case 1:
     if (sort_medium_blocks()) {
       break;
     }
-    if ((freetrackstorage.smallcount > TRACKSTORAGE_MAX_SMALL) && mergesmall) {
+    if ((freetrackstorage.smallcount > TRACKSTORAGE_MAX_SMALL) && freetrackstorage.mergesmall) {
       merge_small_blocks_to_medium_blocks();
       // we know that the small blocks were sorted, so our new mediums should be too
       if (freetrackstorage.newmedium) {
 	merge((struct bytes **)&(freetrackstorage.medium), (struct bytes *)freetrackstorage.newmedium);
       } else {
-	mergesmall = false;
+	freetrackstorage.mergesmall = false;
       }
       break;
-    } else {
-      mergesmall = true;
     }
     if (freetrackstorage.mediumcount < TRACKSTORAGE_MIN_MEDIUM) {
       for (unsigned int i = freetrackstorage.mediumcount; i < TRACKSTORAGE_MIN_MEDIUM; i += 3) {
@@ -580,11 +578,7 @@ void * alloc(enum type type) {
   case SMALLDATABLOCK:
     if (!freetrackstorage.mediumcount) {
       split_big_track_storage_to_medium();
-      sort_new_blocks_into_regular_blocks((struct bytes **)&(freetrackstorage.newmedium),
-					  &(freetrackstorage.newmediumcount),
-					  (struct bytes **)&(freetrackstorage.medium),
-					  &(freetrackstorage.mediumcount)
-					  );
+      sort_medium_blocks();
     }
     freetrackstorage.mediumcount--;
     rv = freetrackstorage.medium;
@@ -597,11 +591,7 @@ void * alloc(enum type type) {
   case MFMAM:
     if (!freetrackstorage.smallcount) {
       split_big_track_storage_to_small();
-      sort_new_blocks_into_regular_blocks(&(freetrackstorage.newsmall),
-					  &(freetrackstorage.newsmallcount),
-					  &(freetrackstorage.small),
-					  &(freetrackstorage.smallcount)
-					  );
+      sort_small_blocks();
     }
     freetrackstorage.smallcount--;
     rv = freetrackstorage.small;

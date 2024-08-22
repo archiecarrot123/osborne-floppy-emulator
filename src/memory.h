@@ -100,6 +100,9 @@ struct trackdatafreememory {
   unsigned int newbigcount;
   unsigned int newmediumcount;
   unsigned int newsmallcount;
+  // whether or not we should try to merge them
+  bool mergemedium;
+  bool mergesmall;
 };
 
 // these are just guesses
