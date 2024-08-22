@@ -35,6 +35,7 @@ struct disk {
   uint_fast8_t firsttrack      : 6;
   uint_fast8_t lasttrack       : 6;
   uint_fast8_t sectorspertrack : 5;
+  uint16_t diskid;
   struct toc *tracks[40];
 };
 
@@ -76,3 +77,5 @@ void generate_mfm_test_disk(struct disk *disk);
 void fill_toc(struct toc *toc);
 
 void add_sector_to_disk(struct sector *sector);
+
+void maintain_tracks(void);

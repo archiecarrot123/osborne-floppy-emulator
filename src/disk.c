@@ -437,8 +437,28 @@ static void free_track(struct toc *start) {
   }
 }
 
+static uint_fast8_t headroom(uint_fast8_t trackcache[6], unsigned int candidate, bool fudge) {
+  uint_fast8_t candidatetrack = trackcache[candidate + 2];
+  uint_fast8_t candidatecurrent = trackcache[candidate & 0b1];
+  if (candidate & 0b10) {
+    // last track
+    if (candidatetrack >= 39 && fudge) {
+      return 40;
+    }
+    return candidatetrack - candidatecurrent;
+  } else {
+    // first track
+    if (candidatetrack == 0 && fudge) {
+      return 40;
+    }
+    return candidatecurrent - candidatetrack;
+  }
+}
+
 // this function should only be called while in thread mode
 void maintain_tracks(void) {
+  // make sure that we have drives
+  bpassert(drive1.enabled || drive2.enabled);
   // so we don't have to keep reading volatiles from memory
   uint_fast8_t trackcache[6];
   trackcache[0] = drive1.currenttrack;
@@ -450,38 +470,34 @@ void maintain_tracks(void) {
   // m-m-max headroom
   uint_fast8_t maxheadroom = 0;
   uint_fast8_t minheadroom = 40;
-  for (unsigned int i = 0; i < 2; i++) {
-    if (trackcache[i] - trackcache[i + 2] > maxheadroom) {
-      maxheadroom = trackcache[i] - trackcache[i + 2];
-    } else if ((trackcache[i] - trackcache[i + 2] < minheadroom) && (trackcache[i + 2] > 0)) {
-      minheadroom = trackcache[i] - trackcache[i + 2];
+  for (unsigned int i = 0; i < 4; i++) {
+    if (!((i & 0b1) ? drive2.enabled : drive1.enabled)) {
+      continue;
     }
-  }
-  for (unsigned int i = 0; i < 2; i++) {
-    if (trackcache[i + 4] - trackcache[i] > maxheadroom) {
-      maxheadroom = trackcache[i + 4] - trackcache[i];
-    } else if ((trackcache[i + 4] - trackcache[i] < minheadroom) && (trackcache[i + 4] < 39)) {
-      minheadroom = trackcache[i + 4] - trackcache[i];
+    if (headroom(trackcache, i, false) > maxheadroom) {
+      maxheadroom = headroom(trackcache, i, false);
+    } else if (headroom(trackcache, i, true) < minheadroom) {
+      minheadroom = headroom(trackcache, i, true);
     }
   }
   // unload (if low on free memory) and load tracks
   if (minheadroom < maxheadroom - 1) {
     while (freetrackstorage.bigcount + freetrackstorage.newbigcount < MIN_FREE_BIGBLOCKS) {
-      unsigned int candidate = 0;
+      unsigned int candidate = 4;
       trackcache[0] = drive1.currenttrack;
       trackcache[1] = drive2.currenttrack;
-      maxheadroom = trackcache[0] - trackcache[2];
-      if (trackcache[1] - trackcache[3] > maxheadroom) {
-	candidate = 1;
-	maxheadroom = trackcache[1] - trackcache[3];
-      }
-      for (unsigned int i = 0; i < 2; i++) {
-	if (trackcache[i + 4] - trackcache[i] > maxheadroom) {
-	  candidate = i + 2;
-	  maxheadroom = trackcache[i + 4] - trackcache[i];
+      maxheadroom = 0;
+      for (unsigned int i = 0; i < 4; i++) {
+	if (!((i & 0b1) ? drive2.enabled : drive1.enabled)) {
+	  continue;
+	}
+	if (headroom(trackcache, i, false) > maxheadroom) {
+	  candidate = i;
+	  maxheadroom = headroom(trackcache, i, false);
 	}
       }
       bpassert(maxheadroom);
+      bpassert(candidate < 4);
       switch (candidate) {
       case 0:
 	free_track(drive1.tracks[trackcache[2]]);
@@ -504,43 +520,40 @@ void maintain_tracks(void) {
     sort_big_blocks();
     sort_medium_blocks();
     sort_small_blocks();
-    while (freetrackstorage.bigcount > MIN_FREE_BIGBLOCKS) {
-      unsigned int candidate = 4;
-      trackcache[0] = drive1.currenttrack;
-      trackcache[1] = drive2.currenttrack;
-      minheadroom = 40;
-      for (unsigned int i = 0; i < 2; i++) {
-	if ((trackcache[i] - trackcache[i + 2] < minheadroom) && (trackcache[i + 2] > 0)) {
-	  candidate = i;
-	  minheadroom = trackcache[i] - trackcache[i + 2];
-	}
-      }
-      for (unsigned int i = 0; i < 2; i++) {
-	if ((trackcache[i + 4] - trackcache[i] < minheadroom) && (trackcache[i + 4] < 39)) {
-	  candidate = i + 2;
-	  minheadroom = trackcache[i + 4] - trackcache[i];
-	}
-      }
-      if (candidate == 4) {
-	// all tracks are loaded
-	break;
-      }
-      union trackrequest request;
-      request.diskid = candidate & 1;
-      request.side1 = false;
-      if (candidate > 1) {
-	trackcache[candidate + 2]++;
-      } else {
-	trackcache[candidate + 2]--;
-      }
-      // TODO: figure out sector count for track request
-      request.trackno = trackcache[candidate + 2];
-      load_track(request);
-    }
-    // flush cache
-    drive1.firsttrack = trackcache[2];
-    drive2.firsttrack = trackcache[3];
-    drive1.lasttrack = trackcache[4];
-    drive2.lasttrack = trackcache[5];
   }
+  while (freetrackstorage.bigcount > MIN_FREE_BIGBLOCKS) {
+    unsigned int candidate = 4;
+    trackcache[0] = drive1.currenttrack;
+    trackcache[1] = drive2.currenttrack;
+    minheadroom = 40;
+    for (unsigned int i = 0; i < 4; i++) {
+      if (!((i & 0b1) ? drive2.enabled : drive1.enabled)) {
+	continue;
+      }
+      if (headroom(trackcache, i, true) < minheadroom) {
+	candidate = i;
+	minheadroom = headroom(trackcache, i, true);
+      }
+    }
+    if (candidate == 4) {
+      // all tracks are loaded
+      break;
+    }
+    union trackrequest request;
+    request.diskid = (candidate & 1) ? drive2.diskid : drive1.diskid;
+    request.side1 = false;
+    if (candidate > 1) {
+      trackcache[candidate + 2]++;
+    } else {
+      trackcache[candidate + 2]--;
+    }
+    // TODO: figure out sector count for track request
+    request.trackno = trackcache[candidate + 2];
+    load_track(request);
+  }
+  // flush cache
+  drive1.firsttrack = trackcache[2];
+  drive2.firsttrack = trackcache[3];
+  drive1.lasttrack = trackcache[4];
+  drive2.lasttrack = trackcache[5];
 }
