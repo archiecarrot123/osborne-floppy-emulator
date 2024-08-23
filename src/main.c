@@ -549,21 +549,7 @@ void main(void) {
   gpio_put(4, !drive1.enabled);
   gpio_put(6, !drive2.enabled);
   select_drive(&drive1);
-  // testing
-  systick_hw->rvr = 0x00FFFFFF;
-  systick_hw->csr = 0x00000005;
-  clocks_hw->fc0.src = 0x05;
-  gpio_init(16);
-  gpio_set_dir(16, true);
   while (1) {
-    if (clocks_hw->fc0.status & CLOCKS_FC0_STATUS_DONE_BITS) {
-      if ((clocks_hw->fc0.result >> 5) > 1000) {
-	gpio_put(16, true);
-      } else {
-	gpio_put(16, false);
-      }
-      clocks_hw->fc0.src = 0x05;
-    }
     //maintain_buffers();
     maintain_track_storage();
   }

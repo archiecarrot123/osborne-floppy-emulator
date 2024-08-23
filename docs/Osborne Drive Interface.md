@@ -1,4 +1,4 @@
-
+		
 Drive controller chip: 1793 LSI chip
 
 [Osborne Technical manual ](https://archive.org/details/bitsavers_osborneosbne1TechnicalManual1982_19169707/page/n3/mode/2up?view=theater) Pages of interest: 110, 57-60 124, 168(internet archive page numbers)
