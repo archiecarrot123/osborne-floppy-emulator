@@ -1,4 +1,4 @@
-**Setting up Raspberry Pi:**
+ls**Setting up Raspberry Pi:**
 
 SSH into the raspberry Pi:
 ```
@@ -31,7 +31,7 @@ Setup is done.
 
 SSH into the Raspberry Pi and port forward:
 ```
-	ssh raspi.ip -L 3333:localhost:3333
+ssh raspi.ip -L 3333:localhost:3333
 ```
 
 Run OpenOCD with the configuration in the repos:
