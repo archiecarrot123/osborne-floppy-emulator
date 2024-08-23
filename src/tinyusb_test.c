@@ -3,6 +3,8 @@
 #include "tusb.h"
 #include <string.h>
 #include <stdint.h>
+#include "ff.h"
+#include "diskio.h"
 
 void send_command(int command, void *message) {
    asm("mov r0, %[cmd];"
@@ -20,6 +22,7 @@ void send_message(char *s){
 }
 
 int main(void) {
+  msc_fat_init();
   // char *s = "hello_world\n";
   // send_message(s);
   // send_message("skibidi toilet\n");
