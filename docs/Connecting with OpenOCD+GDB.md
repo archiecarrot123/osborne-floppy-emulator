@@ -105,3 +105,4 @@ monitor reset halt
 load
 continue
 ```
+(from https://electronics.stackexchange.com/questions/149387/how-do-i-print-debug-messages-to-gdb-console-with-stm32-discovery-board-using-gd)

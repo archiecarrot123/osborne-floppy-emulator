@@ -20,7 +20,8 @@ void send_message(char *s){
 }
 
 int main(void) {
-  char *s = "hello_world\n";
-  send_message(s);
+  // char *s = "hello_world\n";
+  // send_message(s);
+  // send_message("skibidi toilet\n");
 }
 
