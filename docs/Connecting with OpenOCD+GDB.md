@@ -93,15 +93,15 @@ Install GDB:
 Debian: apt instal gdb
 ```
 
+loads src/floppy.elf
 ```
 gdb src/floppy.elf -ex "tar ext :3333"
 ```
 
 Get send_message to work:
 ```
-target remote gdb src/floppy.elf -ex "tar ext :3333"localhost:3333
 monitor arm semihosting enable
 monitor reset halt
-load code.elf
+load
 continue
 ```

@@ -14,7 +14,7 @@ void send_command(int command, void *message) {
 }
 
 void send_message(char *s){
-  uint32_t m[3] = { 2/*stderr*/, (uint32_t)s, strlen(s) - 1 };
+  uint32_t m[3] = { 2/*stderr*/, (uint32_t)s, strlen(s) };
   send_command(0x05/* some interrupt ID */, m);
 
 }
