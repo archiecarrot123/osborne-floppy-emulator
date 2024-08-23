@@ -6,7 +6,8 @@ ssh 192.168.raspberry.pi
 ```
 
 Clone the OpenOCD repository and compile, install (this is just for getting interface configs):
-```git clone http://openocd.zylin.com/openocd
+```
+git clone http://openocd.zylin.com/openocd
 ./bootstrap
 ./configure --enable-sysfsgpio --enable-bcm2835gpio 
 make
