@@ -27,7 +27,7 @@ pico_sdk_init()
 # custom
 add_subdirectory(hardware_clocks)
 add_subdirectory(pico_runtime)
-add_subdirectory(fatfs-cmake)
+# add_subdirectory(fatfs-cmake)
 
 add_executable(test test.c)
 target_link_libraries(test PUBLIC pico_stdlib)

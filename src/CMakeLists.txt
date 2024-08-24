@@ -9,5 +9,14 @@ target_include_directories(floppy PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..)
 
 add_executable(tinyusb_test tinyusb_test.c)
 
-target_link_libraries(tinyusb_test PUBLIC pico_stdlib tinyusb_host FatFS)
-target_include_directories(tinyusb_test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/)
+target_sources(tinyusb_test PUBLIC 
+  ${CMAKE_CURRENT_SOURCE_DIR}/../pico-sdk/lib/tinyusb/lib/fatfs/source/ff.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/../pico-sdk/lib/tinyusb/lib/fatfs/source/ffsystem.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/../pico-sdk/lib/tinyusb/lib/fatfs/source/ffunicode.c
+  )
+
+target_link_libraries(tinyusb_test PUBLIC pico_stdlib tinyusb_host)
+target_include_directories(tinyusb_test PUBLIC 
+  ${CMAKE_CURRENT_LIST_DIR}/ 
+  ${CMAKE_CURRENT_SOURCE_DIR}/../pico-sdk/lib/tinyusb/lib/fatfs/source/
+)
