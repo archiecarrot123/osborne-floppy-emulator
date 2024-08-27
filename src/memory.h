@@ -81,7 +81,7 @@ union trackdata {
 };
 
 // a lot of storage - this is more than an FM disk... all in memory...
-#define TRACKSTORAGE_LENGTH 3072
+#define TRACKSTORAGE_LENGTH 2560
 
 // need some way to remember the free memory
 struct trackdatafreememory {

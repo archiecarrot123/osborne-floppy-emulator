@@ -21,6 +21,9 @@ include(pico-sdk/pico_sdk_init.cmake)
 
 project(osborne-floppy-emulator C ASM CXX)
 
+# for clangd
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
 

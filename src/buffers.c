@@ -27,8 +27,15 @@ volatile uint8_t writebufferend;
 volatile uint8_t writebufferlength;
 unsigned int writebufferstarttime;
 
+unsigned int stablereadpointertime;
+uint_fast8_t stableresidualdatabytes;
+
+
+bool startedonam;
+
 // may as well be a macro
 static inline void set_rawread_timers(uint_fast8_t rawbytecount, uint32_t currenttime) {
+  bpassert(!(pwm_hw->en & 0b01001110));
   // TODO: check behaviour when the readpointertime is little above the currenttime
   int32_t timedifference = readpointertime - currenttime;
   if (timedifference < 0) {
@@ -37,17 +44,33 @@ static inline void set_rawread_timers(uint_fast8_t rawbytecount, uint32_t curren
   }
   if (lastwordbytecount) {
     // don't need to do this if our last byte is full
-    if (timedifference > (32 << currentshift) - PWM_ERROR_MARGIN) {
-      pwm_set_counter(1, 65536 - (timedifference
-				  - ((4 + lastwordbytecount)*8 << currentshift)
-				  + PWM_ERROR_MARGIN));
+    if (timedifference > (4*8 << currentshift) - PWM_ERROR_MARGIN) {
+      // TODO: fix this
+      if (timedifference + PWM_ERROR_MARGIN > ((4 + lastwordbytecount)*8 << currentshift)) {
+	pwm_set_counter(1, 65536 - (timedifference
+				    - ((4 + lastwordbytecount)*8 << currentshift)
+				    + PWM_ERROR_MARGIN));
+      } else {
+	DI();
+	if (pio_sm_get_tx_fifo_level(pio0, 0) != 1 || readbufferlength) {
+	  oops();
+	}
+	// change the amount to output
+	pio0_hw->sm[0].shiftctrl |=
+	  (8 * lastwordbytecount) << PIO_SM0_SHIFTCTRL_PULL_THRESH_LSB;
+	status.rawreadstage++;
+	if (status.rawreadstage != EXHAUSTED_FM_AM &&
+	    status.rawreadstage != EXHAUSTED_MFM_AM) {
+	  oops();
+	}
+	EI();
+      }
       pwm_set_counter(6, 65536 - (timedifference
 				  - (4*8 << currentshift)
 				  + PWM_ERROR_MARGIN));
     } else {
       // angery
-      bpassert(false);
-      pwm_force_irq(1);
+      oops();
     }
   }
   pwm_set_counter(2, 65536 - (timedifference
@@ -56,13 +79,17 @@ static inline void set_rawread_timers(uint_fast8_t rawbytecount, uint32_t curren
 			      + (8*rawbytecount << currentshift)
 			      + PWM_ERROR_MARGIN));
   // enable timers
-  if (lastwordbytecount) {
-    pwm_set_irq_mask_enabled(0b1001110, true);
-    pwm_hw->en |= 0b01001110;
-  } else {
-    pwm_set_irq_mask_enabled(0b0001100, true);
-    pwm_hw->en |= 0b00001100;
+  DI();
+  if (status.reading) {
+    if (lastwordbytecount) {
+      pwm_set_irq_mask_enabled(0b1001110, true);
+      pwm_hw->en |= 0b01001110;
+    } else {
+      pwm_set_irq_mask_enabled(0b0001100, true);
+      pwm_hw->en |= 0b00001100;
+    }
   }
+  EI();
 }
 
 
@@ -85,14 +112,20 @@ static inline uint32_t get_currenttime(void) {
 }
 
 // jumps the readbuffer using the TOC
-static void jump_readbuffer(void) {
+static bool jump_readbuffer(void) {
+  DI();
+  if (!selecteddrive) {
+    return false;
+  }
   struct toc *toc = selecteddrive->tracks[selecteddrive->currenttrack];
+  EI();
   uint32_t targettime = get_currenttime() + ((8 << currentshift) + PWM_ERROR_MARGIN);
   targettime = (targettime / (8 << currentshift)); // the TOC times are in bytes
   uint_fast8_t middle = 0;
   if (targettime < toc->times[0]) {
     readpointer = toc->cdr;
-    return;
+    readpointertime = 0;
+    return true;
   }
   // somehow radix is easier for me to understand than the normal way of doing binary search
   for (int i = 3; i; i--) {
@@ -101,6 +134,8 @@ static void jump_readbuffer(void) {
     }
   }
   readpointer = (toc->addresses[middle] << 3) + (void *)trackstorage;
+  readpointertime = (8 << currentshift) * toc->times[middle];
+  return true;
 }
 
 // TODO: check other times residualdatabytes are used are correct
@@ -108,14 +143,45 @@ static inline void add_data_to_readbuffer(uint8_t *myreadbufferend,
 					  uint8_t *data,
 					  uint32_t end,
 					  uint32_t start) {
-  for (uint32_t i = start; i < end; i++) {
-    residualdatabytes++;
-    residualdata |= (data[i]) << ((4 - residualdatabytes) * 8);
-    if (residualdatabytes == 4) {
-      readbuffer[*myreadbufferend] = residualdata;
-      residualdata = 0;
-      residualdatabytes = 0;
+  if (end - start < (4 - residualdatabytes)) {
+    for (uint32_t i = start; i < end; i++) {
+      residualdatabytes++;
+      residualdata |= (data[i]) << ((4 - residualdatabytes) * 8);
+    }
+  } else if (end - start == (4 - residualdatabytes)) {
+    for (uint32_t i = start; i < end; i++) {
+      residualdatabytes++;
+      residualdata |= (data[i]) << ((4 - residualdatabytes) * 8);
+    }
+    readbuffer[*myreadbufferend] = residualdata;
+    residualdata = 0;
+    residualdatabytes = 0;
+    (*myreadbufferend)++;
+  } else {
+    uint_fast8_t alignedstart = start + (4 - residualdatabytes);
+    for (uint32_t i = start; i < alignedstart; i++) {
+      residualdatabytes++;
+      residualdata |= (data[i]) << ((4 - residualdatabytes) * 8);
+    }
+    readbuffer[*myreadbufferend] = residualdata;
+    (*myreadbufferend)++;
+    residualdata = 0;
+    residualdatabytes = 0;
+    for (uint32_t i = alignedstart;
+	 i < end - ((end - alignedstart) % 4);
+	 i += 4) {
+      readbuffer[*myreadbufferend] =
+	(data[i] << 24) |
+	(data[i + 1] << 16) |
+	(data[i + 2] << 8) |
+	data[i + 3];
       (*myreadbufferend)++;
+    }
+    for (uint32_t i = end - ((end - alignedstart) % 4);
+	 i < end;
+	 i++) {
+      residualdatabytes++;
+      residualdata |= (data[i]) << ((4 - residualdatabytes) * 8);
     }
   }
 }
@@ -129,18 +195,23 @@ static void seek_readbuffer(void) {
   uint32_t currenttime;
   uint32_t targettime;
   uint8_t myreadbufferend = readbufferstart + readbufferlength;
+  startedonam = false;
  readstart:
+  bpassert(!status.rawreadstage);
+  bpassert(!(pwm_hw->en & 0b01011110));
   currenttime = get_currenttime();
   // we aim for the first byte to contain targettime
-  targettime = currenttime + ((8 << currentshift) + PWM_ERROR_MARGIN);
+  targettime = currenttime + ((8 << currentshift) + TARGET_ERROR_MARGIN);
   if (readpointertime > targettime) {
     // we have overshot (unlikely) or the time has wrapped (more likely)
-    if (readpointertime > ROTATION_PERIOD + ((8 << currentshift) + PWM_ERROR_MARGIN)) {
+    if (readpointertime > ROTATION_PERIOD + ((8 << currentshift) + TARGET_ERROR_MARGIN)) {
       readpointertime -= ROTATION_PERIOD;
     } else {
       jump_readbuffer();
     }
   }
+  bpassert(readbufferlength == 0);
+  bpassert(residualdatabytes == 0);
   switch (((struct bytes *)readpointer)->type) {
   case TOC:
     // start of the disc
@@ -230,10 +301,15 @@ static void seek_readbuffer(void) {
       // set up pwm interrupts
       // interrupt 4 will do whatever interrupt 2 normally would
       pwm_set_counter(3, 65536 - (readpointertime - currenttime + PWM_ERROR_MARGIN));
-      pwm_set_irq_enabled(3, true);
-      pwm_set_enabled(3, true);
+      DI();
+      if (status.reading) {
+	pwm_set_irq_enabled(3, true);
+	pwm_set_enabled(3, true);
+      }
+      EI();
       // set status
       status.rawreadstage = EXHAUSTED_FM_AM;
+      startedonam = true;
       readpointer = ((struct datablock *)readpointer)->cdr;
       while (((struct bytes *)readpointer)->type == FMAM) {
 	// TODO: something when we try to add too much to the fifo
@@ -277,11 +353,16 @@ static void seek_readbuffer(void) {
 	  pio_sm_put(pio0, 1, (((struct am *)readpointer)->rawbyte << 16));
 	}
 	// set up pwm interrupts
-	pwm_set_counter(3, 65536 - (readpointertime - currenttime - (8 << currentshift) + PWM_ERROR_MARGIN));
-	pwm_set_irq_enabled(3, true);
-	pwm_set_enabled(3, true);
+	DI();
+	if (status.reading) {
+	  pwm_set_counter(3, 65536 - (readpointertime - currenttime - (8 << currentshift) + PWM_ERROR_MARGIN));
+	  pwm_set_irq_enabled(3, true);
+	  pwm_set_enabled(3, true);
+	}
+	EI();
 	// set status
 	status.rawreadstage = EXHAUSTED_MFM_AM;
+	startedonam = true;
       }
       // this gives us one residual byte
       residualdata = ((struct am *)readpointer)->byte3 << 24;
@@ -296,7 +377,7 @@ static void seek_readbuffer(void) {
   // round targettime down to a byte
   targettime = targettime - (targettime % ((8 << currentshift)));
   // assert that we have the correct number of bytes
-  if (!status.rawreadstage) {
+  if (!startedonam) {
     bpassert(readpointertime == targettime + (4*readbufferlength + residualdatabytes)*(8 << currentshift));
   }
   if (targettime >= ROTATION_PERIOD) {
@@ -306,7 +387,8 @@ static void seek_readbuffer(void) {
   // we can't disable interrupts yet because getcurrenttime relies on them working
   currenttime = get_currenttime();
   DI();
-  if (currenttime >= targettime) {
+  bpassert(!(pwm_hw->en & 0b01010110));
+  if (currenttime + 2 >= targettime) {
     // oh no
     // actually no give up
     bpassert(false);
@@ -314,8 +396,16 @@ static void seek_readbuffer(void) {
     targettime = currenttime + 1;
   }
   pwm_set_counter(4, 65536 - (targettime - currenttime));
-  pwm_set_irq_enabled(4, true);
-  pwm_set_enabled(4, true);
+  if (status.reading) {
+    pwm_set_irq_enabled(4, true);
+    pwm_set_enabled(4, true);
+  }
+  // update the "stable" values
+  stablereadpointertime = readpointertime;
+  stableresidualdatabytes = residualdatabytes;
+  if (!status.rawreadstage && status.reading && readbufferlength) {
+    pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
+  }
   EI();
 }
 
@@ -357,10 +447,14 @@ void maintain_readbuffer(void) {
     DI();
     // update readbuffer length
     readbufferlength = myreadbufferend - readbufferstart;
-    if ((status.rawreadstage != EXHAUSTED_FM_AM) && (status.rawreadstage != EXHAUSTED_MFM_AM)) {
+    if ((status.rawreadstage != EXHAUSTED_FM_AM) && (status.rawreadstage != EXHAUSTED_MFM_AM) && status.reading) {
       pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
     }
+    // update the "stable" values
+    stablereadpointertime = readpointertime;
+    stableresidualdatabytes = residualdatabytes;
     EI();
+      
   }
  firsttime:
   switch (((struct bytes *)readpointer)->type) {
@@ -474,7 +568,7 @@ void maintain_readbuffer(void) {
 	residualdatabytes = 1;
 	readpointertime += (32 << currentshift);
 	// don't forget we're now doing an MFM read (if that's any different)
-	status.rawreadstage += (WAITING_MFM_AM - WAITING_FM_AM);
+	//status.rawreadstage += (WAITING_MFM_AM - WAITING_FM_AM);
 	readpointer = ((struct datablock *)readpointer)->cdr;
       }
       break;
@@ -514,43 +608,94 @@ void maintain_readbuffer(void) {
   // we have broken so we are obviously done, and don't need to keep trying to write
   // until stuff is taken out of the readbuffer
   //deferredtasks.readmore = false;
+  // update the "stable" values
+  stablereadpointertime = readpointertime;
+  stableresidualdatabytes = residualdatabytes;
   EI();
 }
 
+void stop_read(void) {
+  // restart and disable state machines
+  pio0_hw->ctrl = 0b11110000;
+  pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, false);
+  pio_sm_clear_fifos(pio0, 0);
+  pio_sm_clear_fifos(pio0, 1);
+  // disable these pwm interrupts
+  pwm_set_irq_mask_enabled(0b1011110, false);
+  pwm_hw->en &= ~0b01011110;
+  status.reading = false;
+  deferredtasks.startread = false;
+  status.rawreadstage = NO_RAW_READ;
+  pio0_hw->sm[0].shiftctrl &=
+    ~(0b11111 << PIO_SM0_SHIFTCTRL_PULL_THRESH_LSB);
+  bpassert(!(pio0_hw->fdebug & 0x01000000));
+}
+  
+
+static void reset_read(void) {
+  residualdatabytes = 0;
+  residualdata = 0;
+  readbufferlength = 0;
+  status.rawreadstage = NO_RAW_READ;
+  bpassert(!(pio0_hw->ctrl & 0b1111));
+  pio_sm_clear_fifos(pio0, 0);
+  pio_sm_clear_fifos(pio0, 1);
+  bpassert(!(pio0_hw->fdebug & 0x01000000));
+  bpassert(!(pwm_hw->en & 0b01011110));
+}
+
 void maintain_buffers(void) {
+  DI();
   deferredtasks.urgent = false;
-  // read
-  if (deferredtasks.startread) {
-    status.reading = true;
-    deferredtasks.readmore = true;
-    deferredtasks.startread = false;
-    // seek
-    jump_readbuffer();
-    seek_readbuffer();
+  if (pwm_hw->en & 0b00000100) {
+    bpassert(!((status.rawreadstage == ONGOING_FM_AM) ||
+	       (status.rawreadstage == ONGOING_MFM_AM)));
   }
+  if (selecteddrive) {
+    bpassert(selecteddrive->selected);
+  }
+  EI();
   // stop
+  DI();
   if (deferredtasks.stop) {
     status.reading = false;
     deferredtasks.stop = false;
-    residualdatabytes = 0;
-    residualdata = 0;
-    readbufferlength = 0;
-    // restart and disable state machines
-    pio0_hw->ctrl = 0b11110000;
-    pio_sm_clear_fifos(pio0, 0);
-    pio_sm_clear_fifos(pio0, 1);
+    bpassert(!(deferredtasks.startread || deferredtasks.changetrack));
+    EI();
+  } else {
+    EI();
+  }
+  // read
+  DI();
+  if (deferredtasks.startread) {
+    bpassert(!deferredtasks.stop);
+    reset_read();
+    bpassert(selecteddrive);
+    bpassert(selecteddrive->selected);
+    status.reading = true;
+    deferredtasks.readmore = true;
+    deferredtasks.startread = false;
+    EI();
+    // seek
+    if (jump_readbuffer()) {
+      seek_readbuffer();
+    }
+  } else {
+    EI();
   }
   // change track - basically the same as stopping and starting again
-  if (deferredtasks.changetrack && status.reading) {
+  DI();
+  if (deferredtasks.changetrack) {
+    bpassert(!deferredtasks.stop);
     deferredtasks.changetrack = false;
-    deferredtasks.readmore = true;
-    // clear stuff
-    residualdatabytes = 0;
-    readbufferlength = 0;
-    pio_sm_clear_fifos(pio0, 0);
-    pio_sm_clear_fifos(pio0, 1);
-    jump_readbuffer();
-    seek_readbuffer();
+    reset_read();
+    status.reading = true;
+    EI();
+    if (jump_readbuffer()) {
+      seek_readbuffer();
+    }
+  } else {
+    EI();
   }
   if (status.reading &&
       deferredtasks.readmore &&
@@ -559,9 +704,18 @@ void maintain_buffers(void) {
     maintain_readbuffer();
     // just to be safe
     DI();
-    if ((status.rawreadstage != EXHAUSTED_FM_AM) && (status.rawreadstage != EXHAUSTED_MFM_AM)) {
+    if ((status.rawreadstage != EXHAUSTED_FM_AM) && (status.rawreadstage != EXHAUSTED_MFM_AM) && status.reading) {
       pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
     }
     EI();
   }
+  DI();
+  if (pwm_hw->en & 0b00000100) {
+    bpassert(!((status.rawreadstage == ONGOING_FM_AM) ||
+	       (status.rawreadstage == ONGOING_MFM_AM)));
+  }
+  if (selecteddrive) {
+    bpassert(selecteddrive->selected);
+  }
+  EI();
 }

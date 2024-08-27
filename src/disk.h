@@ -31,6 +31,7 @@ struct disk {
   bool selected : 1;
   bool mfm      : 1;
   bool wp       : 1;
+  bool loaded   : 1;
   uint_fast8_t currenttrack    : 6;
   uint_fast8_t firsttrack      : 6;
   uint_fast8_t lasttrack       : 6;

@@ -8,10 +8,13 @@
 #include "buffers.h"
 
 #include "hardware/structs/sio.h"
+#include "pico/multicore.h"
 
 // should probably use bytetotal for asserts
 
 // TODO: use bytetotal to automatically determine gap length
+
+// TODO: be able to load empty disks
 
 volatile uint16_t bytetotal;
 
@@ -19,7 +22,7 @@ volatile struct disk drive1;
 volatile struct disk drive2;
 volatile struct disk *selecteddrive;
 
-volatile void *trackloadingpointer;
+void * volatile trackloadingpointer;
 volatile int trackloadingsectorsleft;
 volatile bool trackloadingready;
 volatile struct sector *trackloadingqueue[10];
@@ -59,6 +62,8 @@ static struct bytes * add_bytes(void *previous, uint8_t byte, uint16_t count) {
   ((struct bytes *)previous)->cdr = block;
   block->type = BYTES;
   block->byte = byte;
+  // rough heuristic, actual limit is probably more like 1020
+  bpassert(count < 1000);
   block->count = count;
   bytetotal += count;
   return block;
@@ -283,23 +288,87 @@ void generate_mfm_test_disk(struct disk *disk) {
   disk->lasttrack = 39;
 }
 
-static void * add_sector(void *previous, struct sector sector, unsigned int gap3length) {
-  void *last;
-  // id field and gap 2
-  last = add_id(previous, sector.mfm, sector.track, sector.side1, sector.sector, sector.length);
-  // data field
-  if (sector.mfm) {
-    // sync
-    last = add_bytes(previous, 0x00, 12);
-    // data address mark
-    last = add_mfmam(last, MFM_DXM, sector.deleted ? 0xF8 : 0xFB);
-  } else {
-    last = add_bytes(previous, 0x00, 6);
-    last = add_fmam(last, sector.deleted ? FM_DEM : FM_DAM);
+static unsigned int next_contiguous_bytes(uint8_t data[], unsigned int end) {
+  uint8_t byte = data[0];
+  unsigned int count = 1;
+  for (unsigned int i = 1; i < end; i++) {
+    if (data[i] == byte) {
+      if (count > 3) {
+	return i - count;
+      }
+      count++;
+    } else {
+      byte = data[i];
+      count = 1;
+    }
   }
+  return end;
+}
+
+// gap3length is a minimum
+static void * add_sector_data(void *previous, struct sector sector, unsigned int gap3length) {
+  void *last = previous;
   // copy data into buffer
   unsigned int i = 0;
-  unsigned int remaining;
+  unsigned int remaining = (128 << sector.length);
+#if 0
+  while (1) {
+    unsigned int highentropy = next_contiguous_bytes(&(sector.data[i]), remaining - i);
+    if (highentropy == remaining
+	|| remaining < 67) {
+      // use biggest ones forever
+      while (remaining >= 67) {
+	last = add_big(last, sector.data + i);
+	remaining -= 67;
+	i += 67;
+      }
+      if (remaining + 2 > 2*19 + 2*3 || // best option is the big one
+	  remaining + 2 > 2*19) { // relaxed because i'm too lazy to do extra coding
+	struct datablock *block = alloc(DATABLOCK);
+	((struct datablock *)last)->cdr = block;
+	block->type = DATABLOCK;
+	memcpy(block->data, sector.data + i, remaining);
+	memcpy(block->data + remaining, sector.crc, 2);
+	memset(block->data + remaining + 2, sector.mfm ? 0x4E : 0xFF, 67 - remaining - 2);
+	bytetotal += 67;
+	last = block;
+	if (gap3length > 67 - remaining - 2) {
+	  if ((gap3length - (67 - remaining - 2)) < 3) {
+	    last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, 3);
+	  } else {
+	    last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, gap3length - (67 - remaining - 2));
+	  }
+	}
+	return last;
+      }
+      
+    } else if (highentropy == 0) {
+      // use bytes type
+      unsigned int j;
+      uint8_t byte = sector.data[i];
+      for (j = i + 1; j < remaining; j++) {
+	if (sector.data[j] != byte) {
+	  break;
+	}
+      }
+      // need a mechanism to split this
+      if (j - i < 900) {
+	last = add_bytes(last, byte, j - i);
+      } else {
+	last = add_bytes(last, byte, 768);
+	last = add_bytes(last, byte, j - i - 768);
+      }
+      remaining -= (j - i);
+      i = j;
+    } else /* if (highentropy >= 67) */ {
+      // use a big one
+      last = add_big(last, sector.data + i);
+      remaining -= 67;
+      i += 67;
+    }
+  }
+#endif
+  // old way
   for (remaining = (128 << sector.length); remaining >= 67; remaining -= 67) {
     last = add_big(last, sector.data + i);
     i += 67;
@@ -319,10 +388,27 @@ static void * add_sector(void *previous, struct sector sector, unsigned int gap3
     bpassert((gap3length - (67 - remaining - 2)) >= 0);
     if (gap3length - (67 - remaining - 2)) {
       bpassert((gap3length - (67 - remaining - 2)) > 2);
-      last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, (67 - remaining - 2));
+      last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, gap3length - (67 - remaining - 2));
     }
   }
   return last;
+}
+
+static void * add_sector(void *previous, struct sector sector, unsigned int gap3length) {
+  void *last;
+  // id field and gap 2
+  last = add_id(previous, sector.mfm, sector.track, sector.side1, sector.sector, sector.length);
+  // data field
+  if (sector.mfm) {
+    // sync
+    last = add_bytes(last, 0x00, 12);
+    // data address mark
+    last = add_mfmam(last, MFM_DXM, sector.deleted ? 0xF8 : 0xFB);
+  } else {
+    last = add_bytes(last, 0x00, 6);
+    last = add_fmam(last, sector.deleted ? FM_DEM : FM_DAM);
+  }
+  return add_sector_data(last, sector, gap3length);
 }
 
 // need a function to generate a TOC
@@ -340,7 +426,7 @@ void fill_toc(struct toc *toc) {
   // seekpointer should contain toc
   for (uint_fast8_t i = 0; i < 16; i++) {
     blockthreshold = ((i + 1)*blocktotal) / 17;
-    while (blockcount < blockthreshold - 1) {
+    while ((blockcount < blockthreshold - 1) && blockthreshold) {
       blockcount++;
       seekpointer = seekpointer->cdr;
       switch (seekpointer->type) {
@@ -372,44 +458,89 @@ void fill_toc(struct toc *toc) {
   }
 }
 
+void check_consistency(struct toc *toc) {
+  // temporary check
+  struct bytes *seekpointer = toc->cdr;
+  unsigned int bytecount = 0;
+  while (seekpointer) {
+      switch (seekpointer->type) {
+      case DATABLOCK:
+	bytecount += 67;
+	break;
+      case SMALLDATABLOCK:
+	bytecount += 19;
+	break;
+      case TINYDATABLOCK:
+	bytecount += 3;
+	break;
+      case BYTES:
+	bytecount += seekpointer->count;
+	break;
+      case FMAM:
+	bytecount += 1;
+	break;
+      case MFMAM:
+	bytecount += 4;
+	break;
+      default:
+	break;
+      }
+      seekpointer = seekpointer->cdr;
+    }
+  bpassert(bytecount == bytetotal);
+}
+
 void add_sector_to_disk(struct sector *sector) {
   bpassert(trackloadingsectorsleft);
   if (trackloadingready) {
-    trackloadingpointer = add_sector((void *)trackloadingpointer, *sector, 0);
+    void *oldtrackloadingpointer = trackloadingpointer;
+    trackloadingpointer = add_sector(trackloadingpointer, *sector, 0);
+    bpassert(trackloadingpointer != oldtrackloadingpointer);
     trackloadingsectorsleft--;
   } else {
-    bpassert(trackloadingqueuehead < 9);
-    trackloadingqueuehead++;
+    bpassert(trackloadingqueuehead < 10);
     trackloadingqueue[trackloadingqueuehead] = sector;
+    trackloadingqueuehead++;
   }
 }
 
 // blocks until it finishes
-static struct toc * load_track(union trackrequest request) {
+static struct toc * load_track(union trackrequest request, bool mfm) {
   struct toc *toc;
   void *last;
   // kindly request that the other processor find the sectors
   trackloadingready = false;
   trackloadingsectorsleft = request.sectorcount;
-  bpassert(sio_hw->fifo_st & SIO_FIFO_ST_RDY_BITS);
-  sio_hw->fifo_wr = request.asword;
+  trackloadingqueuehead = 0;
+  trackloadingqueuetail = 0;
+  bpassert(multicore_fifo_wready());
+  multicore_fifo_push_blocking(request.asword);
+  // is this needed?
+  asm volatile ("SEV");
   toc = create_toc();
   bytetotal = 0;
   // preamble
   // gap 0
-  last = add_bytes(toc, 0xFF, 40);
+  last = add_bytes(toc, mfm ? 0x4E : 0xFF, mfm ? 80 : 40);
   // sync
-  last = add_bytes(last, 0x00, 6);
+  last = add_bytes(last, 0x00, mfm ? 12 : 6);
   // index address mark
-  last = add_fmam(last, FM_IAM);
-  // gap 1 - min 16 bytes in fm 
-  trackloadingpointer = add_bytes(last, 0xFF, 26);
+  if (mfm) {
+    last = add_mfmam(last, MFM_IAM, 0xFC);
+  } else {
+    last = add_fmam(last, FM_IAM);
+  }
+  // gap 1 - min 16 bytes in fm, min 32 bytes in mfm
+  trackloadingpointer = add_bytes(last, mfm ? 0x4E : 0xFF, mfm ? 50 : 26);
+  check_consistency(toc);
  addfromqueue:
   DI();
   if (trackloadingqueuehead - trackloadingqueuetail) {
     EI();
-    trackloadingpointer = add_sector((void *)trackloadingpointer, *trackloadingqueue[trackloadingqueuetail], 0);
+    trackloadingpointer = add_sector(trackloadingpointer, *trackloadingqueue[trackloadingqueuetail], 0);
+    trackloadingsectorsleft--;
     trackloadingqueuetail++;
+    check_consistency(toc);
     goto addfromqueue;
   } else {
     trackloadingready = true;
@@ -419,7 +550,20 @@ static struct toc * load_track(union trackrequest request) {
     // TODO: something in the meantime
     maintain_track_storage();
   }
-  trackloadingpointer = add_bytes((void *)trackloadingpointer, 0xFF, 3125 - bytetotal);
+  check_consistency(toc);
+  // make sure we actually put some stuff in the thing
+  bpassert(bytetotal > (mfm ? 4000 : 2000));
+  // gap 4
+  int gapsize = (mfm ? 6250 : 3125) - bytetotal;
+  bpassert(gapsize >= 0);
+  while (gapsize > 768) {
+    trackloadingpointer = add_bytes(trackloadingpointer, mfm ? 0x4E : 0xFF, 768);
+    gapsize -= 768;
+  }
+  if (gapsize) {
+    trackloadingpointer = add_bytes(trackloadingpointer, mfm ? 0x4E : 0xFF, gapsize);
+  }
+  bpassert((mfm ? 6250 : 3125) == bytetotal);
   ((struct bytes *)trackloadingpointer)->cdr = toc;
   fill_toc(toc);
   return toc;
@@ -456,7 +600,15 @@ static uint_fast8_t headroom(uint_fast8_t trackcache[6], unsigned int candidate,
 }
 
 // this function should only be called while in thread mode
+// BEWARE: could experience an integer wrapping bug if the "head"
+//         is stepped outside of the loaded range, but by that
+//         point we're already stuffed
 void maintain_tracks(void) {
+    DI();
+    if (selecteddrive) {
+      bpassert(selecteddrive->selected);
+    }
+    EI();
   // make sure that we have drives
   bpassert(drive1.enabled || drive2.enabled);
   // so we don't have to keep reading volatiles from memory
@@ -480,6 +632,11 @@ void maintain_tracks(void) {
       minheadroom = headroom(trackcache, i, true);
     }
   }
+    DI();
+    if (selecteddrive) {
+      bpassert(selecteddrive->selected);
+    }
+    EI();
   // unload (if low on free memory) and load tracks
   if (minheadroom < maxheadroom - 1) {
     while (freetrackstorage.bigcount + freetrackstorage.newbigcount < MIN_FREE_BIGBLOCKS) {
@@ -521,10 +678,26 @@ void maintain_tracks(void) {
     sort_medium_blocks();
     sort_small_blocks();
   }
+    DI();
+    if (selecteddrive) {
+      bpassert(selecteddrive->selected);
+    }
+    EI();
   while (freetrackstorage.bigcount > MIN_FREE_BIGBLOCKS) {
     unsigned int candidate = 4;
     trackcache[0] = drive1.currenttrack;
     trackcache[1] = drive2.currenttrack;
+    if (drive1.enabled && !drive1.loaded) {
+      // the drive doesn't have anything loaded
+      candidate = 0;
+      drive1.loaded = true;
+      goto loadtrack;
+    } else if (drive2.enabled && !drive2.loaded) {
+      // this one doesn't have anything loaded
+      candidate = 1;
+      drive2.loaded = true;
+      goto loadtrack;
+    }
     minheadroom = 40;
     for (unsigned int i = 0; i < 4; i++) {
       if (!((i & 0b1) ? drive2.enabled : drive1.enabled)) {
@@ -539,21 +712,36 @@ void maintain_tracks(void) {
       // all tracks are loaded
       break;
     }
-    union trackrequest request;
-    request.diskid = (candidate & 1) ? drive2.diskid : drive1.diskid;
-    request.side1 = false;
+    // this gets skipped if the disks aren't loaded
     if (candidate > 1) {
       trackcache[candidate + 2]++;
     } else {
       trackcache[candidate + 2]--;
     }
-    // TODO: figure out sector count for track request
+  loadtrack:
+    union trackrequest request;
+    volatile struct disk *thisdisk = (candidate & 1) ? &drive2 : &drive1;
+    request.diskid = thisdisk->diskid;
+    request.side1 = false;
+    request.sectorcount = thisdisk->sectorspertrack;
     request.trackno = trackcache[candidate + 2];
-    load_track(request);
+    thisdisk->tracks[request.trackno] = load_track(request, thisdisk->mfm);
   }
+    DI();
+    if (selecteddrive) {
+      bpassert(selecteddrive->selected);
+    }
+    EI();
+    DI();
   // flush cache
   drive1.firsttrack = trackcache[2];
   drive2.firsttrack = trackcache[3];
   drive1.lasttrack = trackcache[4];
   drive2.lasttrack = trackcache[5];
+  EI();
+    DI();
+    if (selecteddrive) {
+      bpassert(selecteddrive->selected);
+    }
+    EI();
 }

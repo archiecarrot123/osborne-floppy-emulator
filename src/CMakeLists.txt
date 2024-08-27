@@ -1,4 +1,4 @@
-add_executable(floppy main.c memory.c buffers.c disk.c)
+add_executable(floppy main.c memory.c buffers.c disk.c core1.c)
 
 pico_set_binary_type(floppy copy_to_ram)
 
