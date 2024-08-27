@@ -99,11 +99,10 @@ static void add_toc_entry(struct toc *toc, unsigned int index, uint16_t time, vo
   toc->addresses[index] = (address - (void *)trackstorage) >> 3;
 }
 
-// optimised bitwise method, bytewise method would be faster, but we
-// won't be using this very often as we will use the DMA to calculate CRCs
-// as we copy memory
+// this is the so-called "bad" crc
+// https://srecord.sourceforge.net/crc16-ccitt.html
 static inline uint32_t software_crc_step(uint32_t buffer, uint8_t byte) {
-  buffer |= byte;
+  buffer ^= byte << 16;
   for (unsigned int j = 0; j < 8; j++) {
     buffer <<= 1;
     if (buffer & 0x01000000) {
@@ -112,14 +111,11 @@ static inline uint32_t software_crc_step(uint32_t buffer, uint8_t byte) {
   }
   return buffer;
 }
-  
+
 static uint16_t software_crc(const uint8_t *data, size_t length, uint16_t crc) {
   uint32_t buffer = crc << 8;
   for (unsigned int i = 0; i < length; i++) {
     buffer = software_crc_step(buffer, data[i]);
-  }
-  for (unsigned int i = 0; i < 2; i++) {
-    buffer = software_crc_step(buffer, 0x00);
   }
   return buffer >> 8;
 }
@@ -143,7 +139,7 @@ static void * add_id(void   *previous,
     // id address mark
     last = add_fmam(last, FM_IDAM);
   }
-  crc = 0xE10E; // precomputed 2024-07-26
+  crc = 0xEF21; // precomputed 2024-08-27
   data[0] = track;
   data[1] = side1 ? 1 : 0;
   data[2] = sector;
@@ -186,7 +182,7 @@ static void * add_test_data(void   *previous,
     last = add_bytes(previous, 0x00, 6);
     last = add_fmam(last, deleted ? FM_DEM : FM_DAM);
   }
-  crc = deleted ? 0xE108 : 0xE10B; // precomputed 2024-07-26
+  crc = deleted ? 0x8FE7 : 0xBF84; // precomputed 2024-08-27
   // make up some data
   int i;
   for (i = 0; i < 67; i++) {

@@ -16,8 +16,10 @@
 #define MAX_SECTORS 10
 
 
+// this is the so-called "bad" crc
+// https://srecord.sourceforge.net/crc16-ccitt.html
 static inline uint32_t software_crc_step(uint32_t buffer, uint8_t byte) {
-  buffer |= byte;
+  buffer ^= byte << 16;
   for (unsigned int j = 0; j < 8; j++) {
     buffer <<= 1;
     if (buffer & 0x01000000) {
@@ -27,21 +29,10 @@ static inline uint32_t software_crc_step(uint32_t buffer, uint8_t byte) {
   return buffer;
 }
 
-static uint16_t software_crc_partial(const uint8_t *data, size_t length, uint16_t crc) {
-  uint32_t buffer = crc << 8;
-  for (unsigned int i = 0; i < length; i++) {
-    buffer = software_crc_step(buffer, data[i]);
-  }
-  return buffer >> 8;
-}
-
 static uint16_t software_crc(const uint8_t *data, size_t length, uint16_t crc) {
   uint32_t buffer = crc << 8;
   for (unsigned int i = 0; i < length; i++) {
     buffer = software_crc_step(buffer, data[i]);
-  }
-  for (unsigned int i = 0; i < 2; i++) {
-    buffer = software_crc_step(buffer, 0x00);
   }
   return buffer >> 8;
 }
@@ -175,7 +166,7 @@ int main(int argc, char **argv) {
 	}
 	// we should really be computing crcs
 	// based on precomputed AM crcs
-	uint16_t crc = software_crc(sectorpointer->data, 128 << length, mysector.deleted ? 0xE108 : 0xE10B);
+	uint16_t crc = software_crc(sectorpointer->data, 128 << length, mysector.deleted ? 0x8FE7 : 0xBF84);
 	sectorpointer->crc[0] = crc >> 8;
 	sectorpointer->crc[1] = crc & 0xFF;
 	sectorpointer++;
