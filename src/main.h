@@ -33,7 +33,8 @@
 //#define DI()
 //#define EI()
 
-#define BREAK_ON_ERROR 0
+#define BREAK_ON_ERROR 1
+#define BREAK_ON_OOPS 1
 
 #if BREAK_ON_ERROR
 #define bpassert(condition) if (!(condition)) asm volatile ("bkpt 0x03")

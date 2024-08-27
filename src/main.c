@@ -47,7 +47,7 @@ uint_fast8_t lastwordbytecount;
 struct piooffsets piooffsets;
 struct pioconfigs pioconfigs;
 
-#if BREAK_ON_ERROR
+#if BREAK_ON_OOPS
 void oops(void) {
   asm volatile ("bkpt 0x0f");
 }
@@ -167,7 +167,7 @@ void pwm_irq_handler(void) {
 	// first bit 1 us after being started
 	// conditionless jump with no sideset or delay is conveniently just the address
 	pio_sm_exec(pio0, 1, piooffsets.rawread + 1);
-	pio_sm_exec(pio0, 0, piooffsets.read + 8);
+	pio_sm_exec(pio0, 0, piooffsets.read + 9);
       } else {
 	// first bit 0.5 us after being started
 	pio_sm_exec(pio0, 1, piooffsets.rawread + 1);
@@ -178,7 +178,7 @@ void pwm_irq_handler(void) {
     } else {
       if (status.mfm) {
 	// first bit 0.75 us after being started
-	pio_sm_exec(pio0, 0, piooffsets.read + 9);
+	pio_sm_exec(pio0, 0, piooffsets.read + 10);
 	pio_sm_exec(pio0, 1, piooffsets.rawread + 7);
       } else {
 	// first bit 0 us after being started
@@ -187,7 +187,9 @@ void pwm_irq_handler(void) {
       }
       if (pio_sm_is_tx_fifo_empty(pio0, 0)) {
 	// attempt recovery
-	bpassert(readbufferlength);
+	if (!readbufferlength) {
+	  oops();
+	}
 	pio_sm_put(pio0, 0, readbuffer[readbufferstart]);
 	readbufferstart++;
 	readbufferlength--;
@@ -711,9 +713,9 @@ static void setup_interrupts(void) {
 
 void set_to_default_disk(struct disk *drive) {
   drive->diskid = DEFAULT_DISK_ID;
-  drive->mfm = false;
+  drive->mfm = DEFAULT_DISK_MFM;
   drive->wp = true;
-  drive->sectorspertrack = 10;
+  drive->sectorspertrack = DEFAULT_DISK_SECTORS_PER_TRACK;
   drive->loaded = false;
 }
 

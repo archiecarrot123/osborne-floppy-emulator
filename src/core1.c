@@ -13,9 +13,9 @@ void core1_entry(void) {
   while (true) {
     request.asword = multicore_fifo_pop_blocking();
     if (request.diskid == DEFAULT_DISK_ID) {
-      bpassert(request.sectorcount <= 10);
+      bpassert(request.sectorcount <= DEFAULT_DISK_SECTORS_PER_TRACK);
       for (int i = 0; i < request.sectorcount; i++) {
-	multicore_fifo_push_blocking((uint32_t)&(defaultdisk[10*request.trackno + i]));
+	multicore_fifo_push_blocking((uint32_t)&(defaultdisk[DEFAULT_DISK_SECTORS_PER_TRACK*request.trackno + i]));
       }
     } else {
       bpassert(false);

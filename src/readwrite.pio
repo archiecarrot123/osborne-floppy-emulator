@@ -172,7 +172,8 @@ data:
   mov PINS X                 ; 8
   jmp !y normal              ; 9
   irq set 4               [1]; 10
-  wait 1 irq 5     side 0    ; -4
+  nop              side 0    ; 12
+  wait 1 irq 5               ; -4
   pull ifempty noblock       ; -3
   out x 1                    ; -2
   jmp PIN noclock            ; -1
