@@ -109,7 +109,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "069e3cc1ea691ca9",
@@ -174,7 +175,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -186,7 +188,7 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "511fcbc600222187",
+  "active": "7983108840a6fd3b",
   "lastOpenFiles": [
     "Osborne Drive Interface.md",
     "Connecting with OpenOCD+GDB.md",
