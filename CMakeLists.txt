@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 3.13)
 set(SKIP_HARDWARE_CLOCKS 1)
 # don't use usb or power ADC
 set(SKIP_PICO_RUNTIME 1)
+# fix the lsp server
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # optimize?
 # O3 perhaps a bad idea...

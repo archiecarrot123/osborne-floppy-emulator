@@ -60,7 +60,7 @@ void send_message(char *s){
 void ocd_sendline(char* fmt_str, ...) {
   va_list argptr;
   va_start(argptr, fmt_str);
-  char buffer[100];
+  char buffer[120]; // arbitary number of characters, 120 seemed fine
   vsprintf(buffer, fmt_str, argptr);
   va_end(argptr);
   send_message(buffer);
@@ -83,7 +83,7 @@ bool inquiry_complete_cb(uint8_t dev_addr, tuh_msc_complete_data_t const * cb_da
 
   if (csw->status != 0)
   {
-    send_message("Inquiry failed\r\n");
+    ocd_sendline("Inquiry failed\r\n");
     return false;
   }
 
@@ -104,7 +104,7 @@ bool inquiry_complete_cb(uint8_t dev_addr, tuh_msc_complete_data_t const * cb_da
 
   if ( f_mount(&fatfs[drive_num], drive_path, 1) != FR_OK )
   {
-    puts("mount failed");
+    ocd_sendline("mount failed\n");
   }
 
   // change to newly mounted drive
@@ -123,7 +123,7 @@ bool inquiry_complete_cb(uint8_t dev_addr, tuh_msc_complete_data_t const * cb_da
 // these are called by tinyusb whenever a usb is mounted
 void tuh_msc_mount_cb(uint8_t dev_addr)
 {
-  send_message("A MassStorage device is mounted\r\n");
+  ocd_sendline("A MassStorage device is mounted\r\n");
 
   uint8_t const lun = 0;
   tuh_msc_inquiry(dev_addr, lun, &inquiry_resp, inquiry_complete_cb, 0);
@@ -131,7 +131,8 @@ void tuh_msc_mount_cb(uint8_t dev_addr)
 
 void tuh_msc_umount_cb(uint8_t dev_addr)
 {
-  send_message("A MassStorage device is unmounted\r\n");
+  ocd_sendline("A MassStorage device is unmounted\r\n");
+  asm volatile ("bkpt 0x00");
 
   uint8_t const drive_num = dev_addr-1;
   char drive_path[3] = "0:";
@@ -149,7 +150,7 @@ void tuh_msc_umount_cb(uint8_t dev_addr)
 // http://elm-chan.org/fsw/ff/00index_e.html
 // LBA is Logical Block Addressing
 
-void wait_for_disk_io(BYTE pdrv)
+static void wait_for_disk_io(BYTE pdrv)
 // pdrv is physical drive number (id)
 {
   while(_disk_busy[pdrv])
@@ -158,7 +159,7 @@ void wait_for_disk_io(BYTE pdrv)
   }
 }
 
-bool disk_io_complete(uint8_t dev_addr, tuh_msc_complete_data_t const * cb_data)
+static bool disk_io_complete(uint8_t dev_addr, tuh_msc_complete_data_t const * cb_data)
 {
   (void) dev_addr; (void) cb_data;
   _disk_busy[dev_addr-1] = false;

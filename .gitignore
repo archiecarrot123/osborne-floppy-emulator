@@ -9,3 +9,4 @@ mainboard-connector.bak
 fp-info-cache
 *.kicad_prl
 build
+.compile_commands.json
