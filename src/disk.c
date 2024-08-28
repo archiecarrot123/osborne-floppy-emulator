@@ -320,12 +320,15 @@ static void * add_sector_data(void *previous, struct sector sector, unsigned int
       }
       if (remaining + 2 > 2*19 + 2*3 || // best option is the big one
 	  remaining + 2 > 2*19) { // relaxed because i'm too lazy to do extra coding
+      bigend:
 	struct datablock *block = alloc(DATABLOCK);
 	((struct datablock *)last)->cdr = block;
 	block->type = DATABLOCK;
 	memcpy(block->data, sector.data + i, remaining);
 	memcpy(block->data + remaining, sector.crc, 2);
-	memset(block->data + remaining + 2, sector.mfm ? 0x4E : 0xFF, 67 - remaining - 2);
+	if (67 - remaining - 2) {
+	  memset(block->data + remaining + 2, sector.mfm ? 0x4E : 0xFF, 67 - remaining - 2);
+	}
 	bytetotal += 67;
 	last = block;
 	if (gap3length > 67 - remaining - 2) {
@@ -335,9 +338,34 @@ static void * add_sector_data(void *previous, struct sector sector, unsigned int
 	    last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, gap3length - (67 - remaining - 2));
 	  }
 	}
-	return last;
+      } else if (remaining + 2 > 19 + 2*3 || // two smalls
+		 remaining + 2 > 19) {
+	last = add_small(last, sector.data + i);
+	remaining -= 19;
+	i += 19;
+	goto smallend;
+      } else {
+      smallend:
+	struct datablock *block = alloc(SMALLDATABLOCK);
+	((struct datablock *)last)->cdr = block;
+	block->type = SMALLDATABLOCK;
+	memcpy(block->data, sector.data + i, remaining);
+	memcpy(block->data + remaining, sector.crc, 2);
+	if (19 - remaining - 2) {
+	  memset(block->data + remaining + 2, sector.mfm ? 0x4E : 0xFF, 19 - remaining - 2);
+	}
+	bytetotal += 19;
+	last = block;
+	if (gap3length > 19 - remaining - 2) {
+	  if ((gap3length - (19 - remaining - 2)) < 3) {
+	    last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, 3);
+	  } else {
+	    last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, gap3length - (19 - remaining - 2));
+	  }
+	}
       }
-      
+    addgap:
+      return last;
     } else if (highentropy == 0) {
       // use bytes type
       unsigned int j;
