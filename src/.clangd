@@ -1,3 +1,0 @@
-CompileFlags:
-  Add:
-    - --target=arm-none-eabi

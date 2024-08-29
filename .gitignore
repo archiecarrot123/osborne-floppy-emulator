@@ -10,3 +10,5 @@ fp-info-cache
 *.kicad_prl
 build
 .compile_commands.json
+.cache
+.clangd
