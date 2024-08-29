@@ -64,6 +64,7 @@ static struct bytes * add_bytes(void *previous, uint8_t byte, uint16_t count) {
   block->byte = byte;
   // rough heuristic, actual limit is probably more like 1020
   bpassert(count < 1000);
+  bpassert(count >= 3);
   block->count = count;
   bytetotal += count;
   return block;
@@ -133,13 +134,14 @@ static void * add_id(void   *previous,
   if (mfm) {
     last = add_bytes(previous, 0x00, 12);
     last = add_mfmam(last, MFM_IDAM, 0xFE);
+    crc = 0xB230; // precomputed 2024-08-28
   } else {
     // sync
     last = add_bytes(previous, 0x00, 6);
     // id address mark
     last = add_fmam(last, FM_IDAM);
+    crc = 0xEF21; // precomputed 2024-08-27
   }
-  crc = 0xEF21; // precomputed 2024-08-27
   data[0] = track;
   data[1] = side1 ? 1 : 0;
   data[2] = sector;
@@ -178,11 +180,12 @@ static void * add_test_data(void   *previous,
     last = add_bytes(previous, 0x00, 12);
     // data address mark
     last = add_mfmam(last, MFM_DXM, deleted ? 0xF8 : 0xFB);
+    crc = deleted ? 0xD2F6 : 0xE295; // precomputed 2024-08-28
   } else {
     last = add_bytes(previous, 0x00, 6);
     last = add_fmam(last, deleted ? FM_DEM : FM_DAM);
+    crc = deleted ? 0x8FE7 : 0xBF84; // precomputed 2024-08-27
   }
-  crc = deleted ? 0x8FE7 : 0xBF84; // precomputed 2024-08-27
   // make up some data
   int i;
   for (i = 0; i < 67; i++) {
@@ -289,7 +292,7 @@ static unsigned int next_contiguous_bytes(uint8_t data[], unsigned int end) {
   unsigned int count = 1;
   for (unsigned int i = 1; i < end; i++) {
     if (data[i] == byte) {
-      if (count > 3) {
+      if (count > 7) {
 	return i - count;
       }
       count++;
@@ -307,91 +310,170 @@ static void * add_sector_data(void *previous, struct sector sector, unsigned int
   // copy data into buffer
   unsigned int i = 0;
   unsigned int remaining = (128 << sector.length);
-#if 0
+#if 1
   while (1) {
-    unsigned int highentropy = next_contiguous_bytes(&(sector.data[i]), remaining - i);
-    if (highentropy == remaining
-	|| remaining < 67) {
+    unsigned int highentropy = next_contiguous_bytes(sector.data + i, remaining);
+    bpassert(i <= 1024);
+    if (highentropy == remaining) {
       // use biggest ones forever
       while (remaining >= 67) {
 	last = add_big(last, sector.data + i);
 	remaining -= 67;
 	i += 67;
       }
-      if (remaining + 2 > 2*19 + 2*3 || // best option is the big one
-	  remaining + 2 > 2*19) { // relaxed because i'm too lazy to do extra coding
-      bigend:
-	struct datablock *block = alloc(DATABLOCK);
-	((struct datablock *)last)->cdr = block;
-	block->type = DATABLOCK;
-	memcpy(block->data, sector.data + i, remaining);
-	memcpy(block->data + remaining, sector.crc, 2);
-	if (67 - remaining - 2) {
-	  memset(block->data + remaining + 2, sector.mfm ? 0x4E : 0xFF, 67 - remaining - 2);
-	}
-	bytetotal += 67;
-	last = block;
-	if (gap3length > 67 - remaining - 2) {
-	  if ((gap3length - (67 - remaining - 2)) < 3) {
-	    last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, 3);
-	  } else {
-	    last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, gap3length - (67 - remaining - 2));
-	  }
-	}
-      } else if (remaining + 2 > 19 + 2*3 || // two smalls
-		 remaining + 2 > 19) {
-	last = add_small(last, sector.data + i);
-	remaining -= 19;
-	i += 19;
-	goto smallend;
-      } else {
-      smallend:
-	struct datablock *block = alloc(SMALLDATABLOCK);
-	((struct datablock *)last)->cdr = block;
-	block->type = SMALLDATABLOCK;
-	memcpy(block->data, sector.data + i, remaining);
-	memcpy(block->data + remaining, sector.crc, 2);
-	if (19 - remaining - 2) {
-	  memset(block->data + remaining + 2, sector.mfm ? 0x4E : 0xFF, 19 - remaining - 2);
-	}
-	bytetotal += 19;
-	last = block;
-	if (gap3length > 19 - remaining - 2) {
-	  if ((gap3length - (19 - remaining - 2)) < 3) {
-	    last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, 3);
-	  } else {
-	    last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, gap3length - (19 - remaining - 2));
-	  }
-	}
-      }
-    addgap:
-      return last;
+      break;
     } else if (highentropy == 0) {
       // use bytes type
       unsigned int j;
       uint8_t byte = sector.data[i];
-      for (j = i + 1; j < remaining; j++) {
+      for (j = i + 1; j < (128 << sector.length); j++) {
 	if (sector.data[j] != byte) {
 	  break;
 	}
       }
-      // need a mechanism to split this
       if (j - i < 900) {
 	last = add_bytes(last, byte, j - i);
       } else {
 	last = add_bytes(last, byte, 768);
 	last = add_bytes(last, byte, j - i - 768);
       }
+      bpassert(remaining >= (j - i));
       remaining -= (j - i);
       i = j;
-    } else /* if (highentropy >= 67) */ {
+    } else if (highentropy > 2*19) {
+      if (remaining < 67) {
+	break;
+      }
       // use a big one
       last = add_big(last, sector.data + i);
       remaining -= 67;
       i += 67;
+    } else if (highentropy > 19) {
+      if (remaining < 2*19) {
+	break;
+      }
+      // use two small ones
+      last = add_small(last, sector.data + i);
+      last = add_small(last, sector.data + i + 19);
+      remaining -= 2*19;
+      i += 2*19;
+    } else if (highentropy > 2*3) {
+      if (remaining < 19) {
+	break;
+      }
+      // use one small one
+      last = add_small(last, sector.data + i);
+      remaining -= 19;
+      i += 19;
+    } else if (highentropy > 3) {
+      if (remaining < 6) {
+	break;
+      }
+      // use two tiny ones
+      last = add_tiny(last, sector.data + i);
+      last = add_tiny(last, sector.data + i + 3);
+      remaining -= 6;
+      i += 6;
+    } else {
+      if (remaining < 3) {
+	break;
+      }
+      // use one tiny one
+      last = add_tiny(last, sector.data + i);
+      remaining -= 3;
+      i += 3;
     }
   }
-#endif
+  int gapcount;
+  if (remaining + 2 > 2*19 + 2*3 || // best option is the big one
+      remaining + 2 > 2*19) { // relaxed because i'm too lazy to do extra coding
+  bigend:
+    struct datablock *block = alloc(DATABLOCK);
+    ((struct datablock *)last)->cdr = block;
+    block->type = DATABLOCK;
+    bpassert(67 - 2 >= remaining);
+    memcpy(block->data, sector.data + i, remaining);
+    memcpy(block->data + remaining, sector.crc, 2);
+    if (67 - remaining - 2) {
+      memset(block->data + remaining + 2, sector.mfm ? 0x4E : 0xFF, 67 - remaining - 2);
+    }
+    bytetotal += 67;
+    last = block;
+    gapcount = gap3length - (67 - remaining - 2);
+    goto addgap;
+  } else if (remaining + 2 > 19 + 2*3 || // two smalls
+	     remaining + 2 > 19) {
+    if (remaining >= 19) {
+      last = add_small(last, sector.data + i);
+      remaining -= 19;
+      i += 19;
+      goto smallend;
+    } else {
+      struct datablock *block = alloc(SMALLDATABLOCK);
+      ((struct datablock *)last)->cdr = block;
+      block->type = SMALLDATABLOCK;
+      bpassert(19 >= remaining);
+      memcpy(block->data, sector.data + i, remaining);
+      memcpy(block->data + remaining, sector.crc, 19 - remaining);
+      bytetotal += 19;
+      last = block;
+      block = alloc(TINYDATABLOCK);
+      ((struct datablock *)last)->cdr = block;
+      block->type = TINYDATABLOCK;
+      memcpy(block->data, sector.crc + (19 - remaining), 2 - (19 - remaining));
+      if (3 - (2 - (19 - remaining))) {
+	memset(block->data + (2 - (19 - remaining)),
+	       sector.mfm ? 0x4E : 0xFF,
+	       3 - (2 - (19 - remaining)));
+      }
+      bytetotal += 3;
+      last = block;
+      gapcount = gap3length - (3 - (2 - (19 - remaining)));
+      goto addgap;
+    }
+  } else if (remaining + 2 > 3) {
+  smallend:
+    struct datablock *block = alloc(SMALLDATABLOCK);
+    ((struct datablock *)last)->cdr = block;
+    block->type = SMALLDATABLOCK;
+    bpassert(19 - 2 >= remaining);
+    memcpy(block->data, sector.data + i, remaining);
+    memcpy(block->data + remaining, sector.crc, 2);
+    if (19 - remaining - 2) {
+      memset(block->data + remaining + 2, sector.mfm ? 0x4E : 0xFF, 19 - remaining - 2);
+    }
+    bytetotal += 19;
+    last = block;
+    gapcount = gap3length - (19 - remaining - 2);
+    goto addgap;
+  } else {
+    struct datablock *block = alloc(TINYDATABLOCK);
+    ((struct datablock *)last)->cdr = block;
+    block->type = TINYDATABLOCK;
+    if (remaining) {
+      bpassert(remaining == 1);
+      block->data[0] = sector.data[i];
+    }
+    block->data[remaining + 0] = sector.crc[0];
+    block->data[remaining + 1] = sector.crc[1];
+    if (3 - (remaining + 2)) {
+      block->data[2] = sector.mfm ? 0x4E : 0xFF;
+    }
+    bytetotal += 3;
+    last = block;
+    gapcount = gap3length - (3 - (remaining + 2));
+    goto addgap;
+  }
+ addgap:
+  if (gapcount > 0) {
+    if (gapcount < 3) {
+      last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, 3);
+    } else {
+      last = add_bytes(last, sector.mfm ? 0x4E : 0xFF, gapcount);
+    }
+  }
+  return last;
+#else
   // old way
   for (remaining = (128 << sector.length); remaining >= 67; remaining -= 67) {
     last = add_big(last, sector.data + i);
@@ -416,6 +498,7 @@ static void * add_sector_data(void *previous, struct sector sector, unsigned int
     }
   }
   return last;
+#endif
 }
 
 static void * add_sector(void *previous, struct sector sector, unsigned int gap3length) {
@@ -432,7 +515,12 @@ static void * add_sector(void *previous, struct sector sector, unsigned int gap3
     last = add_bytes(last, 0x00, 6);
     last = add_fmam(last, sector.deleted ? FM_DEM : FM_DAM);
   }
-  return add_sector_data(last, sector, gap3length);
+  if (gap3length) {
+    return add_sector_data(last, sector, gap3length);
+  } else {
+    // the "magic" numbers 24 and 10 come from the minimum gap lengths from the FD179X datasheet
+    return add_sector_data(last, sector, sector.mfm ? 24 : 10);
+  }
 }
 
 // need a function to generate a TOC
@@ -549,6 +637,7 @@ static struct toc * load_track(union trackrequest request, bool mfm) {
   // sync
   last = add_bytes(last, 0x00, mfm ? 12 : 6);
   // index address mark
+  // according to the FD179X datasheet this is not required
   if (mfm) {
     last = add_mfmam(last, MFM_IAM, 0xFC);
   } else {
