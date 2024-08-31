@@ -1,3 +1,6 @@
 [submodule "pico-sdk"]
 	path = pico-sdk
 	url = https://github.com/raspberrypi/pico-sdk.git
+[submodule "pico-usb-host-msc-demo"]
+	path = pico-usb-host-msc-demo
+	url = https://github.com/rppicomidi/pico-usb-host-msc-demo.git
