@@ -30,6 +30,8 @@ pico_sdk_init()
 add_subdirectory(hardware_clocks)
 add_subdirectory(pico_runtime)
 # add_subdirectory(fatfs-cmake)
+add_subdirectory(pico-sdk/lib/tinyusb/hw/mcu/raspberry_pi/Pico-PIO-USB)
+add_subdirectory(pico-usb-host-msc-demo/lib/fatfs)
 
 add_executable(test test.c)
 target_link_libraries(test PUBLIC pico_stdlib)
