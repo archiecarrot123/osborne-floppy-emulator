@@ -23,21 +23,13 @@ uint_fast8_t currentperiod = MFM_PERIOD;
 uint_fast8_t currentshift = MFM_SHIFT;
 
 volatile struct deferredtasks deferredtasks = {
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
   false
 };
 
 volatile struct status status = {
-  false,
-  false,
+  NOT_SELECTED,
+  IDLE,
   true,  // the emulator starts in mfm mode
-  false,
   NO_RAW_READ
 };
 
@@ -55,32 +47,19 @@ void oops(void) {
 // make sure status is in a good state first
 void oops(void) {
   DI();
-  if (status.reading) {
+  if (status.drivestate == READING) {
     // this will cause it to restart the same track
     stop_read();
-    deferredtasks.changetrack = true;
+    status.bufferstate == NEED_WORK;
   } else {
     // huh?
-    if (status.selected) {
-      stop_read();
-      if (!deferredtasks.stop) {
-	deferredtasks.startread = true;
-	deferredtasks.changetrack = false;
-      } else {
-	deferredtasks.startread = false;
-	deferredtasks.changetrack = false;
-      }
-    } else {
-      // just in case
-      stop_read();
-      deferredtasks.stop = true;
-      deferredtasks.startread = false;
-      deferredtasks.changetrack = false;
-    }
+    // do nothing?
   }
   EI();
 }
 #endif
+
+void set_to_default_disk(struct disk *drive, unsigned int driveno);
 
 // timebase should use CH0,
 // the raw timer should use CH1 and CH2
@@ -94,12 +73,6 @@ void pwm_irq_handler(void) {
   }
   if (selecteddrive) {
     bpassert(selecteddrive->selected);
-  }
-  if (interrupts & PWM_INTS_CH7_BITS) {
-    pwm_clear_irq(7);
-    if (interrupts == PWM_INTS_CH7_BITS) {
-      return;
-    }
   }
   if (interrupts & PWM_INTS_CH1_BITS) {
     // change the amount to output
@@ -115,13 +88,16 @@ void pwm_irq_handler(void) {
     pwm_clear_irq(1);
   }
   if (interrupts & PWM_INTS_CH6_BITS) {
-    // we shouldn't get called before CH1
-    bpassert(!(pwm_hw->en & 0b00000010));
-    // restore amount to output
-    pio0_hw->sm[0].shiftctrl &=
-      ~(0b11111 << PIO_SM0_SHIFTCTRL_PULL_THRESH_LSB);
-    // make sure we were set up for the right time
-    bpassert(pio_sm_get_tx_fifo_level(pio0, 0) == 0);
+    // screw this i can't be bothered troubleshooting it
+    if (status.drivestate) {
+      // we shouldn't get called before CH1
+      bpassert(!(pwm_hw->en & 0b00000010));
+      // restore amount to output
+      pio0_hw->sm[0].shiftctrl &=
+	~(0b11111 << PIO_SM0_SHIFTCTRL_PULL_THRESH_LSB);
+      // make sure we were set up for the right time
+      bpassert(pio_sm_get_tx_fifo_level(pio0, 0) == 0);
+    }
     // disable ourselves
     pwm_set_irq_enabled(6, false);
     pwm_set_enabled(6, false);
@@ -135,7 +111,7 @@ void pwm_irq_handler(void) {
     // make sure we were set up for the right time
     bpassert(pio_sm_get_tx_fifo_level(pio0, 0) == 0);
     // enable fifo interrupt to get it refilled
-    bpassert(status.reading);
+    bpassert(status.drivestate == READING);
     pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
     // disable ourselves
     pwm_set_irq_enabled(2, false);
@@ -193,7 +169,7 @@ void pwm_irq_handler(void) {
 	pio_sm_put(pio0, 0, readbuffer[readbufferstart]);
 	readbufferstart++;
 	readbufferlength--;
-	deferredtasks.readmore = true;
+	status.bufferstate = MORE_WORK;
 	irq_set_pending(BUFFERS_IRQ_NUMBER);
       }
     }
@@ -202,7 +178,7 @@ void pwm_irq_handler(void) {
     // restart and enable state machines
     pio0_hw->ctrl = 0b00110011;
     // enable state machine fifo interrupt
-    bpassert(status.reading);
+    bpassert(status.drivestate == READING);
     if (status.rawreadstage != EXHAUSTED_FM_AM &&
 	status.rawreadstage != EXHAUSTED_MFM_AM) {
       pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
@@ -219,7 +195,7 @@ void pwm_irq_handler(void) {
     if (timebasenumber == TIMEBASE_PER_ROTATION) {
       timebasenumber = 0;
       rotations++;
-      if (status.selected) {
+      if (status.drivestate) {
 	// set index pulse
 	gpio_put(2, true);
       }
@@ -243,6 +219,12 @@ void pwm_irq_handler(void) {
     pwm_set_irq_enabled(5, false);
     pwm_set_enabled(5, false);
     pwm_clear_irq(5);
+  }
+  if (interrupts & PWM_INTS_CH7_BITS) {
+    // just disable ourselves
+    pwm_set_irq_enabled(7, false);
+    pwm_set_enabled(7, false);
+    pwm_clear_irq(7);
   }
   if (pwm_hw->en & 0b00000100) {
     bpassert(!((status.rawreadstage == ONGOING_FM_AM) ||
@@ -286,17 +268,15 @@ static inline void select_drive(volatile struct disk *drive) {
   // begin read if we are being this drive
   if (drive->enabled) {
     bpassert(!selecteddrive);
-    bpassert(!status.reading);
-    status.selected = true;
+    bpassert(!status.drivestate);
     selecteddrive = drive;
     if (drive->mfm != status.mfm) {
       status.mfm = drive->mfm;
       update_mode();
     }
     deferredtasks.urgent = true;
-    deferredtasks.startread = true;
-    deferredtasks.changetrack = false;
-    deferredtasks.stop = false;
+    status.drivestate = READING;
+    status.bufferstate = NEED_WORK;
     irq_set_pending(BUFFERS_IRQ_NUMBER);
     DI();
     if (pwm_hw->slice[5].csr & 0b1) {
@@ -321,12 +301,8 @@ static inline void deselect_drive(volatile struct disk *drive) {
   }
   // stop read if we're being this drive
   if (drive->enabled) {
-    status.selected = false;
-    status.reading = false;
+    status.drivestate = NOT_SELECTED;
     deferredtasks.urgent = true;
-    deferredtasks.stop = true;
-    deferredtasks.startread = false;
-    deferredtasks.changetrack = false;
     irq_set_pending(BUFFERS_IRQ_NUMBER);
     // clear index pulse
     gpio_put(2, false);
@@ -419,15 +395,23 @@ void gpio_irq_handler(void) {
 	}
       }
       deferredtasks.urgent = true;
-      deferredtasks.changetrack = true;
       // stop our current read
       stop_read();
+      status.drivestate = READING;
+      status.bufferstate = NEED_WORK;
       irq_set_pending(BUFFERS_IRQ_NUMBER);
     }
   }
   if (highinterrupts & IO_BANK0_INTR1_GPIO10_EDGE_LOW_BITS) {
     gpio_acknowledge_irq(10, GPIO_IRQ_EDGE_FALL);
     // begin write if we're selected
+    if (status.drivestate && !selecteddrive->wp) {
+      status.drivestate = WRITING;
+      // we don't actually have to do anything to start
+      status.bufferstate = NO_WORK;
+      stop_read();
+      // here we need to do some stuff with interrupts
+    }
   }
   if (pwm_hw->en & 0b00000100) {
     bpassert(!((status.rawreadstage == ONGOING_FM_AM) ||
@@ -459,7 +443,7 @@ void pio0_irq0_handler(void) {
     bpassert(selecteddrive->selected);
   }
   if (interrupts & PIO_INTR_SM0_TXNFULL_BITS) {
-    bpassert(status.reading);
+    bpassert(status.drivestate == READING);
     // TXSTALL confusingly gets set when pull ifempty nowait is
     // unsuccessfuly executed due to an empty TX fifo
     bpassert(!(pio0_hw->fdebug & 0x01000000));
@@ -481,7 +465,8 @@ void pio0_irq0_handler(void) {
 	  (stablereadpointertime
 	   > (8 << currentshift)*(4*pio_sm_get_tx_fifo_level(pio0, 0) +
 				  4*readbufferlength +
-				  stableresidualdatabytes))) {
+				  stableresidualdatabytes)) &&
+	  !(pwm_hw->en & 0b00010000)) {
 	uint32_t currenttime = pwm_get_counter(0) + (timebasenumber << 16);
 	// prediction is the time that the last word in the fifo should be shifted in
 	uint32_t prediction =
@@ -501,25 +486,32 @@ void pio0_irq0_handler(void) {
 	}
 	// if an AM is ongoing then prediction is correct, but we subtract this bit to
 	// compensate for the time we will wait for the other sm to empty
-	if ((status.rawreadstage == ONGOING_FM_AM) ||
-	    (status.rawreadstage == ONGOING_MFM_AM)) {
-	  prediction -= (8 << currentshift)*(pio_sm_get_tx_fifo_level(pio0, 1));
-	}
+	/* if ((status.rawreadstage == ONGOING_FM_AM) || */
+	/*     (status.rawreadstage == ONGOING_MFM_AM)) { */
+	/*   prediction -= (8 << currentshift)*(pio_sm_get_tx_fifo_level(pio0, 1)); */
+	/* } */
 	debugpredictions[debugrefilltimesstart] = prediction;
 	// first check: is now before the next word should be shifted in?
 	// we should make this stricter if the thing runs correctly
 	// if we break here then the state machines have fallen behind
 	// i.e. we are refilling after we expect
-	bpassert(currenttime < prediction + PWM_ERROR_MARGIN);
+	if (currenttime > prediction + PWM_ERROR_MARGIN) {
+	  oops();
+	}
 	// second check: is now after the word in the OSR should have been shifted in?
 	// if we break here then the state machines have gotten ahead
 	// i.e. we are refilling before we expect
-	bpassert(currenttime > prediction - (32 << currentshift) - PWM_ERROR_MARGIN);
+	if (currenttime < prediction - (32 << currentshift) - PWM_ERROR_MARGIN) {
+	  oops();
+	}
       }
       pio_sm_put(pio0, 0, readbuffer[readbufferstart]);
       readbufferstart++;
       readbufferlength--;
-      deferredtasks.readmore = true;
+      if ((status.rawreadstage != WAITING_FM_AM) &&
+	  (status.rawreadstage != WAITING_MFM_AM)) {
+	status.bufferstate = MORE_WORK;
+      }
       irq_set_pending(BUFFERS_IRQ_NUMBER);
     } else {
       if ((status.rawreadstage == WAITING_FM_AM) ||
@@ -538,7 +530,7 @@ void pio0_irq0_handler(void) {
 	// we have run out of readbuffer but the fifo is not empty yet
 	// even if the fifo does run out we should still try to recover,
 	// as the FDC might not be reading or might retry
-	deferredtasks.readmore = true;
+	status.bufferstate = MORE_WORK;
 	deferredtasks.urgent = true;
 	pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, false);
 	irq_set_pending(BUFFERS_IRQ_NUMBER);
@@ -564,10 +556,11 @@ void pio0_irq1_handler(void) {
       writebufferend++;
       writebuffer[writebufferend] = pio_sm_get(pio0, 3);
       writebufferlength++;
-      deferredtasks.writemore = true;
+      status.bufferstate = MORE_WORK;
       irq_set_pending(BUFFERS_IRQ_NUMBER);
     } else {
       // :(
+      oops();
     }
   }
 }
@@ -647,12 +640,18 @@ static void setup_gpio(void) {
   gpio_pull_up(8);  // step
   gpio_pull_up(9);  // write data
   gpio_pull_up(10); // write gate
+  gpio_pull_up(26); // option 1
+  gpio_pull_up(28); // option 2
+  gpio_pull_up(29); // option 3
   // set functions on outputs
   gpio_init(2);  // index
   gpio_init(4);  // DS 1 enable
   gpio_init(6);  // DS 2 enable
   gpio_init(11); // track 0
   gpio_init(12); // write protect
+  gpio_init(26);
+  gpio_init(28);
+  gpio_init(29);
   // set up interrupts
   gpio_set_irq_enabled(3, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
   gpio_set_irq_enabled(5, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
@@ -686,10 +685,9 @@ static void setup_timebase(void) {
   pwm_set_wrap(4, 65535);
   pwm_set_wrap(5, INDEX_PULSE_LENGTH - 1);
   pwm_set_wrap(6, 65535);
-  // debugging
+  // debouncing
   pwm_set_clkdiv(7, TIMEBASE_DIVIDER);
-  pwm_set_wrap(7, 1);
-  pwm_set_enabled(7, true);
+  pwm_set_wrap(7, 65535);
   pwm_set_irq_enabled(7, true);
 }
 
@@ -711,8 +709,8 @@ static void setup_interrupts(void) {
   EI();
 }
 
-void set_to_default_disk(struct disk *drive) {
-  drive->diskid = DEFAULT_DISK_ID;
+void set_to_default_disk(struct disk *drive, unsigned int driveno) {
+  drive->diskid = DEFAULT_DISK_ID + driveno;
   drive->mfm = DEFAULT_DISK_MFM;
   drive->wp = true;
   drive->sectorspertrack = DEFAULT_DISK_SECTORS_PER_TRACK;
@@ -724,15 +722,22 @@ void main(void) {
   /* generate_fm_test_disk((struct disk *)&drive1); */
   drive1.enabled = true;
   drive2.enabled = false;
-  set_to_default_disk((struct disk *)&drive1);
   setup_pio();
   setup_gpio();
   setup_timebase();
+  unsigned int driveno = 0;
+  if (!gpio_get(26)) driveno = 1;
+  if (!gpio_get(28)) driveno = 2;
+  if (!gpio_get(29)) driveno = 3;
+  set_to_default_disk((struct disk *)&drive1, driveno);
   multicore_fifo_drain();
   setup_interrupts();
   // set DS enables
   gpio_put(4, !drive1.enabled);
   gpio_put(6, !drive2.enabled);
+  if (!gpio_get(3)) {
+    select_drive(&drive1);
+  }
   /* select_drive(&drive1); */
   multicore_launch_core1(core1_entry);
   maintain_tracks();

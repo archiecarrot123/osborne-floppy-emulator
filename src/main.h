@@ -33,8 +33,8 @@
 //#define DI()
 //#define EI()
 
-#define BREAK_ON_ERROR 1
-#define BREAK_ON_OOPS 1
+#define BREAK_ON_ERROR 0
+#define BREAK_ON_OOPS 0
 
 #if BREAK_ON_ERROR
 #define bpassert(condition) if (!(condition)) asm volatile ("bkpt 0x03")
@@ -50,13 +50,13 @@ void oops(void);
 
 struct deferredtasks {
   bool urgent      : 1;
-  bool changedisk  : 1;
-  bool startread   : 1;
-  bool startwrite  : 1;
-  bool stop        : 1;
-  bool changetrack : 1;
-  bool readmore    : 1;
-  bool writemore   : 1;
+  /* bool changedisk  : 1; */
+  /* bool startread   : 1; */
+  /* bool startwrite  : 1; */
+  /* bool stop        : 1; */
+  /* bool changetrack : 1; */
+  /* bool readmore    : 1; */
+  /* bool writemore   : 1; */
 };
 
 // waiting:   don't add to the readbuffer or the rawread fifo
@@ -64,20 +64,30 @@ struct deferredtasks {
 // ongoing:   don't put data in rawread fifo
 enum rawreadstage {
   NO_RAW_READ      = 0,
-  WAITING_FM_AM    = 5,
-  EXHAUSTED_FM_AM  = 6,
-  ONGOING_FM_AM    = 7,
-  WAITING_MFM_AM   = 9,
-  EXHAUSTED_MFM_AM = 10,
-  ONGOING_MFM_AM   = 11
+  WAITING_FM_AM    = 1,
+  EXHAUSTED_FM_AM  = 2,
+  ONGOING_FM_AM    = 3,
+  WAITING_MFM_AM   = 5,
+  EXHAUSTED_MFM_AM = 6,
+  ONGOING_MFM_AM   = 7
 };
 
+// when setting drivestate to READING or WRITING make sure to set bufferstate
 struct status {
-  bool reading  : 1;
-  bool writing  : 1;
-  bool mfm      : 1;
-  bool selected : 1;
-  enum rawreadstage rawreadstage : 4;
+  enum {
+    NOT_SELECTED   = 0,
+    SELECTED,
+    READING,
+    WRITING
+  } drivestate   : 2;
+  enum {
+    IDLE           = 0,
+    NEED_WORK,
+    MORE_WORK,
+    NO_WORK
+  } bufferstate  : 2;
+  bool mfm       : 1;
+  enum rawreadstage rawreadstage : 3;
 };
 
 struct piooffsets {

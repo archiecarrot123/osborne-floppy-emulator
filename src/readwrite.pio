@@ -142,15 +142,15 @@ normal:
 delay:
   set y 14                        ; 2 x is not immediately updated
 normal:
-  mov x status                    ; 3 all ones if tx fifo empty
+  mov x status          side 0    ; 3 all ones if tx fifo empty
 .wrap_target
-  pull ifempty noblock  side 0 [3]; 4
+  pull ifempty noblock         [3]; 4
   out pins 1                      ; 0
   jmp !x delay                    ; 1 jump if tx fifo not empty
   jmp y-- normal                  ; 2
-  irq set 5                       ; 3
-  set y 15              side 0    ; 4
-  wait 1 irq 4                    ; -5
+  irq set 5             side 0    ; 3
+  set y 15                        ; 4
+  wait 1 irq 4                 [1]; -6
 .wrap
 
 .program readMFM2_irq
@@ -161,28 +161,28 @@ normal:
 ; this shouldn't cause any trouble with the ibm format as it
 ; always follows a byte with missing clock pulses with a byte starting with a 1
 noclock:
-  mov y status               ; 0
-  jmp data                [5]; 1
+  jmp data                [2]; 0
 .wrap_target
 clock:
-  mov PINS ~X             [3]; 0
-  mov y status     side 0 [2]; 4
+  mov PINS ~X             [2]; 0
 data:
-  jmp !osre delay            ; 7
+  mov y status     side 0 [2]; 3
+  jmp !osre delay            ; 6
+  jmp !y normal              ; 7
   mov PINS X                 ; 8
-  jmp !y normal              ; 9
-  irq set 4               [1]; 10
-  nop              side 0    ; 12
+  irq set 4               [1]; 9
+  nop              side 0    ; 11
   wait 1 irq 5               ; -4
   pull ifempty noblock       ; -3
   out x 1                    ; -2
   jmp PIN noclock            ; -1
-  mov pins ~x             [3]; 0
-  jmp data         side 0 [2]; 4
+  mov pins ~x                ; 0
+  jmp data                [1]; 1
 delay:
-  mov PINS X              [1]; 8
+  nop                        ; 7
 normal:
-  pull ifempty noblock       ; 10
-  out X 1                    ; 11
-  jmp PIN noclock  side 0 [3]; 12
+  mov PINS X                 ; 8
+  pull ifempty noblock       ; 9
+  out X 1                    ; 10
+  jmp PIN noclock  side 0 [4]; 11
 .wrap

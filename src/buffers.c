@@ -42,6 +42,11 @@ static inline void set_rawread_timers(uint_fast8_t rawbytecount, uint32_t curren
     // either we have fallen behind or we have wrapped---let's assume wrapped
     timedifference += ROTATION_PERIOD;
   }
+  DI();
+  if (!status.drivestate) {
+    EI();
+    return;
+  }
   if (lastwordbytecount) {
     // don't need to do this if our last byte is full
     if (timedifference > (4*8 << currentshift) - PWM_ERROR_MARGIN) {
@@ -52,7 +57,8 @@ static inline void set_rawread_timers(uint_fast8_t rawbytecount, uint32_t curren
 				    + PWM_ERROR_MARGIN));
       } else {
 	DI();
-	if (pio_sm_get_tx_fifo_level(pio0, 0) != 1 || readbufferlength) {
+	volatile uint32_t debugfifolevel = pio_sm_get_tx_fifo_level(pio0, 0);
+	if (debugfifolevel != 1 || readbufferlength) {
 	  oops();
 	}
 	// change the amount to output
@@ -73,6 +79,7 @@ static inline void set_rawread_timers(uint_fast8_t rawbytecount, uint32_t curren
       oops();
     }
   }
+  EI();
   pwm_set_counter(2, 65536 - (timedifference
 			      + PWM_ERROR_MARGIN));
   pwm_set_counter(3, 65536 - (timedifference
@@ -80,7 +87,7 @@ static inline void set_rawread_timers(uint_fast8_t rawbytecount, uint32_t curren
 			      + PWM_ERROR_MARGIN));
   // enable timers
   DI();
-  if (status.reading) {
+  if (status.drivestate == READING && status.bufferstate > NEED_WORK) {
     if (lastwordbytecount) {
       pwm_set_irq_mask_enabled(0b1001110, true);
       pwm_hw->en |= 0b01001110;
@@ -184,6 +191,18 @@ static inline void add_data_to_readbuffer(uint8_t *myreadbufferend,
       residualdata |= (data[i]) << ((4 - residualdatabytes) * 8);
     }
   }
+}
+
+static void reset_read(void) {
+  residualdatabytes = 0;
+  residualdata = 0;
+  readbufferlength = 0;
+  status.rawreadstage = NO_RAW_READ;
+  bpassert(!(pio0_hw->ctrl & 0b1111));
+  pio_sm_clear_fifos(pio0, 0);
+  pio_sm_clear_fifos(pio0, 1);
+  bpassert(!(pio0_hw->fdebug & 0x01000000));
+  bpassert(!(pwm_hw->en & 0b01011110));
 }
 
 // only does a linear seek (fast-forward): use the TOC first
@@ -302,7 +321,7 @@ static void seek_readbuffer(void) {
       // interrupt 4 will do whatever interrupt 2 normally would
       pwm_set_counter(3, 65536 - (readpointertime - currenttime + PWM_ERROR_MARGIN));
       DI();
-      if (status.reading) {
+      if (status.drivestate == READING && status.bufferstate == MORE_WORK) {
 	pwm_set_irq_enabled(3, true);
 	pwm_set_enabled(3, true);
       }
@@ -354,7 +373,7 @@ static void seek_readbuffer(void) {
 	}
 	// set up pwm interrupts
 	DI();
-	if (status.reading) {
+	if (status.drivestate == READING && status.bufferstate == MORE_WORK) {
 	  pwm_set_counter(3, 65536 - (readpointertime - currenttime - (8 << currentshift) + PWM_ERROR_MARGIN));
 	  pwm_set_irq_enabled(3, true);
 	  pwm_set_enabled(3, true);
@@ -389,21 +408,24 @@ static void seek_readbuffer(void) {
   DI();
   bpassert(!(pwm_hw->en & 0b01010110));
   if (currenttime + 2 >= targettime) {
-    // oh no
-    // actually no give up
-    bpassert(false);
-    // let's just ignore the problem
-    targettime = currenttime + 1;
+    // try again
+    reset_read();
+    myreadbufferend = readbufferstart + readbufferlength;
+    startedonam = false;
+    goto readstart;
   }
   pwm_set_counter(4, 65536 - (targettime - currenttime));
-  if (status.reading) {
+  if (status.drivestate == READING && status.bufferstate == MORE_WORK) {
     pwm_set_irq_enabled(4, true);
     pwm_set_enabled(4, true);
   }
   // update the "stable" values
   stablereadpointertime = readpointertime;
   stableresidualdatabytes = residualdatabytes;
-  if (!status.rawreadstage && status.reading && readbufferlength) {
+  if (!startedonam &&
+      readbufferlength &&
+      status.drivestate == READING &&
+      status.bufferstate == MORE_WORK) {
     pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
   }
   EI();
@@ -447,14 +469,15 @@ void maintain_readbuffer(void) {
     DI();
     // update readbuffer length
     readbufferlength = myreadbufferend - readbufferstart;
-    if ((status.rawreadstage != EXHAUSTED_FM_AM) && (status.rawreadstage != EXHAUSTED_MFM_AM) && status.reading) {
+    if ((status.rawreadstage != EXHAUSTED_FM_AM) &&
+	(status.rawreadstage != EXHAUSTED_MFM_AM) &&
+	status.drivestate == READING) {
       pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
     }
     // update the "stable" values
     stablereadpointertime = readpointertime;
     stableresidualdatabytes = residualdatabytes;
     EI();
-      
   }
  firsttime:
   switch (((struct bytes *)readpointer)->type) {
@@ -539,11 +562,11 @@ void maintain_readbuffer(void) {
       // set up the pio
       bpassert(!(pio_sm_is_tx_fifo_full(pio0, 1)));
       pio_sm_put(pio0, 1, ((uint32_t)((struct am *)readpointer)->rawbyte << 16));
+      // set status
+      status.rawreadstage = WAITING_FM_AM;
       // set up pwm interrupts
       uint32_t currenttime = get_currenttime();
       set_rawread_timers(1, currenttime);
-      // set status
-      status.rawreadstage = WAITING_FM_AM;
       readpointertime += (8 << currentshift);
       readpointer = ((struct datablock *)readpointer)->cdr;
       while (((struct bytes *)readpointer)->type == FMAM) {
@@ -584,11 +607,11 @@ void maintain_readbuffer(void) {
 	bpassert(!(pio_sm_is_tx_fifo_full(pio0, 1)));
 	pio_sm_put(pio0, 1, (((struct am *)readpointer)->rawbyte << 16));
       }
+      // set status
+      status.rawreadstage = WAITING_MFM_AM;
       // set up pwm interrupts
       uint32_t currenttime = get_currenttime();
       set_rawread_timers(3, currenttime);
-      // set status
-      status.rawreadstage = WAITING_MFM_AM;
       // this gives us one residual byte
       residualdata = ((struct am *)readpointer)->byte3 << 24;
       residualdatabytes = 1;
@@ -601,19 +624,25 @@ void maintain_readbuffer(void) {
   default:
     asm volatile ("bkpt 0x01");
   }
+  // we have broken so we are obviously done, and don't need to keep trying to write
+  // until stuff is taken out of the readbuffer
+  // don't do this if we jumped to the end
+  DI();
+  if (status.bufferstate > NEED_WORK) {
+    status.bufferstate = NO_WORK;
+  }
+  EI();
  finish:
   DI();
   // update readbuffer length
   readbufferlength = myreadbufferend - readbufferstart;
-  // we have broken so we are obviously done, and don't need to keep trying to write
-  // until stuff is taken out of the readbuffer
-  //deferredtasks.readmore = false;
   // update the "stable" values
   stablereadpointertime = readpointertime;
   stableresidualdatabytes = residualdatabytes;
   EI();
 }
 
+// presumed to be done with interrupts disabled
 void stop_read(void) {
   // restart and disable state machines
   pio0_hw->ctrl = 0b11110000;
@@ -623,25 +652,13 @@ void stop_read(void) {
   // disable these pwm interrupts
   pwm_set_irq_mask_enabled(0b1011110, false);
   pwm_hw->en &= ~0b01011110;
-  status.reading = false;
-  deferredtasks.startread = false;
+  if (status.drivestate) {
+    status.drivestate = SELECTED;
+  }
   status.rawreadstage = NO_RAW_READ;
   pio0_hw->sm[0].shiftctrl &=
     ~(0b11111 << PIO_SM0_SHIFTCTRL_PULL_THRESH_LSB);
   bpassert(!(pio0_hw->fdebug & 0x01000000));
-}
-  
-
-static void reset_read(void) {
-  residualdatabytes = 0;
-  residualdata = 0;
-  readbufferlength = 0;
-  status.rawreadstage = NO_RAW_READ;
-  bpassert(!(pio0_hw->ctrl & 0b1111));
-  pio_sm_clear_fifos(pio0, 0);
-  pio_sm_clear_fifos(pio0, 1);
-  bpassert(!(pio0_hw->fdebug & 0x01000000));
-  bpassert(!(pwm_hw->en & 0b01011110));
 }
 
 void maintain_buffers(void) {
@@ -655,26 +672,15 @@ void maintain_buffers(void) {
     bpassert(selecteddrive->selected);
   }
   EI();
-  // stop
+  // start read
   DI();
-  if (deferredtasks.stop) {
-    status.reading = false;
-    deferredtasks.stop = false;
-    bpassert(!(deferredtasks.startread || deferredtasks.changetrack));
-    EI();
-  } else {
-    EI();
-  }
-  // read
-  DI();
-  if (deferredtasks.startread) {
-    bpassert(!deferredtasks.stop);
+  if (status.drivestate == READING && status.bufferstate == NEED_WORK) {
     reset_read();
     bpassert(selecteddrive);
     bpassert(selecteddrive->selected);
-    status.reading = true;
-    deferredtasks.readmore = true;
-    deferredtasks.startread = false;
+    if (status.drivestate == READING) {
+      status.bufferstate = MORE_WORK;
+    }
     EI();
     // seek
     if (jump_readbuffer()) {
@@ -683,28 +689,18 @@ void maintain_buffers(void) {
   } else {
     EI();
   }
-  // change track - basically the same as stopping and starting again
-  DI();
-  if (deferredtasks.changetrack) {
-    bpassert(!deferredtasks.stop);
-    deferredtasks.changetrack = false;
-    reset_read();
-    status.reading = true;
-    EI();
-    if (jump_readbuffer()) {
-      seek_readbuffer();
-    }
-  } else {
-    EI();
-  }
-  if (status.reading &&
-      deferredtasks.readmore &&
+  // read more data
+  if (status.drivestate == READING &&
+      status.bufferstate == MORE_WORK &&
       (status.rawreadstage != WAITING_FM_AM) &&
       (status.rawreadstage != WAITING_MFM_AM)) {
     maintain_readbuffer();
     // just to be safe
     DI();
-    if ((status.rawreadstage != EXHAUSTED_FM_AM) && (status.rawreadstage != EXHAUSTED_MFM_AM) && status.reading) {
+    if ((status.rawreadstage != EXHAUSTED_FM_AM) &&
+	(status.rawreadstage != EXHAUSTED_MFM_AM) &&
+	status.drivestate == READING &&
+	status.bufferstate > NEED_WORK) {
       pio_set_irq0_source_enabled(pio0, pis_sm0_tx_fifo_not_full, true);
     }
     EI();

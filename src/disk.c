@@ -804,11 +804,15 @@ void maintain_tracks(void) {
       // the drive doesn't have anything loaded
       candidate = 0;
       drive1.loaded = true;
+      trackcache[2] = trackcache[0];
+      trackcache[4] = trackcache[0];
       goto loadtrack;
     } else if (drive2.enabled && !drive2.loaded) {
       // this one doesn't have anything loaded
       candidate = 1;
       drive2.loaded = true;
+      trackcache[3] = trackcache[1];
+      trackcache[5] = trackcache[1];
       goto loadtrack;
     }
     minheadroom = 40;

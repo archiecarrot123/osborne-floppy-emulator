@@ -61,6 +61,7 @@ int main(int argc, char **argv) {
   char *imd;
   char *imdpointer;
   bool fail;
+  size_t binfilesize;
   if (argc < 3) {
     printf("too few arguments\n");
     return 1;
@@ -76,7 +77,7 @@ int main(int argc, char **argv) {
     goto binfail;
   }
   if (ftruncate(binfd, 40 * MAX_SECTORS * sizeof(struct sector)) == -1) {
-    perror("Failed to resize bin file");
+    perror("Failed to grow bin file");
     goto resizefail;
   }
   sectors = mmap(NULL, 40 * MAX_SECTORS * sizeof(struct sector), PROT_WRITE|PROT_READ, MAP_SHARED, binfd, 0);
@@ -166,18 +167,28 @@ int main(int argc, char **argv) {
 	}
 	// we should really be computing crcs
 	// based on precomputed AM crcs
-	uint16_t crc = software_crc(sectorpointer->data, 128 << length, mysector.deleted ? 0x8FE7 : 0xBF84);
+	uint16_t crc;
+	if (mysector.mfm) {
+	  crc = mysector.deleted ? 0xD2F6 : 0xE295; // precomputed 2024-08-28
+	} else {
+	  crc = mysector.deleted ? 0x8FE7 : 0xBF84; // precomputed 2024-08-27
+	}
+	crc = software_crc(sectorpointer->data, 128 << length, crc);
 	sectorpointer->crc[0] = crc >> 8;
 	sectorpointer->crc[1] = crc & 0xFF;
-	sectorpointer++;
+	sectorpointer = (void *)sectorpointer + 4 + (128 << length);
       }
       if (fail) {
 	break;
       }
     }
+    binfilesize = (void *)sectorpointer - (void *)sectors;
   }
   munmap(imd, statbuf.st_size);
   munmap(sectors, 40 * MAX_SECTORS * sizeof(struct sector));
+  if (ftruncate(binfd, binfilesize) == -1) {
+    perror("Failed to shrink bin file");
+  }
   close(binfd);
   close(imdfd);
   return fail;
