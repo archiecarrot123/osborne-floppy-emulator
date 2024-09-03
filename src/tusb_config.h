@@ -34,16 +34,18 @@
 // Board Specific Configuration
 //--------------------------------------------------------------------+
 
-#if CFG_TUSB_MCU == OPT_MCU_RP2040
+// #if CFG_TUSB_MCU == OPT_MCU_RP2040
 // change to 1 if using pico-pio-usb as host controller for raspberry rp2040
 #define CFG_TUH_RPI_PIO_USB   1
 #define BOARD_TUH_RHPORT      CFG_TUH_RPI_PIO_USB
-#endif
+// #endif
+
+#define CFG_TUSB_RHPORT0_MODE       OPT_MODE_HOST
 
 // RHPort number used for host can be defined by board.mk, default to port 0
-#ifndef BOARD_TUH_RHPORT
-#define BOARD_TUH_RHPORT      0
-#endif
+// #ifndef BOARD_TUH_RHPORT
+// #define BOARD_TUH_RHPORT      0
+// #endif
 
 // RHPort max operational speed can defined by board.mk
 #ifndef BOARD_TUH_MAX_SPEED
@@ -102,7 +104,8 @@
 #define CFG_TUH_VENDOR              0
 
 // max device support (excluding hub device)
-#define CFG_TUH_DEVICE_MAX          (CFG_TUH_HUB ? 4 : 1) // hub typically has 4 ports
+// #define CFG_TUH_DEVICE_MAX          (CFG_TUH_HUB ? 4 : 1) // hub typically has 4 ports
+#define CFG_TUH_DEVICE_MAX          1
 
 //------------- HID -------------//
 #define CFG_TUH_HID_EPIN_BUFSIZE    64

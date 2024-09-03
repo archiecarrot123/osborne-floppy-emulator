@@ -1,0 +1,5 @@
+main -> tuh_task
+-> tuh_task_ext
+    -> msch_xfer_cb (usbh_class_driver_t [driver->xfer_cb])
+        -> config_read_capacity_complete (tuh_msc_read_capacity, tuh_msc_scsi_command [p_msc->complete_cb p_msc is one of msch_itf])
+            -> tuh_msc_mount_cb
