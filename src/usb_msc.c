@@ -32,6 +32,8 @@
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
 
+#include "hardware/clocks.h"
+
 #include "pico/multicore.h"
 #include "pico/bootrom.h"
 #include "pio_usb.h"
@@ -47,7 +49,6 @@
 
 #include "semihosting.c"
 
-
 static scsi_inquiry_resp_t inquiry_resp;
 static FATFS fatfs[CFG_TUH_DEVICE_MAX];
 static_assert(FF_VOLUMES == CFG_TUH_DEVICE_MAX);
@@ -61,6 +62,7 @@ static_assert(FF_VOLUMES == CFG_TUH_DEVICE_MAX);
 //--------------------------------------------------------------------+
 bool inquiry_complete_cb(uint8_t dev_addr, tuh_msc_complete_data_t const* cb_data)
 {
+    ocd_sendline("Inquired USB\n");
     if (cb_data->csw->status != 0) {
         ocd_sendline("Inquiry failed\r\n");
         return false;
@@ -121,19 +123,113 @@ void main_loop_task()
 }
 
 
+void configure_pll() {
+    // Write USB PLL postdiv 1 and 2 to 1
+    *(uint32_t *) (PLL_USB_BASE + 0xc) |= 1 << 12;
+    *(uint32_t *) (PLL_USB_BASE + 0xc) &= ~(1 << 13);
+    *(uint32_t *) (PLL_USB_BASE + 0xc) &= ~(1 << 14);
+    *(uint32_t *) (PLL_USB_BASE + 0xc) |= 1 << 16;
+    *(uint32_t *) (PLL_USB_BASE + 0xc) &= ~(1 << 17);
+    *(uint32_t *) (PLL_USB_BASE + 0xc) &= ~(1 << 18);
+
+    // Write USB PLL FBDIV_INT to 24
+    *(uint32_t *) (PLL_USB_BASE + 0x8) &= ~1;
+    *(uint32_t *) (PLL_USB_BASE + 0x8) |= 24;
+
+    // Write USB PLL REFDIV to 2
+    *(uint32_t *) (PLL_USB_BASE + 0x0) |= 2;
+
+    
+    // Write SYS PLL postdiv 1 and 2 to 1
+    *(uint32_t *) (PLL_SYS_BASE + 0xc) |= 1 << 12;
+    *(uint32_t *) (PLL_SYS_BASE + 0xc) &= ~(1 << 13);
+    *(uint32_t *) (PLL_SYS_BASE + 0xc) &= ~(1 << 14);
+    *(uint32_t *) (PLL_SYS_BASE + 0xc) |= 1 << 16;
+    *(uint32_t *) (PLL_SYS_BASE + 0xc) &= ~(1 << 17);
+    *(uint32_t *) (PLL_SYS_BASE + 0xc) &= ~(1 << 18);
+
+    // Write SYS PLL FBDIV_INT to 24
+    *(uint32_t *) (PLL_SYS_BASE + 0x8) &= ~1;
+    *(uint32_t *) (PLL_SYS_BASE + 0x8) |= 24;
+
+    // Write SYS PLL REFDIV to 1
+    *(uint32_t *) (PLL_SYS_BASE + 0x0) |= 1;
+}
+
+uint32_t int_power(uint32_t base, uint32_t exponent) {
+    uint32_t value = 1;
+    for (int i=0; i<exponent; i++) {
+        value *= base;
+    }
+    return value;
+}
+
+void set_register(uint32_t reg, uint32_t offset, uint32_t size, uint32_t value) {
+    // registers aren't reset without power cycling
+    // Write to 32 bit register "reg", where the "value" start location is "offset" and size is "size"
+    *(uint32_t*) (reg) &= ~((int_power(2, size)-1) << offset); // Clear
+    *(uint32_t*) (reg) |= (value << offset); // Set
+}
+
+void set_safe_clocks() {
+    ocd_sendline("\nSetting safe clocks (clk_sys, clk_ref)\n");
+    // Set CLK_REF
+    set_register(CLOCKS_BASE + 0x30, 0, 2, 0x0); // Set ROSC as the source of clk_ref
+    while (*((uint32_t*) (CLOCKS_BASE + 0x38)) != 0x1) {}; // Poll CLK_REF_SELECTED until glitchless mux switches to ROSC as above
+
+    // Set CLK_SYS
+    set_register(CLOCKS_BASE + 0x3c, 0, 1, 0x0); // Set CLK_REF as the source of clk_sys
+    while (*((uint32_t*) (CLOCKS_BASE + 0x44)) != 0x1) {}; // Poll CLK_SYS_SELECTED until glitchless mux switches to CLK_SYS as above
+}
+
+void set_clock_out_gpio() {
+    // GPOUT0/GPCLK is on GPIO 21
+    
+    // GPOUT0
+    ocd_sendline("Setting GPCLK0 (GPIO 21) debug output\n");
+    
+    // GPIO settings
+    set_register(IO_BANK0_BASE + 4 + 8*21, 0, 5, 0x8); // Set GPIO21 function to GPCLK0
+    set_register(IO_BANK0_BASE + 4 + 8*21, 8, 2, 0x0); // Output driven from function
+    set_register(IO_BANK0_BASE + 4 + 8*21, 12, 2, 0x3); // Output enabled
+
+    // Pad settings
+    set_register(PADS_BANK0_BASE + 4 + 4*21, 2, 1, 0x0); // Pull down disable
+    set_register(PADS_BANK0_BASE + 4 + 4*21, 6, 1, 0x0); // Input disable
+    set_register(PADS_BANK0_BASE + 4 + 4*21, 4, 2, 0x0); // Drive 2mA
+    set_register(PADS_BANK0_BASE + 4 + 4*21, 0, 1, 0x1); // Fast slewing
+
+    // GPCLK settings
+    set_register(CLOCKS_BASE+0x00, 5, 4, 0x4); // Set output to ROSC
+    // set_register(CLOCKS_BASE+0x00, 5, 4, 0x5); // Set output to XOSC
+    // set_register(CLOCKS_BASE+0x00, 5, 4, 0x6); // Set output to CLK_SYS
+    // set_register(CLOCKS_BASE+0x04, 8, 24, 10); // Divide by 10
+    set_register(CLOCKS_BASE+0x04, 8, 24, 1000); // Divide by 1000
+    set_register(CLOCKS_BASE+0x00, 11, 1, 0x1); // Enable output
+}
+
 // core1: handle host events
 static volatile bool core1_booting = true;
 static volatile bool core0_booting = true;
 void core1_main() {
     sleep_ms(10);
+
     // Use tuh_configure() to pass pio configuration to the host stack
     // Note: tuh_configure() must be called before
     // 26 is d-, 27 is d+
-    pio_usb_configuration_t pio_cfg = {27,1,PIO_SM_USB_TX_DEFAULT, PIO_USB_DMA_TX_DEFAULT, 1, PIO_SM_USB_RX_DEFAULT, PIO_SM_USB_EOP_DEFAULT, NULL, PIO_USB_DEBUG_PIN_NONE, PIO_USB_DEBUG_PIN_NONE, false, PIO_USB_PINOUT_DMDP};
-    tuh_configure(1, TUH_CFGID_RPI_PIO_USB_CONFIGURATION, &pio_cfg);
+    // pio_usb_configuration_t pio_cfg = {27,1,PIO_SM_USB_TX_DEFAULT, PIO_USB_DMA_TX_DEFAULT, 1, PIO_SM_USB_RX_DEFAULT, PIO_SM_USB_EOP_DEFAULT, NULL, PIO_USB_DEBUG_PIN_NONE, PIO_USB_DEBUG_PIN_NONE, false, PIO_USB_PINOUT_DMDP};
+    // pio_usb_configuration_t pio_cfg = {26,1,PIO_SM_USB_TX_DEFAULT, PIO_USB_DMA_TX_DEFAULT, 1, PIO_SM_USB_RX_DEFAULT, PIO_SM_USB_EOP_DEFAULT, NULL, PIO_USB_DEBUG_PIN_NONE, PIO_USB_DEBUG_PIN_NONE, false, PIO_USB_PINOUT_DPDM};
+
+    pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
+    pio_cfg.pin_dp=27;
+    pio_cfg.pio_tx_num=1;
+    pio_cfg.pio_rx_num=1;
+    pio_cfg.pinout=PIO_USB_PINOUT_DMDP;
+    tuh_configure(CFG_TUH_RPI_PIO_USB, TUH_CFGID_RPI_PIO_USB_CONFIGURATION, &pio_cfg);
+
     // To run USB SOF interrupt in core1, init host stack for pio_usb (roothub
     // port1) on core1
-    tuh_init(1);
+    tuh_init(CFG_TUH_RPI_PIO_USB);
     core1_booting = false;
     while(core0_booting) {
     }
@@ -145,14 +241,33 @@ void core1_main() {
 
 int main()
 {
-    ocd_sendline("my bad code is running\r\n");
+    // ocd_sendline("my bad code is running\r\n");
+
+    set_safe_clocks();
+    set_clock_out_gpio();
+    // configure_pll();
+
+    // uint32_t* clk_sys_ctrl = (uint32_t*) (CLOCKS_BASE + 0x3c);
+    // uint32_t clk_sys_ctrl_val = *clk_sys_ctrl;
+    // // uint8_t* clk_sys_ctrl_auxsrc = *clk_sys_ctrl << 5 
+    // ocd_sendline("CLK_SYS_CTRL: %x\n", clk_sys_ctrl);
+    // ocd_sendline("CLK_SYS_CTRL, VAL: %x\n", clk_sys_ctrl_val);
+
+
+
+    while (1) {
+        sleep_ms(10);
+    }
+
+    asm("bkpt");
+
     sleep_ms(10);
 
     stdio_init_all();
     // all USB Host task run in core1
     // multicore_reset_core1();
     // multicore_launch_core1(core1_main);
-    ocd_sendline("started core1\n");
+    // ocd_sendline("started core1\n");
 
     msc_fat_init();
     core0_booting = false;
