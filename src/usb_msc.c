@@ -63,97 +63,63 @@ static_assert(FF_VOLUMES == CFG_TUH_DEVICE_MAX);
 bool inquiry_complete_cb(uint8_t dev_addr, tuh_msc_complete_data_t const* cb_data)
 {
     ocd_sendline("Inquired USB\n");
-    if (cb_data->csw->status != 0) {
-        ocd_sendline("Inquiry failed\r\n");
-        return false;
-    }
+    // if (cb_data->csw->status != 0) {
+    //     ocd_sendline("Inquiry failed\r\n");
+    //     return false;
+    // }
 
-    // Print out Vendor ID, Product ID and Rev
-    ocd_sendline("%.8s %.16s rev %.4s\r\n", inquiry_resp.vendor_id, inquiry_resp.product_id, inquiry_resp.product_rev);
+    // // Print out Vendor ID, Product ID and Rev
+    // ocd_sendline("%.8s %.16s rev %.4s\r\n", inquiry_resp.vendor_id, inquiry_resp.product_id, inquiry_resp.product_rev);
 
-    // Get capacity of device
-    uint32_t const block_count = tuh_msc_get_block_count(dev_addr, cb_data->cbw->lun);
-    uint32_t const block_size = tuh_msc_get_block_size(dev_addr, cb_data->cbw->lun);
+    // // Get capacity of device
+    // uint32_t const block_count = tuh_msc_get_block_count(dev_addr, cb_data->cbw->lun);
+    // uint32_t const block_size = tuh_msc_get_block_size(dev_addr, cb_data->cbw->lun);
 
-    ocd_sendline("Disk Size: %lu MB\r\n", block_count / ((1024*1024)/block_size));
-    ocd_sendline("Block Count = %lu, Block Size: %lu\r\n", block_count, block_size);
+    // ocd_sendline("Disk Size: %lu MB\r\n", block_count / ((1024*1024)/block_size));
+    // ocd_sendline("Block Count = %lu, Block Size: %lu\r\n", block_count, block_size);
 
-    return true;
+    // return true;
 }
 
 void tuh_msc_mount_cb(uint8_t dev_addr)
 {
-    asm("bkpt");
     ocd_sendline("mounted\n");
-    uint8_t pdrv = msc_map_next_pdrv(dev_addr);
+    asm("bkpt");
+    // uint8_t pdrv = msc_map_next_pdrv(dev_addr);
 
-    assert(pdrv < FF_VOLUMES);
-    msc_fat_plug_in(pdrv);
-    uint8_t const lun = 0;
-    tuh_msc_inquiry(dev_addr, lun, &inquiry_resp, inquiry_complete_cb, 0);
-    char path[3] = "0:";
-    path[0] += pdrv;
-    if ( f_mount(&fatfs[pdrv],path, 0) != FR_OK ) {
-        ocd_sendline("mount drive %s failed\r\n", path);
-        return;
-    }
-    if (f_chdrive(path) != FR_OK) {
-        ocd_sendline("f_chdrive(%s) failed\r\n", path);
-        return;
-    }
-    ocd_sendline("\r\nMass Storage drive %u is mounted\r\n", pdrv);
-    ocd_sendline("Run the set-date and set-time commands so file timestamps are correct\r\n\r\n");
+    // assert(pdrv < FF_VOLUMES);
+    // msc_fat_plug_in(pdrv);
+    // uint8_t const lun = 0;
+    // tuh_msc_inquiry(dev_addr, lun, &inquiry_resp, inquiry_complete_cb, 0);
+    // char path[3] = "0:";
+    // path[0] += pdrv;
+    // if ( f_mount(&fatfs[pdrv],path, 0) != FR_OK ) {
+    //     ocd_sendline("mount drive %s failed\r\n", path);
+    //     return;
+    // }
+    // if (f_chdrive(path) != FR_OK) {
+    //     ocd_sendline("f_chdrive(%s) failed\r\n", path);
+    //     return;
+    // }
+    // ocd_sendline("\r\nMass Storage drive %u is mounted\r\n", pdrv);
+    // ocd_sendline("Run the set-date and set-time commands so file timestamps are correct\r\n\r\n");
 }
 
 void tuh_msc_umount_cb(uint8_t dev_addr)
 {
+    ocd_sendline("unmounted\n");
     asm("bkpt");
-    ocd_sendline("unmounted");
-    uint8_t pdrv = msc_unmap_pdrv(dev_addr);
-    char path[3] = "0:";
-    path[0] += pdrv;
+    // uint8_t pdrv = msc_unmap_pdrv(dev_addr);
+    // char path[3] = "0:";
+    // path[0] += pdrv;
 
-    f_mount(NULL, path, 0); // unmount disk
-    msc_fat_unplug(pdrv);
-    ocd_sendline("Mass Storage drive %u is unmounted\r\n", pdrv);
+    // f_mount(NULL, path, 0); // unmount disk
+    // msc_fat_unplug(pdrv);
+    // ocd_sendline("Mass Storage drive %u is unmounted\r\n", pdrv);
 }
 
 void main_loop_task()
 {
-}
-
-
-void configure_pll() {
-    // Write USB PLL postdiv 1 and 2 to 1
-    *(uint32_t *) (PLL_USB_BASE + 0xc) |= 1 << 12;
-    *(uint32_t *) (PLL_USB_BASE + 0xc) &= ~(1 << 13);
-    *(uint32_t *) (PLL_USB_BASE + 0xc) &= ~(1 << 14);
-    *(uint32_t *) (PLL_USB_BASE + 0xc) |= 1 << 16;
-    *(uint32_t *) (PLL_USB_BASE + 0xc) &= ~(1 << 17);
-    *(uint32_t *) (PLL_USB_BASE + 0xc) &= ~(1 << 18);
-
-    // Write USB PLL FBDIV_INT to 24
-    *(uint32_t *) (PLL_USB_BASE + 0x8) &= ~1;
-    *(uint32_t *) (PLL_USB_BASE + 0x8) |= 24;
-
-    // Write USB PLL REFDIV to 2
-    *(uint32_t *) (PLL_USB_BASE + 0x0) |= 2;
-
-    
-    // Write SYS PLL postdiv 1 and 2 to 1
-    *(uint32_t *) (PLL_SYS_BASE + 0xc) |= 1 << 12;
-    *(uint32_t *) (PLL_SYS_BASE + 0xc) &= ~(1 << 13);
-    *(uint32_t *) (PLL_SYS_BASE + 0xc) &= ~(1 << 14);
-    *(uint32_t *) (PLL_SYS_BASE + 0xc) |= 1 << 16;
-    *(uint32_t *) (PLL_SYS_BASE + 0xc) &= ~(1 << 17);
-    *(uint32_t *) (PLL_SYS_BASE + 0xc) &= ~(1 << 18);
-
-    // Write SYS PLL FBDIV_INT to 24
-    *(uint32_t *) (PLL_SYS_BASE + 0x8) &= ~1;
-    *(uint32_t *) (PLL_SYS_BASE + 0x8) |= 24;
-
-    // Write SYS PLL REFDIV to 1
-    *(uint32_t *) (PLL_SYS_BASE + 0x0) |= 1;
 }
 
 uint32_t int_power(uint32_t base, uint32_t exponent) {
@@ -182,6 +148,34 @@ void set_safe_clocks() {
     while (*((uint32_t*) (CLOCKS_BASE + 0x44)) != 0x1) {}; // Poll CLK_SYS_SELECTED until glitchless mux switches to CLK_SYS as above
 }
 
+void configure_pll() {
+    ocd_sendline("Configuring PLL\n");
+
+    // From datasheet:
+    // Input clock is 4MHz. The PLL's VCO must run between 750 and 1600Mhz.
+    // Output clock is (FREF/REFDIV)*FBDIV/(POSTDIV1*POSTDIV2).
+    // VCO frequency is (FREF/REFDIV)*FBDIV.
+
+    // Wait uhoh
+    // • Minimum reference frequency (FREF / REFDIV) is 5MHz
+    // We're using FREF = 4MHz
+    // ohnoooooooo
+    // gonna try it anyway ig
+    // yay it works :) !!!!
+
+    // SYS PLL (120MHz)
+    set_register(PLL_SYS_BASE + 0x0, 0, 6, 1); // REFDIV = 1
+    set_register(PLL_SYS_BASE + 0x8, 0, 12, 300); // FBDIV = 300
+    set_register(PLL_SYS_BASE + 0xc, 16, 3, 5); // POSTDIV1 = 5
+    set_register(PLL_SYS_BASE + 0xc, 12, 3, 1); // POSTDIV2 = 1
+
+    // USB PLL (48MHz)
+    set_register(PLL_USB_BASE + 0x0, 0, 6, 1); // REFDIV = 1
+    set_register(PLL_USB_BASE + 0x8, 0, 12, 300); // FBDIV = 300
+    set_register(PLL_USB_BASE + 0xc, 16, 3, 5); // POSTDIV1 = 5
+    set_register(PLL_USB_BASE + 0xc, 12, 3, 5); // POSTDIV2 = 5
+}
+
 void set_clock_out_gpio() {
     // GPOUT0/GPCLK is on GPIO 21
     
@@ -200,12 +194,33 @@ void set_clock_out_gpio() {
     set_register(PADS_BANK0_BASE + 4 + 4*21, 0, 1, 0x1); // Fast slewing
 
     // GPCLK settings
-    set_register(CLOCKS_BASE+0x00, 5, 4, 0x4); // Set output to ROSC
+    // set_register(CLOCKS_BASE+0x00, 5, 4, 0x4); // Set output to ROSC
     // set_register(CLOCKS_BASE+0x00, 5, 4, 0x5); // Set output to XOSC
     // set_register(CLOCKS_BASE+0x00, 5, 4, 0x6); // Set output to CLK_SYS
+    set_register(CLOCKS_BASE+0x00, 5, 4, 0x7); // Set output to CLK_USB
+    // set_register(CLOCKS_BASE+0x00, 5, 4, 0x0); // Set output to CLKSRC_PLL_SYS
+    // set_register(CLOCKS_BASE+0x00, 5, 4, 0x3); // Set output to CLKSRC_PLL_USB
     // set_register(CLOCKS_BASE+0x04, 8, 24, 10); // Divide by 10
     set_register(CLOCKS_BASE+0x04, 8, 24, 1000); // Divide by 1000
+    // set_register(CLOCKS_BASE+0x04, 8, 24, 5*1000); // Divide by 5*1000
     set_register(CLOCKS_BASE+0x00, 11, 1, 0x1); // Enable output
+}
+
+void set_clocks_for_usb() {
+    // Assumes set_safe_clocks has been run and CLK_REF/CLK_SYS are running off ROSC
+    ocd_sendline("Setting clocks for USB\n");
+    
+    // CLK_SYS
+    set_register(CLOCKS_BASE + 0x3c, 5, 3, 0x0); // Set AUXSRC to CLKSRC_PLL_SYS
+    set_register(CLOCKS_BASE + 0x3c, 0, 1, 0x1); // Set SRC to CLKSRC_CLK_SYS_AUX
+    while (*((uint32_t*) (CLOCKS_BASE + 0x44)) != 0x2) {} // Wait for SRC to switch to CLKSRC_CLK_SYS_AUX
+    set_register(CLOCKS_BASE + 0x40, 8, 24, 1); // Set divider to 1
+
+    // CLK_USB
+    set_register(CLOCKS_BASE + 0x54, 11, 1, 0x0); // Disable clock 
+    set_register(CLOCKS_BASE + 0x54, 5, 3, 0x0); // Set AUXSRC to CLKSRC_PLL_USB
+    set_register(CLOCKS_BASE + 0x58, 8, 2, 1); // Set divider to 1
+    set_register(CLOCKS_BASE + 0x54, 11, 1, 0x1); // Enable clock
 }
 
 // core1: handle host events
@@ -222,14 +237,14 @@ void core1_main() {
 
     pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
     pio_cfg.pin_dp=27;
-    pio_cfg.pio_tx_num=1;
-    pio_cfg.pio_rx_num=1;
+    // pio_cfg.pio_tx_num=1;
+    // pio_cfg.pio_rx_num=1;
     pio_cfg.pinout=PIO_USB_PINOUT_DMDP;
     tuh_configure(CFG_TUH_RPI_PIO_USB, TUH_CFGID_RPI_PIO_USB_CONFIGURATION, &pio_cfg);
 
     // To run USB SOF interrupt in core1, init host stack for pio_usb (roothub
     // port1) on core1
-    tuh_init(CFG_TUH_RPI_PIO_USB);
+    tuh_init(CFG_TUH_RPI_PIO_USB); // Maybe i need to run tusb_init instead
     core1_booting = false;
     while(core0_booting) {
     }
@@ -241,29 +256,22 @@ void core1_main() {
 
 int main()
 {
-    // ocd_sendline("my bad code is running\r\n");
-
+    // Set clocks
     set_safe_clocks();
+    configure_pll();
+    set_clocks_for_usb();
     set_clock_out_gpio();
-    // configure_pll();
 
-    // uint32_t* clk_sys_ctrl = (uint32_t*) (CLOCKS_BASE + 0x3c);
-    // uint32_t clk_sys_ctrl_val = *clk_sys_ctrl;
-    // // uint8_t* clk_sys_ctrl_auxsrc = *clk_sys_ctrl << 5 
-    // ocd_sendline("CLK_SYS_CTRL: %x\n", clk_sys_ctrl);
-    // ocd_sendline("CLK_SYS_CTRL, VAL: %x\n", clk_sys_ctrl_val);
+    // while (1) {
+    //     sleep_ms(10);
+    // }
 
-
-
-    while (1) {
-        sleep_ms(10);
-    }
-
-    asm("bkpt");
+    // asm("bkpt");
 
     sleep_ms(10);
 
-    stdio_init_all();
+    stdio_init_all(); // i think i need this
+
     // all USB Host task run in core1
     // multicore_reset_core1();
     // multicore_launch_core1(core1_main);
